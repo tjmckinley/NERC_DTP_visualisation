@@ -1,0 +1,29 @@
+# Practical Material
+
+Many introduction to R practicals focus on the use of R as a statistical computing environment. We will take a similar tact, but with more focus on the programming aspect of R. You will use R more regularly in following years for the statistical components of the course, and indeed these lectures/practicals provide prerequisite information for these later modules. Here we devote some time to aspects of R that are often less well known, but very useful, such as the use of more advanced graphics and the production of reproducible documents.
+
+To help the process of learning to use R, we have set up a forum on the module ELE page. This forum emulates the nature of the R community: users share advice and information on techniques for programming and analysis. This is a free-style community, so some requests get bombarded with answers and others languish unanswered for months. You can help this community to work by answering any questions that you have time and skill to answer. Please use this resource in the manner in which it is intended---please see guidance at [stackoverflow](http://stackoverflow.com/help/how-to-ask) for advice.
+
+> **Important**: Be sensible. The forum is **not** designed to ask for the answers to assignment questions. Any blatant attempts to do this will be deleted and the guilty party given a stern talking to!
+
+In the following practical, R commands to be entered into the console are show in grey boxes e.g.
+
+```{r, eval = F}
+seq(0, 1, length = 11)
+```
+
+and the corresponding output is shown in white boxes
+
+```{r, echo = F}
+seq(0, 1, length = 11)
+```
+
+## Tasks
+
+```{task}
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked below.
+```
+
+```{solution}
+Eloquent and inspiring solution.
+```

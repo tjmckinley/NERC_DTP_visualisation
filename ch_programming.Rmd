@@ -1,0 +1,686 @@
+# Programming in R
+
+The popularity of R is in part due to its fantastic statistical packages and extremely flexible graphical capabilities. It is often easy to forget that it is a fully functional programming language in its own right. In this part of the practical we cover how to implement some standard programming practices, such as `for` and `while` loops, conditional `if` statements and so on.
+
+> As previously stated, R is a **high-level** language, and as such does not require the same level of code complexity to work. For example, it is not necessary to differentiate between `integer`, `float` and `double` types for numerical arrays. It is also not necessary to declare objects in advance of using them---you can create objects 'on-the-fly', and even change an object type without any memory reallocation. In addition, R has many [packages](https://cran.r-project.org/) which provide **functions** to implement a huge number of different algorithms or analyses etc. The cost of this functionality is **speed**. For example, a `for` loop written in native R code will generally be ***much*** slower than an equivalent loop written in C. For simple problems this difference is often practically negligible, and is often counter-balanced against the fact that R code is usually significantly faster to write. For complex, highly computationally demanding algorithms, this difference can be highly significant. Many R functions get around this by virtue of being wirtten in C (or Fortran), and simply providing a user-friendly interface to a fast C executable. We have already seen examples of this for functions such as `mean()` and `sum()`.
+
+Often, native R code is very useful to know, and so the following sections inroduce some (hopefully) familiar concepts in the context of R.
+
+## Loops
+
+R has implementations of both `for` and `while` loops. For example,
+
+### `for` loops
+
+```{r}
+for(i in 1:10){ 
+    print(i) 
+}
+```
+
+This command creates an object `i`, which takes the values in the vector `1:10` in turn, and prints each to the screen. Notice that we wrote this entire loop on a single line. The curly brackets `{}` delineate the contents of the loop. A more complex example is
+
+```{r}
+for(i in 1:10)
+{
+    ## generate 10 random numbers
+    ## uniformly between 0 and 1
+    x <- runif(10)
+    
+    ## calculate the mean
+    x <- mean(x)
+    
+    ## print the mean to the screen
+    print(x)
+}
+```
+
+Here I've included comments in the loop itself. Of course it is also possible to use nested functions to write this more concisely.
+
+```{task}
+Write the above `for` loop using nested functions. You should be able to fit the content of the loop on a single line. Why does your code print different values to before?
+```
+
+```{solution}
+
+``{r, eval = F}
+## the code can be condensed to a single line
+## using nested functions. The answers are different
+## because each line generates a different set of 
+## random numbers - the replicate we would need
+## to set the seed
+for(i in 1:10) { 
+    print(mean(runif(10))) 
+}
+``
+
+```
+
+> **Note**: for single line pieces of code, it is not always necessary to use curly brackets `{}` to delineate the loop. However, it is a good habit to get into, and saves lots of simple errors. Hence, in these practicals I will insist you always delineate loops and if/else statments using curly brackets. Please let me know if I've missed any!
+
+> **Note**: the use of **indentation** to delineate what is inside of the `for` loop. This is not necessary for R to work, but in my opinion greatly helps the comprehension of the code. Along with comments and spacing, this is a useful habit to get into, and I insist upon it here. Some people prefer to place the leading bracket on a different line to the `for` statement e.g. something like:
+> ```
+> for(i in 1:10) 
+> {
+>     x <- runif(10)
+>     print(x)
+> }
+> ```
+> I would support either approach above, but something like
+> ```
+for(i in 1:10)
+{
+x <- runif(10)
+print(x)
+}
+```
+> is bad programming practice (in my opinion), and will be marked as such.
+    
+Loops can also be **nested**:
+
+```{r}
+for(i in 1:3) {
+    for(j in 1:3) { 
+        print(c(i, j))
+    }
+}
+```
+
+```{task}
+Write a piece of R code, using nested `for` loops, that transposes a 3 $\\times$ 3 matrix. Test it on the matrix `x <- matrix(1:9, 3, 3)`
+```
+
+```{solution}
+
+``{r, eval = F}
+## create x matrix
+x <- matrix(1:9, 3, 3)
+x
+
+## there are lots of ways to do this
+## I have created a dummy matrix, populated it
+## and then saved over the original
+xt <- matrix(0, 3, 3)
+for(i in 1:3) {
+    for(j in 1:3) {
+        xt[i, j] <- x[j, i]
+    }
+}
+x <- xt
+rm(xt)
+x
+``
+
+```
+
+> **Note**: `for` loops in R can loop over any type of vector, not just sequential indices. For example, 
+> ```{r}
+letters[1:5]
+> for(i in letters[1:5]) {
+>   print(i)
+> }
+> ```
+
+### `while` loops
+
+R's `while` statement works in a similar way. The loop continues until some logical statement is met. For example,
+
+```{r}
+i <- 1
+while(i < 5){
+    print(i)
+    i <- i + 1
+}
+```
+
+> **Note**: R doesn't have a `++` operator like C. In addition notice that the `i` variable had to be initialised in advance of the loop, so that the `while` statement could be evaluated. The `i` variable is then incremented during the loop.
+
+> **Warning**: a common coding error is to create **infinite** loops. You must take care to ensure that the loop will eventually end. For example, the following code will produce an infinite loop. Why?
+> ```
+> i <- 1
+> while(i < 5) { 
+>    print(i) 
+>  }
+> ```
+
+```{task}
+Write a `while` loop that generates a uniform random number between 0 and 1 (use the `runif()` function), until a number of > 0.9 is obtained.
+```
+
+```{solution}
+
+``{r, eval = F}
+## set initial value to arbitrary value to enable
+## while loop to initialise
+x <- 0
+while(x < 0.9) {
+    x <- runif(1)
+}
+x
+``
+
+```
+
+## Conditional statements
+
+R also supports conditional statements, such as `if` and `else`. These help the code to change its path depending on whether a condition is true or false. For example:
+
+```{r}
+y <- runif(1)
+if(y < 0.5) {
+    print("y is < 0.5")
+} else {
+    print("y is >= 0.5")
+}
+```
+
+> **Note**: that the `else` statement starts on the same line as the closing bracket `}` from the preceding `if` statement.
+
+Conditional statements can also be **nested**.
+
+```{task}
+Generate two uniform random numbers between 0 and 1, called `x` and `y`. Write a nested `if`/`else` statement that prints out whether `x` is > 0.5, and then whether `y` is > 0.5.
+```
+
+```{solution}
+
+``{r, eval = F}
+## generate random numbers
+x <- runif(1)
+y <- runif(1)
+x
+y
+if(x > 0.5) {
+    print("x > 0.5")
+    if(y < 0.5) {
+        print("y < 0.5")
+    } else {
+        print("y > 0.5")
+    }
+} else {
+    print("x < 0.5")
+    if(y < 0.5) {
+        print("y < 0.5")
+    } else {
+        print("y > 0.5")
+    }
+}
+``
+
+```
+
+R also supports an `ifelse` function, that can be applied **element-wise** to vectors and matrices. This is useful if you want to return an object the same size as the one you are testing. For example,
+
+```{r}
+x <- runif(6, 0, 1)
+x
+ifelse(x > 0.5, TRUE, FALSE)
+```
+
+## User defined functions
+
+R also allows you define your own `functions`, that take a set of arguments and return some output. For example,
+
+```{r}
+## define a function that takes a number and returns whether
+## the number is greater than, less than or equal to 0
+sign_num <- function(x) {
+    if(x < 0) {
+        print("x is less than 0")
+    } else {
+        if(x == 0) {
+            print("x is equal to zero")
+        } else {
+            print("x is greater than 0")
+        }
+    }
+}
+```
+
+This piece of code is broken down as follows:
+
+* The `function(x)` part defines a `function` object that takes an argument `x`. Whatever variables are defined here are **local** variables, i.e. they only exist within the function, and are destroyed once the function exits. 
+* The first set of curly brackets then denote which lines of code are part of the function.
+* The function then takes the local variable `x`, and using a series of nested `if`/`else` loops, prints out whether the number is greater than, less than or equal to zero.
+* When the code hits the final curly bracket, the function exits.
+* The function is stored (using the assignment operator `<-`) into an object called `sign_num`.
+
+We can then use this function by simply passing values to it:
+
+```{r}
+sign_num(1)
+sign_num(-1)
+sign_num(0)
+```
+
+> **Note**: By default, an R function returns the final line as its output. In the example above, no object was present on the final line, so R returned nothing. A useful habit to get into is to use explicit `return()` statements to denote what object is returned from a function.
+
+The following code returns the **absolute value** of `x`, as well as printing information on whether the original `x` was greater than, less than or equal to zero:
+
+```{r}
+## define a function that takes a number and returns whether
+## the number is greater than, less than or equal to 0
+sign_num <- function(x) {
+    if(x < 0) {
+        print("x is less than 0")
+    } else {
+        if(x == 0) {
+            print("x is equal to zero")
+        } else {
+            print("x is greater than 0")
+        }
+    }
+    return(ifelse(x < 0, -x, x))
+}
+sign_num(-1)
+```
+
+> **Aside**: A really useful function in R is called `paste()`. This allows us to concatenate objects into strings, which is particularly useful for printing to the screen. For example:
+> ```{r}
+> x <- 10
+> paste("The variable x is", x)
+> ```
+> We can see that this has taken the value of `x` (which is `r x`), and created a character vector of length 1 containing the concatenated string `"The variable x is 10"`. Notice by default that `paste()` inserts a space between the arguments it's concatenating, this can be suppressed using the `sep` argument, or by using the `paste0()` function e.g. note the difference between the first function and the latter two (which are equivalent) below:
+> ```{r}
+> paste("x=", 1)
+> paste("x=", 1, sep = "")
+> paste0("x=", 1)
+> ```
+
+
+```{task}
+Try the following pieces of code. What do they do?
+     
+1. `paste(\"Here is the number:\", 1:10)`.
+2. `paste(1:10, collapse = \" + \")`.
+3. `paste(\"Here are some numbers:\", paste(1:10, collapse = \", \"))`.
+4. `x <- 1:10;`
+  `paste(\"The sum of the first\", length(x), `
+      `\"numbers is given by\", paste(1:10, collapse = \" + \"),`
+      `\"=\", sum(x))`
+      
+```
+
+```{solution}
+
+``{r, eval = F}
+## 1. This creates a character vector of length 10 where each
+## element is the result of pasting "Here is the number:" 
+## with each number 1 to 10 respectively
+paste("Here is the number:", 1:10)
+
+## 2. This creates a character vector of length 1 that 
+## has the numbers 1 to 10 separated by "+" signs
+paste(1:10, collapse = " + ")
+
+## 3. This creates a character vector of length 1 that 
+## prints a message followed by the vector separated
+## by commas (uses nested functions)
+paste("Here are some numbers:", paste(1:10, collapse = ", "))
+
+## 4. This creates a long string which concatenates
+## various functions of a vector (length, sum etc.)
+## together to form a description of adding numbers
+## together. Uses nested functions.
+x <- 1:10
+paste("The sum of the first", length(x), "positive integers is given by", paste(1:10, collapse = " + "), "=", sum(x))
+``
+
+```
+
+Outputs from R functions can be passed into other objects e.g.
+
+```{r, results = "hold"}
+y <- -1.3
+absy <- sign_num(y)
+y
+absy
+```
+
+Here we pass a variable `y` to our function, and because R creates a **local variable** inside the function, the original value of `y` remains unchanged once the function has been run. The absolute value is calculated and then passed into a new variable `absy`. R also allows variables to be overwritten, hence the following code overwrites `y` with its absolute value.
+
+```{r, results = "hold"}
+y <- sign_num(y)
+y
+```
+
+If you wish to exit an R function earlier than the final line, perhaps due to some conditional statement, then the `return()` function can be used to do this e.g.
+
+```{r}
+whoknows <- function(x) {
+    for(i in 2:x) {
+        if(x %% i == 0){ 
+            return(i) 
+        }
+    }
+}
+```
+
+```{r}
+whoknows(10)
+whoknows(17)
+```
+
+```{task}
+What is the `whoknows` function defined in the above piece of code doing?
+```
+
+```{solution}
+It is taking a number and printing out the first number > 1 that divides `x` to leave a whole number.
+```
+
+The `stop()` function is useful as a way of stopping the code if some condition is breached. It takes a character argument that it prints to the screen if it is run.
+
+```{r, error = T}
+whoknows <- function(x) {
+    if(length(x) > 1) stop("x argument needs to be of length 1")
+    for(i in 2:x) {
+        if(x %% i == 0){ return(i) }
+    }
+    return(NULL)
+}
+whoknows(10)
+whoknows(c(10, 17))
+```
+
+There is even a useful `stopifnot()` function, which takes a conditional statement as an argument and stops the code if the statement is not true. This is particularly useful for checking inputs. Notice that our functions have been quite sloppy so far, and really we should check that the variables that we are entering into the function are of the correct form. A better piece of code is:
+
+<a id="tidyscript"></a>
+```{r}
+whoknows <- function(x) {
+    ## check `x` variable is present
+    stopifnot(!missing(x))
+    
+    ## check `x` is numeric
+    stopifnot(is.numeric(x))
+    
+    ## check `x` is of length one
+    stopifnot(length(x) == 1)
+    
+    ## check `x` is a whole number
+    stopifnot(x %% 1 == 0)
+    
+    ## check `x` is larger than 1
+    stopifnot(x >= 2)
+    
+    ## print out the first number > 1 that
+    ## divides x to leave a whole number
+    for(i in 2:x) {
+        if(x %% i == 0) { 
+            return(i) 
+        }
+    }
+}
+```
+
+```{r, error = T}
+whoknows()
+whoknows(10)
+whoknows(2.5)
+whoknows(-1)
+whoknows("bob")
+whoknows(c(10, 17))
+```
+
+```{task}
+Write an R function called `checkprime`, that takes a single argument `x`, and returns whether `x` is a **prime number** or not. The function should check whether `x` is a single positive integer > 2 and return an error if not. [**Hint**: copy the `whoknows` function into your R script file and use this as the basis of your new function.]
+
+Use it to check whether the following numbers are primes:
+
+1. 3891
+2. 7103
+3. 7919
+4. 10535
+
+```
+
+```{solution}
+
+``{r, eval = F}
+## function to check whether x is a prime number
+checkprime <- function(x) {
+    ## check `x` variable is present
+    stopifnot(!missing(x))
+    
+    ## check `x` is numeric
+    stopifnot(is.numeric(x))
+    
+    ## check `x` is of length one
+    stopifnot(length(x) == 1)
+    
+    ## check `x` is a whole number
+    stopifnot(x %% 1 == 0)
+    
+    ## check `x` is larger than 1
+    stopifnot(x >= 2)
+    
+    ## check whether x can be divided by something
+    ## other than itself to leave a whole number
+    for(i in 2:x) {
+        if(x %% i == 0 & i != x) {
+            return(paste(x, "is not a prime number")) 
+        }
+    }
+    return(paste(x, "is a prime number"))
+}
+checkprime(3891)
+checkprime(7103)
+checkprime(7919)
+checkprime(10535)
+``
+
+```
+
+```{task}
+Write an R function called `allprimes`, that takes a single argument `x`, and returns a vector containing **all prime numbers** from `1` to `x`. The function should check whether `x` is a single positive integer > 2 and return an error if not.
+
+Use it to return a vector containing all the prime numbers up to 1,000.
+```
+
+```{solution}
+
+``{r, eval = F}
+## function to return all prime numbers up to x
+allprimes <- function(x) {
+    ## check `x` variable is present
+    stopifnot(!missing(x))
+    
+    ## check `x` is numeric
+    stopifnot(is.numeric(x))
+    
+    ## check `x` is of length one
+    stopifnot(length(x) == 1)
+    
+    ## check `x` is a whole number
+    stopifnot(x %% 1 == 0)
+    
+    ## check `x` is larger than 1
+    stopifnot(x >= 2)
+    
+    ## setup output vector
+    out <- 1
+    
+    ## loop through all numbers from
+    ## 2 to x
+    for(i in 2:x) {
+        ## check if i can be divided by something
+        ## other than itself
+        j <- 2
+        while(j <= i) {
+            if(i %% j == 0 & j != i) {
+                ## if i is not a prime number then
+                ## break out of the while loop
+                j <- i + 10
+            } 
+            ## increment j
+            j <- j + 1
+        }
+        ## if j == i + 1, then i must be prime
+        if(j == (i + 1)) {
+            ## append to output vector
+            out <- c(out, i)
+        }
+    }
+    ## return vector
+    return(out)
+}
+## calculate all primes between 1 and 1,000
+allprimes(1000)
+``
+
+```
+
+## Using `apply()` functions
+
+There are several ubiquituous functions that you'll see used often in R code, I'll introduce four main ones (though there are others): `apply()`, `lapply()`, `sapply()` and `tapply()`.
+
+Their sole *raison d'&ecirc;tre* (as far as I can tell) is to make code more concise. Essentially they allow you to replace the use of a loop with a single line of code that aids legibility. They do not (as far as I'm aware) make the code faster (for that you can see various functions in packages like [`plyr`](https://cran.r-project.org/web/packages/plyr/plyr.pdf)).
+
+For ultimate speed, one always wants to try to use **vectorised** operations in R, but sometimes looping over various margins of an object can be useful, and these functions can help.
+
+### `apply()`
+
+The `array()` function applies a function to either rows or columns of a matrix (in fact it applies to any dimension of an `array`, but we will restrict ourselves here to `matrix` types only). For example, consider that we have a matrix `x` as below:
+
+```{r}
+x <- matrix(1:12, 3, 4)
+x
+```
+
+Now we might want to calculate the *mean* say, of each row, in which case we could write a loop:
+
+```{r}
+## set output vector
+xmn <- numeric(nrow(x))
+
+## calculate mean for each row
+for(i in 1:nrow(x)) xmn[i] <- mean(x[i, ])
+
+## print means
+xmn
+```
+
+Note that here we had to set up an output vector (`xmn`) and then populate it with values. We used ***vectorised*** functions (`mean()`) to calculate the means for each row, but we required a loop to extract each row as a `vector` (the `i`th row is `x[i, ]`). We could do this in a single line using `apply()`:
+
+```{r}
+xmn <- apply(x, 1, mean)
+xmn
+```
+
+Here the first argument to `apply()` is the matrix, the second argument determines the *margin* (`1` for rows and `2` for columns), and the third argument determines the function you want to apply to each row/column (`mean()`), and must take a vector of values as its first argument. To calculate the means of each column of `x` we can write:
+
+```{r}
+ymns <- apply(x, 2, mean)
+ymns
+```
+
+We can also use user-defined functions, for example to divide each row by its sum, we could use:
+
+```{r}
+apply(x, 1, function(vec) {
+    return(vec / sum(vec))
+})
+```
+
+Here each row of `x` is passed into our function as a **local** object called `vec`, the function then divides each element of `vec` by its sum and returns the resulting vector. Note that `apply()` returns an output matrix with dimensions `ncol(x)` $\times$ `nrow(x)` here, so we might want to transpose if we want to return in the original dimensions:
+
+```{r}
+t(apply(x, 1, function(vec) {
+    return(vec / sum(vec))
+}))
+```
+
+Other arguments can be passed to our user-defined function as extra arguments to apply, as long as the first argument to our user-defined function corresponds to each row/column e.g. to divide each line by a variable `n` we could:
+
+```{r}
+t(apply(x, 1, function(vec, n) {
+    return(vec / n)
+}, n = 10))
+t(apply(x, 1, function(vec, n) {
+    return(vec / n)
+}, n = 2))
+```
+
+We can also save our user-defined function as an object and pass it into `apply()` e.g.
+
+
+```{r}
+divn <- function(vec, n) {
+    return(vec / n)
+}
+t(apply(x, 1, divn, n = 10))
+t(apply(x, 1, divn, n = 2))
+```
+
+```{task}
+Use `apply()` to return the range of each column of the matrix `x` defined above. Return as a 2 $\\times$ 4 matrix.
+```
+
+```{solution}
+
+``{r, eval = F}
+t(apply(x, 2, range))
+``
+
+```
+
+### `lapply()` and `sapply()`
+
+These functions essentially do the same thing but on lists, so each element of a list is passed to a corresponding function e.g.
+
+```{r}
+x <- list(matrix(1:4, 2, 2), matrix(1:9, 3, 3))
+x
+```
+
+To get the dimensions of each element of the list we could use something like:
+
+```{r}
+lapply(x, dim)
+```
+
+We can see that `lapply()` returns a list object with the dimensions. The function `sapply()` is a user-friendly version of `lapply()` that always returns a simpler object than a list if possible e.g.
+
+```{r}
+sapply(x, dim)
+```
+
+> **Note**: Again, be careful of the format returned by these functions. In this case `sapply()` returns a 2 $\times$ 2 matrix where the dimensions are returned down the columns. If you are in doubt, check with a trivial example like this one.
+
+### `tapply()`
+
+A very useful function is `tapply()`. This takes three arguments: the first is a vector of values, the second is a `factor` vector of the same length, and the third is a function. `tapply()` groups the first vector according to the levels of the second vector (the `factor`), and then applies the function to these subgroups. For example, R has a `datasets` package that provides a series of data sets---here we will look at one called `chickwts`.
+
+```{r}
+## load the datasets package
+library(datasets)
+
+## summarise the chickwts data
+head(chickwts)
+summary(chickwts)
+```
+
+Here we have loaded the `chickwts` data set, that records chick weights in an experiment, where newly hatched chicks were randomly allocated into six groups, and each group was given a different feed supplement. Their weights in grams after six weeks are given along with feed types. So if we wanted to measure the mean weight at six weeks for chicks fed different diets, we could use:
+
+```{r}
+tapply(chickwts$weight, chickwts$feed, mean)
+```
+
+```{task}
+The `datasets` package provides data on from an experiment to compare yields (as measured by dried weight of plants) obtained under a control and two different treatment conditions (stored as the `PlantGrowth` data set). Summarise this data set and produce an estimate of the mean yield for each experimental group. Gneerate means and standard deviations for each experimental group.
+```
+
+```{solution}
+
+``{r, eval = F}
+## summarise data
+summary(PlantGrowth)
+
+## generate mean yields per experimental group
+tapply(PlantGrowth$weight, PlantGrowth$group, mean)
+
+## generate mean and SD yields per experimental group
+tapply(PlantGrowth$weight, PlantGrowth$group, function(x) c(mean(x), sd(x)))
+``
+
+```

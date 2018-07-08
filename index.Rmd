@@ -1,5 +1,5 @@
 --- 
-title: "Skeleton Tutorial Template"
+title: "Introduction to R"
 author: "TJ McKinley"
 site: bookdown::bookdown_site
 output:
@@ -16,131 +16,27 @@ output:
 linkcolor: blue
 documentclass: book
 link-citations: yes
-description: "Skeleton Tutorial Template"
+description: "Introduction to R Tutorial"
 ---
 
-# Opening page
+# Acknowledgements
 
 ```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
 ```
 
-Basically a standard Bookdown template with a few tweaks. New chapters need to be in separate '.Rmd' files, where each file starts with a chapter heading as seen [here](https://bookdown.org/yihui/bookdown/usage.html). In order to use the task and solution blocks in \LaTeX, you must input the order of the files into the `_bookdown.yml` file, and the first file must be called `index.Rmd` e.g.
-
-```
-rmd_files:
-    html: ['index.Rmd', 'ch1.Rmd']
-    latex: ['index.Rmd', 'ch1.Rmd', 'ch_appendix.Rmd']
-output_dir: "docs"
+```{r include = FALSE, purl = F, cache = F}
+## set seed for reproducibility
+set.seed(123654)
 ```
 
-The `latex:` path above ***must*** have `'ch_appendix.Rmd'` as its last entry. This ensures that the appendix is properly formatted for the solutions to the problems.
+I am indebted to [Dr Matt Castle](http://www.plantsci.cam.ac.uk/directory/castle-matt), whose excellent Introduction to R practicals form the basis of the first part of these notes. I heartily recommend the following books:
+    
+* [Statistics: An Introduction Using R](https://www.amazon.com/Statistics-Introduction-Michael-J-Crawley/dp/0470022981/ref=sr_1_1?s=books&ie=UTF8&qid=1484432671&sr=1-1&keywords=an+introduction+to+statistics+with+r+crawley) by Mick Crawley (2005);
+* [The R Book](https://www.amazon.com/R-Book-Michael-J-Crawley/dp/0470973927/ref=sr_1_1?s=books&ie=UTF8&qid=1484432596&sr=1-1&keywords=the+r+book) by Mick Crawley (2007).
 
-There are a couple of useful special blocks. A `task` block, and a `solution` block. These can be used as e.g.
+[Hadley Wickham](http://hadley.nz/) and colleagues have also written many great R packages and several great books:
+    
+* [Advanced R](https://www.amazon.com/dp/1466586966/ref=cm_sw_su_dp?tag=devtools-20) by Hadley Wickham (2014), which has a useful companion [website](http://adv-r.had.co.nz/); and
+* [R for Data Science](https://www.amazon.com/R-Data-Science-Hadley-Wickham/dp/1491910399/ref=as_li_ss_tl?ie=UTF8&qid=1469550189&sr=8-1&keywords=R+for+data+science&linkCode=sl1&tag=devtools-20&linkId=6fe0069f9605cf847ed96c191f4e84dd) by Hadley Wickham and Garrett Grolemund (2016), also with a great companion [website](http://r4ds.had.co.nz/).
 
-````
-```{task}`r ''`
-Here is a task written in **markdown**.
-```
-````
-
-which renders as:
-
-```{task}
-Here is a task written in **markdown**.
-```
-
-You can include chunks within the `task` chunk, but you need to use double backticks *within* the chunk, and leave carriage returns around the internal chunk e.g.
-
-````
-
-```{task}`r ''`
-
-``{r}
-x <- 2 + 2
-x
-``
-
-```
-
-````
-
-which renders as:
-
-```{task}
-
-``{r}
-x <- 2 + 2
-x
-``
-
-```
-
-Be careful to have suitable carriage returns around e.g. `enumerate` or `itemize` environments inside the chunk also. For example:
-
-````
-
-```{task}`r ''`
-Here is a list:
-1. item 1
-2. item 2
-```
-
-```` 
-
-will not render nicely. But
-
-````
-
-```{task}`r ''`
-Here is a list:
-
-1. item 1
-2. item 2
-
-```
-
-```` 
-
-will:
-
-```{task}
-Here is a list:
-
-1. item 1
-2. item 2
-
-```
-
-The `solution` chunk works in the same way, and the numbers will follow the previous `task` chunk (so you can set tasks without solutions) e.g.
-
-````
-
-```{task}`r ''`
-Add 2 and 2 together
-```
-
-```{solution}`r ''`
-
-``{r}
-2 + 2
-``
-
-```
-
-````
-
-gives:
-
-```{task}
-Add 2 and 2 together
-```
-
-```{solution}
-
-``{r}
-2 + 2
-``
-
-```
-
-To compile, run the `_build.sh` script which will compile into multiple formats. 
+Finally, [ggplot2](https://www.amazon.com/dp/0387981403/ref=cm_sw_su_dp?tag=ggplot2-20) by Hadley Wickham (2009) is also great for learning the [ggplot2](http://ggplot2.org/) graphics package in R.

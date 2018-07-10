@@ -1,0 +1,334 @@
+# Visualisation (the new-fangled way)
+
+We have seen that the R base graphics system is highly flexible, and can be used to produce high-quality, bespoke animations and visualisations. However, it was a lot of work! Let's show an alternative way to produce a similar plot. We will introduce the code first, and then talk through it.
+
+This uses the `ggplot2` package, so make sure it's loaded:
+
+```{r}
+library(ggplot2)
+```
+
+Now enter the following code:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952") +
+    guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size")) +
+    theme_bw()
+```
+
+Notice that we had to do little physical manipulation of the plot. We didn't have to choose how to position legends, or derive a function to scale point characters (`ggplot2` scales by **area** by default, and produces sensible relative sizes). The colours are muted and contrast well. It just worked really well straight-out-of-the-box. 
+
+So, how does it work? `ggplot2` is based on a book called the [Grammar of Graphics](https://www.amazon.co.uk/Grammar-Graphics-Statistics-Computing/dp/0387245448) by [Leland Wilkinson](https://en.wikipedia.org/wiki/Leland_Wilkinson)---hence the name `gg`-`plot`! The ethos of `ggplot2` is that plots can be broken down into different **features**, most notably:
+
+* data;
+* aesthetic mapping;
+* geometric object;
+* statistical transformations;
+* scales;
+* coordinate system;
+* position adjustments;
+* faceting.
+
+Perhaps the easiest way to explain some of these concepts is to work through our example step-by-step. Let's start with the first part of the code:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent))
+```
+
+This sets up the plot. The first argument to the `ggplot` function is the **data**---here we have simply given it all the gapminder data from 1952.
+
+> **Important**: whereas base R graphics can plot various object types, `ggplot()` **requires** `data.frame` (or `tbl`) objects. It is designed for plotting statistical data sets. Never fear, most R objects can be manipulated into `data.frames` for plotting if required. (See next practical on data wrangling.)
+
+The `aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)` part sets the **aesthetics**, i.e. how the data are **mapped** onto the visual aesthetics of the plot (i.e. something you can visualise). Here we are setting the `x` coordinates to be `gdpPercap`, the `y` coordinates to be `lifeExp`, the `size` of the characters to be related to `pop`, and the `colour` of the characters to be related to `continent`. In general, **aesthetics** include:
+
+* position;
+* colour (border color);
+* fill (inside color);
+* shape;
+* linetype;
+* size.
+
+> As usual, information can be found in the relevant help files, but a really useful resource for `ggplot2` is the [Data Visualisation Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf). Another fantastic resource, is the [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/) by Winston Chang, which has a free online version, or a physical book that you can buy.
+
+> **Notice** that we did not have to use the `$` operator to extract columns. This makes `ggplot2` code a bit clearer. R knows to look for the `gdpPercap` object in the `gapminder` data, because we have told `ggplot()` which data set to operate on.
+
+Notice that only an **empty plot** has been drawn so far, there are no points present. This is because we haven't told `ggplot2` what type of plot we want. We do this by specifying a **geom**. 
+
+> A **geom** defines the type of plot we want. In this case we want a **scatterplot**, which can be defined by the `geom_point()` function. Geoms can be layered, allowing us to built complex plots in different ways.
+
+> **Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot (incuding the aesthetics) using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point()`. The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
+
+Let's see how this works:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point()
+```
+
+Nice! With one tiny function we have added colours, point sizes *and* legends. All nicely formatted to work together in one plot.
+
+> **Important**: Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [`ggplot2` Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf).
+
+Next we want to plot GDP on the $\log_{10}$ scale. In base R we did this by transforming the variable itself. In `ggplot2` we can simply tell the `ggplot()` function to **scale** the $x$-axis accordingly. 
+
+> **Scales** control how a plot maps data values to the visual values of an aesthetic. 
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10")
+```
+
+`ggplot2` has lots of built in transformations e.g. `"log"`, `"exp"`, `"sqrt"`, `"log10"` and so on. Or you can define your own. The `scale_x_continuous()` function tells `ggplot2` to plot the continuous `x` aesthetic (which is `gdpPercap` here) on the $\log_{10}$ scale. Notice that we have not transformed the data, we have merely told `ggplot()` on what scale to plot it. This also sorts out the axis labelling automatically. 
+
+We can also scale other aesthetics. For example, although the relative areas of the points are scaled nicely, we probably want the largest points to be slightly larger. Hence we can scale the area of the maximum point by using the `scale_size_area()` function: 
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15)
+```
+
+Labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `ggtitle()` functions:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952")
+```
+
+Changing the legend titles is a bit less intuitive unfortunately, but can be done using the `guides()` options (I had to Google this one). (Notice that the legends map to the aesthetics, so there is a `colour` legend that maps to the colour aesthetic, and a `size` legend that maps to the size aesthetic.)
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952") +
+    guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size")) 
+```
+
+Not bad. Finally notice that by default `ggplot2` uses a light-grey background. This seems to prove somewhat divisive. There is a solid theory behind choosing this as the default, since it provides clarity without having too much contrast. However, some people don't like it, and so there are options to turn this off (using `theme()`). In this case we can simply turn this off using `theme_bw()` (a black-and-white theme).
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952") +
+    guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size")) +
+    theme_bw()
+```
+
+There are many, many possible options with `ggplot2`. Far too many to cover here. We can only really get a flavour of what can be achieved. I have often found [Google](www.google.com) to be invaluable for learning `ggplot2`. Let's have a look at a couple of other examples.
+
+### GDP per continent
+
+Another chart seen in Professor Rosling's talk was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_histogram()` geom, which requires only an `x` aesthetic---see`?geom_histogram`---since it calculates the counts on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
+
+```{r, message = F}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap)) +
+    geom_histogram()
+```
+
+This simple plot is producing a histogram of the distribution of GDP across **all countries** in 1952. How do split this by continent? Well, there are various ways. One way would be to set the `fill` aesthetic to map to the `continent` variable:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram()
+```
+
+This produces a **stacked histogram**, where each bar is coloured according to the relative frequency of each `continent`. This is more informative, we can see that African countries tend to have lower GDP per capita than the Americas for example. Asia and Africa were the poorest continents in the 1950s in terms of GDP. 
+
+> **Important**: `ggplot2` also allows you to save the plot as an object, which can be updated at a later date or used within other functions. For example,
+> ```{r}
+p <- ggplot(gapminder[gapminder$year == 1952, ],
+>        aes(x = gdpPercap, fill = continent)) +
+>     geom_histogram()
+> ```
+> creates an object called `p` that contains the plot information. This will not be plotted until the objected is **printed** to the screen e.g.
+> ```{r, message = F}
+> p
+> ```
+> **Note**: If using `ggplot` inside functions you may have to explicitly use the `print()` function (e.g. `print(p)`).
+
+```{task}
+Try tidying up the axis and legend titles on these plots.
+```
+
+```{solution}
+
+``{r}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram() +
+    xlab("GDP per capita") + 
+    ylab("Count") +
+    ggtitle("1952") +
+    guides(fill = guide_legend(title = "Continent")) 
+``
+    
+```
+
+```{task}
+Write a function in R that takes a `year` argument and plots histogram for a given year. Use this to plot the data for 1952, 1982, 1992 and 2002.
+```
+
+```{solution}
+
+``{r}
+plotGapminder_gg <- function(data, year = 1952) {
+    p <- ggplot(gapminder[gapminder$year == year, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram() +
+    xlab("GDP per capita") + 
+    ylab("Count") +
+    ggtitle(year) +
+    guides(fill = guide_legend(title = "Continent"))
+    print(p)
+}
+for(i in c(1952, 1982, 1992, 2002)) {
+    plotGapminder_gg(gapminder, i)
+}
+``
+
+```
+
+### Faceting
+
+Another option would be to produce different histograms for each continent. This can be done in `ggplot2` by **faceting** e.g.
+
+```{r, message = F}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap)) +
+    geom_histogram() +
+    facet_wrap(~ continent)
+```
+
+Pretty neat eh? The `facet_wrap()` function allows R to choose how to position the subplots, there is also a `facet_grid()` function that allows you to set the plots out in a specifed grid format. This is more useful if you wish to facet by more than one variable. To this end, the  `~` operator allows for faceting by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf) for more details. Notice also that it's fixed the axes to be the same across all plots. Useful eh? (These defaults can be relaxed of course, using the correct arguments.)
+
+We can also map multiple aesthetics to variables, so we could facet by `continent` and colour by `continent`:
+
+```{r, message = F}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram() +
+    facet_wrap(~ continent)
+```
+
+This plot is not really very informative, the colours add nothing more than the facets do. Perhaps a better plot would be to use a stacked histogram but facet by different years, to see how the relative distributions change over time:
+
+```{r, message = F}
+ggplot(gapminder,
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram() +
+    facet_wrap(~ year)
+```
+
+Here the axis labels are difficult to read, due to the plot size, so perhaps we could rotate them. A quick Google search came up with [this](http://www.cookbook-r.com/Graphs/Axes_(ggplot2)/) page from the R Graphics Cookbook, so let's try:
+
+```{r, message = F}
+ggplot(gapminder,
+       aes(x = gdpPercap, fill = continent)) +
+    geom_histogram() +
+    facet_wrap(~ year) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+```
+
+```{task}
+Revisit the "worms" examples from earlier practicals and produce the histograms, box plots and scatterplots using `ggplot2`. (You might have to manually adjust your binwidth to get reasonable looking histograms.)
+```
+
+```{solution}
+
+``{r}
+## read data into R
+worms <- read.csv("worms.csv", header = T)
+
+## plot histogram for worm density 
+ggplot(worms, aes(x = Worm.density)) +
+    geom_histogram(binwidth = 0.5) + 
+    xlab("Worm Density")
+
+# plot histogram for area
+ggplot(worms, aes(x = Area)) +
+    geom_histogram(binwidth = 0.25) + 
+    xlab("Area")
+
+## box-and-whisker plot for worm density against vegetation
+ggplot(worms, aes(x = Vegetation, y =Worm.density)) +
+    geom_boxplot() +
+    ylab("Worm Density")
+
+## scatter plot for worm density against area with
+## fitted regression line
+ggplot(worms, aes(y = Worm.density, x = Area)) +
+    geom_point() +
+    # Add linear regression line
+    geom_smooth(method = lm, se = F) +
+    ylab("Worm Density")
+``
+
+```
+
+```{task}
+Revisit the "fruitflies" examples from earlier practicals and reproduce something similar to the plot below using `ggplot2`
+     
+![Plot of fruitfly data stratified by experimental group](images/fruitflies.png).
+```
+
+```{solution}
+
+``{r, fig.height = 4, fig.width = 8}
+## load data
+ff <- readRDS("ff.rds")
+
+## amend factor labels for type to make
+## easier to read
+ff$type <- as.character(ff$type)
+ff$type[ff$type == "0"] <- "Inseminated"
+ff$type[ff$type == "1"] <- "Virgin"
+ff$type[ff$type == "9"] <- "Control"
+ff$type <- factor(ff$type)
+
+ggplot(ff, aes(y = longevity, x = thorax, 
+               colour = type)) +
+    geom_point() +
+    geom_smooth(method = lm, se = F) +
+    facet_wrap(~ partners) +
+    guides(colour = guide_legend(title = "Partner Type")) +
+    ylab("Longevity (days)") +
+    xlab("Thorax length (mm)")
+``
+    
+```
+
+> Another great `ggplot2` tutorial can be found [here](http://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html).

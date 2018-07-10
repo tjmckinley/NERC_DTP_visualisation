@@ -1,0 +1,69 @@
+# Advanced Visualisation
+
+In the next couple of practicals we will introduce you to some really useful packages for data wrangling and visualisation: notably [`tidyr`](https://cran.r-project.org/web/packages/tidyr/), [`dplyr`](https://cran.r-project.org/web/packages/dplyr/index.html) and [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html). We start with a motivating example.
+
+## Gapminder
+
+[Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
+
+```{r}
+include_url("https://www.youtube.com/embed/jbkSRLYSojo")
+```
+
+For a slightly longer presentation, his TED talk on global development has been watched over 11 million times. If you have 20 minutes, it can be found [here](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread), and is well worth a watch!
+
+> **Update**: More-or-less as I finished these practical notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the contribution that he made to the world of public health and education. He presented a world-view based on facts and data; to this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
+
+The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages have been developed that provide a systematic and flexible way to generate complex plots / visualisations from data. We will begin by trying to emulate the plot in Figure \@ref(fig:gapminder).
+
+We will do this first by using R's base graphics system, before introducing a set of functions from a powerful package called [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html).
+
+### Gapminder data
+
+Datasets from the Gapminder project can be downloaded from [https://www.gapminder.org/data](https://www.gapminder.org/data). However, this particular data set is available in a package in R called (naturally) [`gapminder`](https://cran.r-project.org/web/packages/gapminder/index.html). This can be installed in the usual way. (For ease later on, make sure the `tidyr`, `dplyr` and `ggplot2` packages are also installed.)
+
+```{r, eval = F}
+install.packages("gapminder")
+install.packages("tidyr")
+install.packages("tibble")
+install.packages("dplyr")
+install.packages("ggplot2")
+```
+
+Once you have it installed we need to load the packages. 
+
+```{r, cache = F, message = F}
+library(gapminder)
+library(tidyr)
+library(tibble)
+```
+
+> Two really useful cheat sheets to have for data wrangling can be found [here](https://www.rstudio.com/resources/cheatsheets/), under [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/data-import-cheatsheet.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/data-transformation-cheatsheet.pdf).
+
+To have a quick look at the data, which are available as an object called `gapminder`. We can use the `head()` and `tail()` functions, which print the top and bottom of a data frame respectively. The functions `dim()` and `summary()` are also useful e.g.
+
+```{r}
+dim(gapminder)
+head(gapminder)
+tail(gapminder)
+summary(gapminder)
+```
+
+Here we can see that the data set consists of `r nrow(gapminder)` rows and `r ncol(gapminder)` columns, and contains information on country, continent, life expectancy, population size, GDP (per capita) and year.
+
+> **Aside**: Note the slightly strange formatting when printing the `data.frame`. This is subtly different to what you've seen before. This is because the `gapminder` data is actually a `tbl` object (pronounced "tibble"), which is a special object type. This is an enhanced `data.frame` object: `tbls` are generally easier to examine than `data.frames`, for example they force R to display only the data that fits onscreen. It also adds some information about the class of each column. Try typing
+> ```{r}
+> gapminder
+> ```
+> to see what I mean. In fact, the `tibble` package introduces the `as_tibble()` function to convert ordinary `data.frame` objects to `tbls` in case you want to use this functionality in future. Please see the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/source/pdfs/data-import-cheatsheet.pdf) for more information.
+>  
+>  Note also that `tbl` seems to make a distinction between integers (`<int>`) and doubles (`<dbl>`), instead of just using `numeric`. R makes no such distinction in practice, and so you can think of either of these as simply `numeric` types.
+
+Let's just clarify the data:
+
+* **`country`**: country of interest (`factor`);
+* **`continent`**: continent country can be found in (`factor`);
+* **`year`**: year corresponding to data (in increments of 5 years) (`numeric`);
+* **`lifeExp`**: life expectancy at birth (in years) (`numeric`);
+* **`pop`**: population size (`numeric`);
+* **`gdpPercap`**: GDP per capita, in dollars, by Purchasing Power Parities and adjusted for inflation (`numeric`).

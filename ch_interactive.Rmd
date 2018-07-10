@@ -1,0 +1,69 @@
+# Interactive visualisations
+
+The advent of [Javascript](https://en.wikipedia.org/wiki/JavaScript) has enabled the development of powerful visualisation packages that enable graphics to be rendered in HTML and displayed using a web browser. On such Javascript library is called [plotly](https://plot.ly/), another is called [d3](https://d3js.org/). Naturally we do not want to learn another programming language here, but it is worth mentioning that one of the key features of R is its ability to incorporate other languages within its own. Here we will explore how the R package [`plotly`](https://cran.r-project.org/web/packages/plotly/index.html) enables us to draw interactive web graphics using R. 
+
+> A great resource for `plotly` can be found at [https://plot.ly/r/](https://plot.ly/r/).
+
+We will not spend very long on this here, but it's just to give you a flavour of what's possible.
+
+> **Note**: if you want to include these sorts of graphics into documents produced by R Markdown, you will have to render into HTML only.
+
+After installing the `plotly` package, we need to load it:
+
+```{r, message = F}
+library(plotly)
+```
+
+Let's think about the life expectancy graph vs. GDP we generated earlier using `ggplot2`. One key piece of information we left off was the names of the countries. One option we could use is to create an interactive HTML graph, where the name of the country appears once we hover over a point. Sounds complex right? Well actually not really! The `plotly` package for R provides a useful wrapper function `ggplotly()`, that takes a `ggplot2` object and automatically creates an interactive graphic using plotly. For example,
+
+```{r}
+p <- ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952") + 
+    guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size")) +
+    theme_bw()
+
+ggplotly(p)
+```
+
+```{task}
+Have a play with the plot, notice that you can zoom in and pan around, take a screenshot, select points, interact with the legend and so on. Notice also, that if you hover over the points you get a **tooltip** giving lots of information about each point.
+```
+
+There are many options, which we will not go into here. One thing we will do is to change the tooltip to just display country. To do this we can specify which aesthetics we want to tooltip to display, using the `tooltip` argument to `ggplotly`. We have yet to set an aesthetic relating to country, and we actually do not want country to interfere with the plot in any way, other than as a tooltip. Hence we will set a "fake" aesthetic, called `extra`, when drawing the `ggplot` object. We then pass the name of this aesthetic to `ggplotly()`. 
+
+```{r}
+p <- ggplot(gapminder[gapminder$year == 1952, ], 
+       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent,
+           extra = country)) +
+    geom_point() + 
+    scale_x_continuous(trans = "log10") +
+    scale_size_area(max_size = 15) +
+    xlab("GDP per capita") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952") + 
+    guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size")) +
+    theme_bw()
+
+ggplotly(p, tooltip = "extra")
+```
+You can also use fairly syntaxes that are *similar* (though not identical) to R's native plot syntaxes, to produce simple interactive plots e.g.
+
+```{r, message = F}
+worms <- read.csv("worms.csv", header = T)
+plot_ly(data = worms, x = ~Area, y = ~Worm.density)
+```
+
+All information on producing plotly plots in R can be found [here](https://plot.ly/r/) (be warned, the website can sometimes be slow to render). There is also a useful [plotly Cheat Sheet](https://images.plot.ly/plotly-documentation/images/r_cheat_sheet.pdf).
+
+## Shiny
+
+I will spend zero ($\pm$ a bit) on another key package in R: [Shiny](https://shiny.rstudio.com/). This is another great package from the developers at RStudio, which allows you to make interactive websites, powered by R. This is beyond what we will do in this module, but in case you're interested, there's a nice tutorial [here](https://shiny.rstudio.com/) and a gallery of examples [here](https://shiny.rstudio.com/gallery/). Have a look and be inspired!
+

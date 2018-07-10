@@ -1,0 +1,330 @@
+# Visualisation (the old-fashioned way)
+
+R's base graphics system is very flexible, and is one of the main reasons R has surged in popularity amongst statisticians and data scientists. Flexibility often comes with a price, and in this case it's that complex plotting often involves many steps. Here I will take you through a process of building a complex plot up piece-by-piece using R's base graphics system.
+
+> Please note there are other ways to do this, you might find a better way!
+
+Let's start by visualising a single year, and noting that we are trying to produce something that looks like Figure \@ref(fig:gapminder).
+
+```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project"}
+include_graphics("images/gapminder.png")
+```
+
+Let's break this plot down into various **features**:
+
+* It shows data from 1952 only;
+* it shows a **scatterplot** of  **life expectancy** on the $y$-axis, and **GDP per capita** on the $x$-axis;
+* GDP is plotted on the **$\log_{10}$** scale;
+* points are coloured according to **continent**;
+* points are scaled according to the population of the country (more subtly---they are scaled according to **area**, so a point with *double the area* of another point, has *twice the population*).
+
+Let's start by extracting just the subset of data from 1952 to work with, and save this into a new object called `gpm1952`:
+
+```{r}
+gpm1952 <- gapminder[gapminder$year == 1952, ]
+gpm1952
+```
+
+Let's start by producing a straightforward scatterplot of life expectancy against GDP.
+
+```{r}
+plot(gpm1952$gdpPercap, gpm1952$lifeExp)
+```
+
+OK, so we have a basic plot of life expectancy against GDP for the year 1952, but it's a bit uninformative. Let's start by trying to implement some of the features discussed above, beginning by plotting GDP on the $\log_{10}$ scale, using R's `log10()` function:
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp)
+```
+
+That's a bit better. Now lets think about colours. Each row of the `gapminder` data has an associated `continent` value, and the `continent` column is a `factor` with `r length(levels(gapminder$continent))` levels e.g.
+
+```{r}
+levels(gapminder$continent)
+```
+
+Remember, when we convert a `factor` to a `numeric`, it replaces the factor level with its position in the hierarchy of `levels()`. Hence in this example ` `r levels(gapminder$continent)[1]` ` gets replaced by `1`; ` `r levels(gapminder$continent)[2]` ` gets replaced by `2` and so on (see Practical 1 for a recap). So,
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     col = as.numeric(gpm1952$continent))
+```
+
+This is looking a bit better, but ideally we would like filled points with black borders. This can be done by setting the point character, `pch = 21`. This allows for a circle with different coloured background and border. By default, the `col` argument sets the **border** of the circle, and the `bg` argument sets the **background** colour. Since the default `col` is `"black"`, we only have to set the `bg` argument.
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent))
+```
+
+> **Aside**: a nice graphical look at R's base point characters and line types can be found [here](http://www.statmethods.net/advgraphs/parameters.html).
+
+OK, so we're making some progress. Let's try scaling the points to reflect population size. The `cex` argument to the `plot()` function stands for **character expansion**, so perhaps linking the vector of population sizes to this argument will scale the point sizes accordingly. Before we do this we need to note that the ***scale*** of population sizes are huge, so perhaps it's sensible to scale by **relative** population size (hence if we divide all population sizes by the maximum population size, we will force the population sizes to be in the range $[0, 1]$) e.g.
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = gpm1952$pop / max(gpm1952$pop))
+```
+
+> **Tip**: If you're unsure of what each of the lines is doing above, try copying-and-pasting parts into the console. For example (I've only printed the first six entries for brevity):
+> ```{r}
+> head(gpm1952$pop)
+> max(gpm1952$pop)
+> head(gpm1952$pop / max(gpm1952$pop))
+> ```
+> We can see that this produces a vector of scaled population sizes in the range $[0, 1]$.
+
+Hmmm. We seem to have different point sizes, but many points are *very* small. This is because the **maximum point size** is one, so perhaps multiplying by a scalar will help to improve matters. Let's choose to multiply by 10:
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = 10 * gpm1952$pop / max(gpm1952$pop))
+```
+
+This is still not quite right compared to Figure \@ref(fig:gapminder). Ah! We should note that character expansion using the `cex` argument scales points **linearly** (hence it increases both $x$ and $y$ dimensions by a fixed amount). In this case we have a circle, and so linearly scaling the circle is the same as mutiplying by the **radius**, and not the **area**, as we originally wanted. We know that if $A$ is the area of a circle, then $A = \pi r^2$, where $r$ is the radius. As a result, to scale the *area* $A$ by some value $s_A$, this is equivalent to scaling the *radius* by some value $s_r$, where
+$$
+    \begin{aligned}
+    s_A A &= \pi \left(rs_r\right)^2\\
+    \sqrt{\frac{s_A A}{\pi}} &= rs_r\\
+    s_r &= \frac{\sqrt{s_A A}}{r\sqrt{\pi}}.
+    \end{aligned}
+$$
+Since we do not know the radius of a circle `pch = 21` at its default point size, we cannot scale by exact area (which wouldn't make sense in any case since the two axes are on different scales), but we can at least keep the *relative* areas fixed between points. (Alternatively, we could use the `symbols()` function, which allows us to add circles to a plot scaled by an appropriate radius.)
+
+Hence, if $A$ is the area of the largest point (at the default point size), and instead we want the largest point to have an area of $s_A A$, then this means scaling the radius of all points by $\sqrt{s_A / \pi}$. (R provides a constant `pi` to equal $\pi$.) Here I played around a bit and found that setting $s_A = 200$ worked well.
+    
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))))
+```
+
+This is looking a bit better. Now the points are scaled by relative area.
+
+Now let's think about tidying up the axes. Firstly the axis titles and main title:
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))),
+     xlab = "log10(GDP per capita)",
+     ylab = "Life expectancy at birth (years)",
+     main = "1952")
+```
+
+Not far off! Although the $x$-axis is correct, it is sometimes more informative to change the axis labels to reflect the actual GDP values (for example, a value of 5 is hard to decipher in terms of real-life numbers, since it's on the log-scale, but a value of $10^5 = 100,000$ is arguably more informative). To do this, we have to first tell R to leave off the $x$-axis when plotting (using the `xaxt = "n"` argument), and then use the `axis()` function to manually add a new axis with the correct characteristics. (See the help file for `?axis`, and notice that I've updated the $x$-axis title as well.)
+
+```{r}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))),
+     xlab = "GDP per capita",
+     ylab = "Life expectancy at birth (years)",
+     main = "1952",
+     xaxt = "n")
+axis(side = 1, at = 3:5, labels = 10^{3:5})
+```
+
+Great! Finally, let's add a legend. Here we might need two legends: one for the colours, and one for the point sizes. Let's add the colour legend first.
+
+Since we're using filled points with borders and backgrounds, we use the `pt.bg` argument to set the background colours. We set the top-left corner of the legend to be at the point $(4.3, 70)$ (remember, points are plotted on the $\log_{10}$ scale, but the *axis labels* have been amended. So $x$-coordinates are in the approximate range $(2, 5)$, ***not*** $(`r 10^2`, `r 10^{5}`)$). Since they all have the same point character, we only need to set one value for `pch`, but we must set `r length(levels(gapminder$continent))` legend labels and `r length(levels(gapminder$continent))` colours.
+
+```{r, echo = -c(1:2)}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))),
+     xlab = "GDP per capita",
+     ylab = "Life expectancy at birth (years)",
+     main = "1952",
+     xaxt = "n")
+axis(side = 1, at = 3:5, labels = 10^{3:5})
+legend(4.3, 70, legend = levels(gpm1952$continent), 
+       pch = 21, 
+       pt.bg = 1:length(levels(gpm1952$continent)),
+       title = "Continent")
+```
+
+> **Notice**: the `legend()` function **adds** a legend to an existing plot. We only have to rerun the plotting commands if we make an error.
+
+Finally, let's add a legend for the point scaling. Since this is a **continuous** variable, it's much more complex to plot. First we have to summarise the continuous scale at a set of discrete values. Let's choose 5 points, at the lower 2.5%, 25%, 50% (median), 75% and 97.5% quantiles of the range of (scaled) population sizes. The `quantile()` function in R helps us find out these values. We need to offset the legend slightly lower than the first legend, so let's try:
+
+```{r, echo = -c(1:3)}
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))),
+     xlab = "GDP per capita",
+     ylab = "Life expectancy at birth (years)",
+     main = "1952",
+     xaxt = "n")
+axis(side = 1, at = 3:5, labels = 10^{3:5})
+legend(4.3, 70, legend = levels(gpm1952$continent), 
+       pch = 21, 
+       pt.bg = 1:length(levels(gpm1952$continent)),
+       title = "Continent")
+legend(4.3, 51, 
+       legend = signif(quantile(gpm1952$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2), 
+       pch = 21, 
+       pt.cex = sqrt(200 * signif(quantile(gpm1952$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2) / (pi * max(gpm1952$pop))), 
+       pt.bg = "black",
+       title = "Population size")
+```
+
+Almost there! Let's format the population sizes slightly, and remove the boxes around the legends (`bty = "n"` sets **no** box type). The final plotting code is therefore:
+
+```{r}
+## produce plot of life expectancy against log10(GDP)
+plot(log10(gpm1952$gdpPercap), gpm1952$lifeExp, 
+     pch = 21, 
+     bg = as.numeric(gpm1952$continent),
+     cex = sqrt(200 * gpm1952$pop / (pi * max(gpm1952$pop))),
+     xlab = "GDP per capita",
+     ylab = "Life expectancy at birth (years)",
+     main = "1952",
+     xaxt = "n")
+
+## manually re-label x-axis
+axis(side = 1, at = 3:5, labels = 10^{3:5})
+
+## add colour legend
+legend(4.3, 70, legend = levels(gpm1952$continent), 
+       pch = 21, 
+       pt.bg = 1:length(levels(gpm1952$continent)),
+       title = "Continent",
+       bty = "n")
+
+## add point size legend
+legend(4.3, 51, 
+       legend = signif(quantile(gpm1952$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2), 
+       pch = 21, 
+       pt.cex = sqrt(200 * signif(quantile(gpm1952$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2) / (pi * max(gpm1952$pop))), 
+       pt.bg = "black",
+       title = "Population size",
+       bty = "n")
+```
+
+Wow, good job! The plot looks great, but this is just for one year. What if we want to repeat the plot for multiple years? Perhaps the easiest way to do this is to wrap the plotting code into a **function**, that takes a `data` argument, and a `year` argument, and then produces a plot accordingly.
+
+```{r}
+plotGapminder <- function(data, year = 1952)
+{
+    ## extract subset of data by year 
+    data <- data[data$year == year, ]
+    
+    ## produce plot of life expectancy against log10(GDP)
+    plot(log10(data$gdpPercap), data$lifeExp, 
+         pch = 21, 
+         bg = as.numeric(data$continent),
+         cex = sqrt(200 * data$pop / (pi * max(data$pop))),
+         xlab = "GDP per capita",
+         ylab = "Life expectancy at birth (years)",
+         main = year,
+         xaxt = "n")
+    
+    ## manually re-label x-axis
+    axis(side = 1, at = 3:5, labels = 10^{3:5})
+    
+    ## add colour legend
+    legend(4.3, 70, legend = levels(data$continent), 
+           pch = 21, 
+           pt.bg = 1:length(levels(data$continent)),
+           title = "Continent",
+           bty = "n")
+    
+    ## add point size legend
+    legend(4.3, 51, 
+           legend = signif(quantile(data$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2), 
+           pch = 21, 
+           pt.cex = sqrt(200 * signif(quantile(data$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2) / (pi * max(data$pop))), 
+           pt.bg = "black",
+           title = "Population size",
+           bty = "n")
+}
+```
+
+This can now be called as follows (defaulting to plotting 1952 if not `year` argument used):
+
+```{r}
+plotGapminder(gapminder)
+```
+
+or even used in a loop to plot across multiple years:
+
+```{r, fig.show = "hold"}
+for(i in c(1952, 1962, 1972, 1982)) plotGapminder(gapminder, i)
+```
+
+> **Remember**: R creates **local** copies of arguments in functions. So in the function above, a local object `data` is created, which is a copy of the `gapminder` data. Hence the line `data <- data[data$year == year, ]` does not change the original `gapminder` object at all.
+
+```{task}
+Notice that this function is not very **robustly** written. The positions of the legends are fixed but the axes ranges change for different subsets of the data. Also, there are no checks-and-balances to ensure that the correct arguments are being input (for brevity we will not do this here, but it's good practice in general). I want you to:
+
+1. Amend the function above to set the $x$- and $y$-axes to a **fixed** range (using the `xlim` and `ylim` plot arguments---see `?par`). These ranges can be obtained by extracting the $x$ and $y$ ranges from the data.
+2. Set the legends so that they remain fixed regardless of what year is plotted. 
+3. Fix the point size legend to use the same sizes regardless of the year. (Think about scaling the populations using **all** the data, generating point sizes for the legend and saving into a temporary object, ***before*** subsetting by year. This way the point sizes will be the same across all plots.)
+
+Use this function to plot the years 1952, 1982, 1992 and 2002.
+```
+
+```{solution}
+
+``{r, fig.width = 6, fig.height = 6}
+plotGapminder <- function(data, year = 1952)
+{
+    ## produce point sizes 
+    data$pop <- data$pop / max(data$pop)
+    
+    ## produce legend sizes
+    leg_pop <- signif(quantile(data$pop, probs = c(0.05, 0.25, 0.5, 0.75, 0.95)), 2)
+    pt_pop <- sqrt(200 * leg_pop / pi)
+    
+    ## produce axes ranges
+    ylims <- range(data$lifeExp)
+    xlims <- range(log10(data$gdpPercap))
+    ## extend bounds to fit legend in
+    ylims[1] <- ylims[1] * 0.9
+    xlims[2] <- xlims[2] * 1.1
+    
+    ## extract subset of data by year
+    data <- data[data$year == year, ]
+    
+    ## produce plot
+    plot(log10(data$gdpPercap), data$lifeExp, 
+         pch = 21, 
+         bg = as.numeric(data$continent),
+         cex = sqrt(200 * data$pop),
+         xlab = "GDP per capita",
+         ylab = "Life expectancy at birth (years)",
+         main = year,
+         xaxt = "n",
+         xlim = xlims,
+         ylim = ylims)
+    axis(side = 1, at = 3:5, labels = 10^{3:5})
+    legend(4.7, 65, legend = levels(data$continent), 
+           pch = 21, 
+           pt.bg = 1:length(levels(data$continent)),
+           title = "Continent",
+           bty = "n")
+    legend(4.7, 43, 
+           legend = leg_pop, 
+           pch = 21, 
+           pt.cex = pt_pop, 
+           pt.bg = "black",
+           title = "Population size",
+           bty = "n")
+}
+for(i in c(1952, 1982, 1992, 2002)) {
+    plotGapminder(gapminder, i)
+}
+``
+
+```

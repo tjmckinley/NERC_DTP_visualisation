@@ -6,7 +6,7 @@ In the next couple of practicals we will introduce you to some really useful pac
 
 [Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
 
-```{r}
+```{r, screenshot.alt = "images/hans.jpg", align = "center", echo = F}
 include_url("https://www.youtube.com/embed/jbkSRLYSojo")
 ```
 

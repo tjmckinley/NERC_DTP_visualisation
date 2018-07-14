@@ -44,21 +44,24 @@ The console pane provides a direct interface with R, and looks similar to comman
 
 You can see here that R has returned a value of `r 10 + 5 * 3`, illustrating one of R's key features: that it can be used as an overgrown calculator, simply by entering commands into the prompt. Notice that (unlike a language such as C) you do not have to compile these commands; you simply type them into the console, hit return, and R produces an answer. R supports basic mathematical operators, such as those found in Table \@ref(tab:mathop).
 
-```{r, mathop, echo = F}
-x <- data.frame(
-    Symbol = c("+", "-", "*", "/", "^", "%%", "%/%"), 
-    Meaning = c("addition", "subtraction", "multiplication", "division", "to the power", "the remainder of a division (modulo)", "the integer part")
-)
-x$Symbol <- paste0("`", x$Symbol, "`")
-kable(x, booktabs = T, align = 'cc', caption = "Basic mathematical operators")
-```
+Table: (\#tab:mathop) Basic mathematical operators
+
+Symbol | Meaning 
+:--------: | :--------:
+`+`    | addition 
+`-` | subtraction 
+`*` | multiplication 
+`/` | division 
+`^` | to the power 
+`%%` | the remainder of a division (modulo)
+`%/%` | the integer part 
 
 Meanwhile, Table \@ref(tab:mathfunc) has some other ones you might need. (These are functions: just replace `x` with a number.)
 
 Table: (\#tab:mathfunc) Other useful mathematical functions
 
-Function 	|	Meaning 
-:-----------------------: | :-------------------------------
+Function 	|	           Meaning 
+:---------: | :----------------------------:
 `log(x)` 	|	$\log_e(x)$ (or $\ln(x)$)
 `exp(x)` 	|	$e^x$ 
 `log(x, n)` 	|	$\log_n(x)$
@@ -120,7 +123,7 @@ Put simply, ***R scripts are just text files that contain commands to run in R**
 Some comments:
 
 * RStudio comes with its own text editor, but if you are not using RStudio, then there are plenty of others available. 
-* R is case-sensitive. If something doesn't work, it's often because you have failed to capitalise, or capitalised where you shouldn't have. **NEVER, EVER, EVER** use Word to edit your R scripts! Word often tries to correct your grammar and is an absolute nightmare to work with when writing code. If you don't like RStudio's editor, then lots of lightweight and free text editors exist that you can use. By all means use Word for writing up the work (although we will see even better ways to do this later on), but **please**, ***never*** use it for writing code.
+* R is case-sensitive. If something doesn't work, it's often because you have failed to capitalise, or capitalised where you shouldn't have. **NEVER, EVER, EVER** use Word to edit your R scripts! Word often tries to correct your grammar and is an absolute nightmare to work with when writing code. If you don't like RStudio's editor, then lots of lightweight and free text editors exist that you can use. By all means use Word for writing up the work (although we will see even better ways to do this in a later **Literate Programming** workshop), but **please**, ***never*** use it for writing code.
 
 In RStudio, you can open a new script in R using: *File > New File > R Script*. 
 
@@ -132,7 +135,7 @@ Type the following into the **script file**:
 sqrt(3^2 + 4^2)
 ```
 
-Notice that nothing has happened. All you've done is write some commands into a text window. However, if you highlight these lines and then hit the `Run` button in the top right-hand corner of the script pane (or, in Windows certainly, press `Ctrl-R`), then RStudio runs these lines in the console pane. (Alternatively, you can manually copy-and-paste these lines into the console window.) This should return:
+Notice that nothing has happened. All you've done is write some commands into a text window. However, if you highlight these lines and then hit the `Run` button in the top right-hand corner of the script pane (or, in Windows certainly, press `Ctrl-Enter`), then RStudio runs these lines in the console pane. (Alternatively, you can manually copy-and-paste these lines into the console window.) This should return:
 
 ```{r, echo = F}
 sqrt(3^2 + 4^2)
@@ -148,13 +151,11 @@ It is conventional to save R script files using the suffix '.R' or '.r', though 
 
 #### Notes on legibility {#legible}
 
-> **NOTE**: that I use spaces within the code to make it clearer. R does not require this, but again I think it is good practice to think about how to make you code legible. Different coders have different preferences, but personally I prefer `plot(Worm.density ~ Vegetation, data = worms)` over `plot(Worm.density~Vegetation,data=worms)`. 
+> **NOTE**: that I use spaces within the code to make it clearer. R does not require this, but again I think it is good practice to think about how to make you code legible. Different coders have different preferences, but personally I prefer `plot(Worm.density ~ Vegetation, data = worms)` over `plot(Worm.density~Vegetation,data=worms)`. As [Hadley Wickham](http://style.tidyverse.org/) says: "Good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread."
 
-> For interest, some guidelines from Google can be found at [https://google.github.io/styleguide/Rguide.xml](https://google.github.io/styleguide/Rguide.xml). Note that different coders prefer different styles---there is no universal agreement. (For example, I have my own idiosyncratic style.) However, it's worth getting into the habit of writing your code neatly and with a thought towards legibility...
+> Note that different coders prefer different styles---there is no universal agreement. However, it's worth getting into the habit of writing your code neatly and with a thought towards legibility. A guide that closely follows my own is the `tidyverse` guide [here](http://style.tidyverse.org/). (Note that unlike Python, R does not require specific indentation. Instead it uses curly brackets to group lines of code together. However, indentation is still key to good legibility. An example of a tidy R script is given e.g. [here](#tidyscript).)
 
 > I tend to use script files to keep a record of all commands that need to be reproduced, but I often enter commands directly into the console window when I'm testing or visualising things. Try to keep redundant code out of your script files. In this practical I expect you to use script files from the outset! Make sure the code is legible and commented.
-
-An example of a tidy R script is given e.g. [here](#tidyscript).
 
 ## R packages {#packages}
 

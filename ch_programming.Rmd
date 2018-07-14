@@ -21,8 +21,7 @@ for(i in 1:10){
 This command creates an object `i`, which takes the values in the vector `1:10` in turn, and prints each to the screen. Notice that we wrote this entire loop on a single line. The curly brackets `{}` delineate the contents of the loop. A more complex example is
 
 ```{r}
-for(i in 1:10)
-{
+for(i in 1:10) {
     ## generate 10 random numbers
     ## uniformly between 0 and 1
     x <- runif(10)
@@ -56,7 +55,7 @@ for(i in 1:10) {
 
 ```
 
-> **Note**: for single line pieces of code, it is not always necessary to use curly brackets `{}` to delineate the loop. However, it is a good habit to get into, and saves lots of simple errors. Hence, in these practicals I will insist you always delineate loops and if/else statments using curly brackets. Please let me know if I've missed any!
+> **Note**: for single line pieces of code, it is not always necessary to use curly brackets `{}` to delineate the loop. However, it is a good habit to get into, and saves lots of simple errors. Hence, in this workshop I will insist you always delineate loops and if/else statments using curly brackets. Please let me know if I've missed any!
 
 > **Note**: the use of **indentation** to delineate what is inside of the `for` loop. This is not necessary for R to work, but in my opinion greatly helps the comprehension of the code. Along with comments and spacing, this is a useful habit to get into, and I insist upon it here. Some people prefer to place the leading bracket on a different line to the `for` statement e.g. something like:
 > ```
@@ -74,7 +73,7 @@ x <- runif(10)
 print(x)
 }
 ```
-> is bad programming practice (in my opinion), and will be marked as such.
+> is bad programming practice (in my opinion).
     
 Loops can also be **nested**:
 
@@ -87,7 +86,7 @@ for(i in 1:3) {
 ```
 
 ```{task}
-Write a piece of R code, using nested `for` loops, that transposes a 3 $\\times$ 3 matrix. Test it on the matrix `x <- matrix(1:9, 3, 3)`
+Write a piece of R code, using nested `for` loops, that transposes a 3 $\times$ 3 matrix. Test it on the matrix `x <- matrix(1:9, 3, 3)`
 ```
 
 ```{solution}
@@ -282,22 +281,22 @@ sign_num(-1)
 > ```
 > We can see that this has taken the value of `x` (which is `r x`), and created a character vector of length 1 containing the concatenated string `"The variable x is 10"`. Notice by default that `paste()` inserts a space between the arguments it's concatenating, this can be suppressed using the `sep` argument, or by using the `paste0()` function e.g. note the difference between the first function and the latter two (which are equivalent) below:
 > ```{r}
-> paste("x=", 1)
-> paste("x=", 1, sep = "")
-> paste0("x=", 1)
+> paste("x =", 1)
+> paste("x =", 1, sep = "")
+> paste0("x =", 1)
 > ```
 
 
 ```{task}
 Try the following pieces of code. What do they do?
      
-1. `paste(\"Here is the number:\", 1:10)`.
-2. `paste(1:10, collapse = \" + \")`.
-3. `paste(\"Here are some numbers:\", paste(1:10, collapse = \", \"))`.
+1. `paste"Here is the number:", 1:10)`.
+2. `paste(1:10, collapse = " + ")`.
+3. `paste("Here are some numbers:", paste(1:10, collapse = ", "))`.
 4. `x <- 1:10;`
-  `paste(\"The sum of the first\", length(x), `
-      `\"numbers is given by\", paste(1:10, collapse = \" + \"),`
-      `\"=\", sum(x))`
+  `paste("The sum of the first", length(x), `
+      `"numbers is given by", paste(1:10, collapse = " + "),`
+      `"=", sum(x))`
       
 ```
 
@@ -323,7 +322,8 @@ paste("Here are some numbers:", paste(1:10, collapse = ", "))
 ## together to form a description of adding numbers
 ## together. Uses nested functions.
 x <- 1:10
-paste("The sum of the first", length(x), "positive integers is given by", paste(1:10, collapse = " + "), "=", sum(x))
+paste("The sum of the first", length(x), "positive integers is given by", 
+      paste(1:10, collapse = " + "), "=", sum(x))
 ``
 
 ```
@@ -613,7 +613,7 @@ t(apply(x, 1, divn, n = 2))
 ```
 
 ```{task}
-Use `apply()` to return the range of each column of the matrix `x` defined above. Return as a 2 $\\times$ 4 matrix.
+Use `apply()` to return the range of each column of the matrix `x` defined above. Return as a 2 $\times$ 4 matrix.
 ```
 
 ```{solution}
@@ -667,7 +667,7 @@ tapply(chickwts$weight, chickwts$feed, mean)
 ```
 
 ```{task}
-The `datasets` package provides data on from an experiment to compare yields (as measured by dried weight of plants) obtained under a control and two different treatment conditions (stored as the `PlantGrowth` data set). Summarise this data set and produce an estimate of the mean yield for each experimental group. Gneerate means and standard deviations for each experimental group.
+The `datasets` package provides data on from an experiment to compare yields (as measured by dried weight of plants) obtained under a control and two different treatment conditions (stored as the `PlantGrowth` data set). Summarise this data set and produce an estimate of the mean yield for each experimental group. Generate means and standard deviations for each experimental group.
 ```
 
 ```{solution}
@@ -680,7 +680,9 @@ summary(PlantGrowth)
 tapply(PlantGrowth$weight, PlantGrowth$group, mean)
 
 ## generate mean and SD yields per experimental group
-tapply(PlantGrowth$weight, PlantGrowth$group, function(x) c(mean(x), sd(x)))
+tapply(PlantGrowth$weight, PlantGrowth$group, function(x) {
+    c(mean(x), sd(x))
+})
 ``
 
 ```

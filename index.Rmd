@@ -1,5 +1,5 @@
 --- 
-title: "Advanced Visualisation in R"
+title: "Advanced Visualisation and Data Wrangling in R"
 author: "TJ McKinley"
 site: bookdown::bookdown_site
 output:
@@ -18,17 +18,17 @@ documentclass: book
 link-citations: yes
 ---
 
-# Introduction
+# Introduction {-}
 
 ```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
 ```
 
 In this workshop we will introduce some R packages that provide really useful and powerful functions for doing visualisation of complex data sets. We will see how R can be used to make informative animations, and even interactive HTML graphics.
 
-## Tasks
+## Tasks {-}
 
 ```{task}
-All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked below.
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked via the **Show Solution** buttons.
 ```
 
 ```{solution}

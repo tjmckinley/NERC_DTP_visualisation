@@ -15,7 +15,7 @@ x
 ## can also assign text to a variable
 y <- "Hello There" 
 
-# print y
+## print y
 y
 
 ## can re-assign variables
@@ -29,7 +29,7 @@ ziggy <- x + y
 ziggy
 ```
 
-You will notice that as I create each of these variables, they begin to appear in the **environment** pane in the top right-hand side of the RStudio window. This shows the current R **workspace**, which is a collection of objects that R stores in memory. We can remove objects from the workspace using the `rm()` function e.g.
+You will notice that as we create each of these variables, they begin to appear in the **environment** pane in the top right-hand side of the RStudio window. This shows the current R **workspace**, which is a collection of objects that R stores in memory. We can remove objects from the workspace using the `rm()` function e.g.
 
 ```{r}
 ## remove the variables x and y
@@ -54,7 +54,9 @@ ls()[ls() == "ziggy"]
 
 > Names of variables can be chosen quite freely in R. They can be built from letters, digits and other characters, such as `_`. They can't, however, start with a digit or a `.` followed by a digit. Names are **case sensitive** and so `height` is a different variable from `Height`. Try to choose **informative** variable names where possible (`height` is more informative than `x` when talking about heights for example.)
 
-> Try to use avoid spaces between words in your variable names. Underscores or dots are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible (since R is highly case sensitive). If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
+> Try to use avoid spaces between words in your variable names. Underscores are much safer[^1]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
+
+[^1]: Some people also use dots, e.g. `child.heights`, but in general I would avoid this, since dots are often used when working with functions of specific classes such as `print.lm()`
 
 ## Functions in R
 
@@ -91,7 +93,7 @@ The other type of matching is called **named matching** and this would allow you
 
 Using named matching also allows us to access the other argument: `length.out` if we wanted to use it, though you should recognise that you cannot, in general, use all four arguments in this case to specify a vector. Why not? 
 
-In fact, this command needs three arguments to work, and it doesn't matter which three of the four arguments you use. To find out what arguments a function can take and what they mean use the `?FUNCTION` syntax (where you replace `FUNCTION` with whichever function you're interested in e.g. `?seq` or `?atan`). This will open the internal R help file for the function. The [Help](#help) section of this practical contains detailed information on these help files.
+In fact, this command needs three arguments to work, and it doesn't matter which three of the four arguments you use. To find out what arguments a function can take and what they mean use the `?FUNCTION` syntax (where you replace `FUNCTION` with whichever function you're interested in e.g. `?seq` or `?atan`). This will open the internal R help file for the function. The [Help](#help) section of this workshop contains detailed information on these help files.
 
 Being able to access these internal help files will be of particular help for all of the statistical functions we will want to use which generally have many arguments.
     
@@ -108,7 +110,6 @@ Use the R function `seq()` to create the following sequences:
 ```{solution}
 
 ``{r, eval = F}
-## 1.
 seq(2, 30, by = 2)
 ## 2.
 seq(-2.5, 15.34, length.out = 14)
@@ -167,9 +168,9 @@ References: | This gives you some selected text books that the author feels expl
 See Also: | This should be a list of other R commands that are related to the current function. They might be of more use to you, or their help files might be better written and clarify what you’re trying to do.
 Examples: | This should be a set of R commands that you can copy-and-paste into either a script file or the console pane. These should give you a practical example of how to use the function in several different settings.
 
-If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics. In the Help menu, choose 'search r-project.org' and work through the search pages. Beware though, these are busy people who will often ignore directly emailed requests for help. Ask your resident experts first, before e-mailing the R-search email lists! For example, try the group ELE forum.
+If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics. In the Help menu, choose 'search r-project.org' and work through the search pages. Beware though, these are busy people who will often ignore directly emailed requests for help. Ask your resident experts first, before e-mailing the R-search email lists! 
 
-I also tend to succeed by Googling the problem, prefaced by 'R'. For example, Google 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
+I also tend to succeed mostly by Googling the problem. For example, Google 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
 
 ## Objects in R
 
@@ -218,11 +219,11 @@ Run the following commands to see how we can create different types of vectors:
 Notice that brackets can be important, for example, note the differences below.
 
 ```{r, results = "hold"}
--4:0
--(1:3)
+-4:1
+-(4:1)
 ```
 
-The first line above creates an integer sequence from -4 to 0, and the second creates one from -1 to -3. The `seq()` command we saw earlier, and here are some more examples:
+The first line above creates an integer sequence from -4 to 1, and the second creates one from -4 to -1. The `seq()` command we saw earlier, and here are some more examples:
 
 ```{r, results = "hold"}
 seq(0, 1, by = 0.1)
@@ -264,6 +265,8 @@ c(c("bob", "sam", "ted"), ziggy)
 
 (Here we use [**nested**](#nested) `c()` functions to first create a `character` vector out of the strings `"bob"`, `"sam"` and `"ted"`, and then to concatenate this with the object `ziggy`.) Notice that the concatenated vector is a `character` vector (notice the **double-quotes** around `"8.16227766016838"`), indicating that R has converted the elements of `ziggy` into `characters` in order to concatenate them with a `character` vector. 
 
+> R will always convert to the most complex object type: so a combination of `character` and `numeric` values will be converted to a `character`.
+
 Notice that R has not changed the value of the object `ziggy`---if we print `ziggy` to the screen we can see it is still a `numeric` vector:
 
 ```{r}
@@ -304,7 +307,7 @@ Use the various vector creation commands to create the following sequences:
 ## 1. (alternative)
 seq(1, 11, by = 1)
 ## 2.
-seq(2, 4, by = 2)
+seq(2, 50, by = 2)
 ## 3.
 seq(17, 33, by = 2)
 ## 4.
@@ -317,7 +320,9 @@ c("M", "T", "W", "T", "F", "S", "S")
 
 If we only want to get at certain elements of a vector then we need to be able to subset the vector. In R, square brackets `[]` are used to get subsets of a vector.
 
-> **IMPORTANT**: In R, objects are **indexed** such that the **first** element is element `1` (unlike a language like C for example, which indexes relative to `0`). In R the first element of `x` is `x[1]`, whereas in C it would be `x[0]`.
+> **IMPORTANT**: In R, objects are **indexed** such that the **first** element is element `1` (unlike C or Python for example, which indexes relative to `0`). In R the first element of `x` is `x[1]`, whereas in Python it would be `x[0]`.
+> 
+> Note also that in Python the command `x[-1]` would extract the **last** element of the vector `x`, whereas in R the `-` is used to **remove** elements; hence `x[-1]` would ***remove*** the first element of `x`.
 
 ```{task}
 Copy the following commands into your script file and then run them in order to see how this works. Annotate each line using comments to describe what it is doing.
@@ -346,7 +351,7 @@ y[i] <- z
 ## generate a vector x of five elements from 1 to 5
 x <- 1:5
 
-## extract the third element of x (3)
+## extract the third element of x
 x[3]
 
 ## extract the 2, 3 and 4th elements of x
@@ -422,7 +427,7 @@ order(-y)
 
 R performs most operations on vectors **element-wise** , meaning that it performs each calculation on each element of a vector or array **independently** of the other elements. This can make for very fast manipulation of large data sets.
 
-> **Aside**: R is a **high-level** language, meaning that it is built on **low-level** languages, in this case C and Fortran. In C, if we wish to apply a function to each element of an array, we need to write a loop. In R there are so-called **vectorised** functions, that will apply a function to each element of a vector or array. We will cover loops in R later on, but generally they are much slower than the equivalent loops in C or Fortran. The source code for vectorised functions are often written in C or Fortran and hence run much faster than writing a loop in native R code. In addition they make the code more concise. For simple functions the difference in run time is often too small to really notice, but for more complex or large-scale functions the difference in run time can be large. To this end, R also offers various ways of using C code within R functions. But more on that later...
+> **Aside**: R is a **high-level** language, meaning that it is built on **low-level** languages, in this case C and Fortran. In C, if we wish to apply a function to each element of an array, we need to write a loop. In R there are so-called **vectorised** functions, that will apply a function to each element of a vector or array. We will cover loops in R later on, but generally they are much slower than the equivalent loops in C or Fortran. The source code for vectorised functions are often written in C or Fortran and hence run much faster than writing a loop in native R code. In addition they make the code more concise. For simple functions the difference in run time is often too small to really notice, but for more complex or large-scale functions the difference in run time can be large. To this end, R also offers various ways of using C code within R functions. But that is beyond the scope of this workshop...
 
 ```{task}
 Copy the following commands into your script file and then run them in order to see how this works. Annotate each line using comments to describe what it is doing.
@@ -499,6 +504,8 @@ This is a useful property if the shorter vector is of length 1, in which case R 
 ```{r}
 c(1:3) * 2
 ```
+
+> You must be **very careful** with this. I only use this feature when multiplying a vector by a scalar; otherwise I will always generate vectors of the same length, since I think this makes what you are trying to achieve explicit. Hence instead of writing `c(1:6) * c(1:2)`, I would write `c(1:6) * rep(1:2, 3)`. (I would personally rather that R did not allow elementwise operations on vectors that are of different lengths, but it does, and one should be careful...)
 
 R will also perform **matrix multiplication** (e.g. dot products) on vectors, and this is described in a [later section](#matmult).
 
@@ -725,8 +732,7 @@ as.character(x)
 (Notice the double-quotes around the elements of the converted vectors.) They can also easily be converted into factors (if you want to set the levels of the factor specifically, then you can use the `factor()` function as described [earlier](#factor)):
 
 ```{r}
-as.factor(x)
-factor(x, levels = c(0, 1, 3, 4, 10))
+factor(x)
 ```
 
 We can also convert numbers to logical strings, in which case R converts `0` values to `FALSE` and anything else to `TRUE`. Hence,
@@ -759,6 +765,8 @@ y <- factor(c("10", "2", "8"))
 y
 as.numeric(y)
 ```
+
+**Notice** that this returns `r as.numeric(y)` rather than `r as.numeric(as.character(y))`.
 
 If a `factor` holds a numerical value you wish to convert directly, then you must convert the factor to a `character` first (for which you can often use nested functions to do) e.g.
 
@@ -899,7 +907,7 @@ rbind(x1, x2, x3)
 
 ```
 
-Some useful commands for matrices are listed in the table below:
+Some useful commands for matrices are listed in Table \@ref(tab:matfunc).
 
 Table: (\#tab:matfunc) Useful `matrix` commands in R
 
@@ -994,7 +1002,12 @@ An R list is an object consisting of an ordered collection of objects known as i
 The following command creates a list object called `simpsons`, with four components: the first two are character strings, the third is an integer, and the fourth component is a numerical vector. Try creating a list as follows:
 
 ```{r}
-simpsons <- list(father = "Homer", mother = "Marge", no_children = 3, child_ages = c(10, 8, 1))
+simpsons <- list(
+    father = "Homer", 
+    mother = "Marge", 
+    no_children = 3, 
+    child_ages = c(10, 8, 1)
+)
 ```
 
 The components of a list are always numbered and may always be referred to as such. Thus with `simpsons` above, its components may be individually referred to as `simpsons[[1]]`, `simpsons[[2]]`, `simpsons[[3]]` and `simpsons[[4]]`. Since `simpsons[[4]]` is a ***vector***, we can access the elements of the vector using the `[]` notation (i.e. `simpsons[[4]][1]` is its first element).

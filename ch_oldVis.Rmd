@@ -6,10 +6,6 @@ R's base graphics system is very flexible, and is one of the main reasons R has 
 
 Let's start by visualising a single year, and noting that we are trying to produce something that looks like Figure \@ref(fig:gapminder).
 
-```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project"}
-include_graphics("images/gapminder.png")
-```
-
 Let's break this plot down into various **features**:
 
 * It shows data from 1952 only;

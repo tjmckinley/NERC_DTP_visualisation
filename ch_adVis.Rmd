@@ -1,20 +1,131 @@
-# Advanced Visualisation
+# Visualisation using `ggplot2`
 
-In the next couple of practicals we will introduce you to some really useful packages for data wrangling and visualisation: notably [`tidyr`](https://cran.r-project.org/web/packages/tidyr/), [`dplyr`](https://cran.r-project.org/web/packages/dplyr/index.html) and [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html). We start with a motivating example.
+Let's start with a motivating example.
 
 ## Gapminder
 
 [Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
 
-```{r, screenshot.alt = "images/hans.jpg", align = "center", echo = F}
+```{r, screenshot.alt = "images/hans.jpg", echo = F}
 include_url("https://www.youtube.com/embed/jbkSRLYSojo")
 ```
 
 For a slightly longer presentation, his TED talk on global development has been watched over 11 million times. If you have 20 minutes, it can be found [here](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread), and is well worth a watch!
 
-> **Update**: More-or-less as I finished these practical notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the contribution that he made to the world of public health and education. He presented a world-view based on facts and data; to this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
+> More-or-less as I had finished the first version of these notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the immense contribution that he made to the world of public health and education. He presented a world-view based on facts and data. To this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
 
-The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages have been developed that provide a systematic and flexible way to generate complex plots / visualisations from data. We will begin by trying to emulate the plot in Figure \@ref(fig:gapminder).
+The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
+
+```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = F}
+include_graphics("images/gapminder.png")
+```
+
+Before we do this, let's quickly remind ourselves of basic plotting functionality in R.
+
+## Revision 
+
+Let's begin by exploring the `mpg` data set that is available in the `ggplot2` package. Remember that `ggplot2` is loaded automatically when you load `tidyverse`, hence we will begin by simply loading `tidyverse` and then visualising the `mpg` dataset.
+
+```{r, message = F}
+library(tidyverse)
+mpg
+```
+
+The R aficionados amongst you might notice the slightly strange `print` behaviour of the `mpg` object. If we try to `print` a `data.frame` object to the screen, then it prints the whole object. Here it's printed an attenuated version of the object. This is because the `mpg` data set is saved as a `tibble` object, rather than a standard `data.frame`. 
+
+> **Aside**: A `tibble` is an enhanced `data.frame` object which are generally easier to examine than `data.frames`. For example, they force R to display only the data that fits onscreen. It also adds some information about the class of each column. In fact, the `tibble` package---loaded as part of the `tidyverse`---introduces the `as_tibble()` function to convert ordinary `data.frame` objects to `tibble` objects, in case you want to use this functionality in future. Please see the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for more information.
+>  
+>  Note also that `tbl` seems to make a distinction between integers (`<int>`) and doubles (`<dbl>`), instead of just using `numeric`. R makes no such distinction in practice, and so you can think of either of these as simply `numeric` types.
+
+The `mpg` dataset contains a subset of the fuel economy data that the US Environmental Protection Agency makes available on [http://fueleconomy.gov](http://fueleconomy.gov). It contains only models that had a new release every year between 1999 and 2008. The variable `hwy` corresponds to *highway miles per gallon*. Let's produce a kernel density plot of `hwy`.
+
+```{r}
+## kernel density of hwy
+plot(density(mpg$hwy))
+```
+
+> Remember that we can extract a named column from a `data.frame` using the `$` operator. The `density()` function is a simple function in R that takes a `vector` argument and returns a kernel density plot. 
+
+Now let's try to plot different kernel density plots for Hondas and Dodges We could do this as two separate plots, and use our standard subsetting notation to extract the correct elements of the data frame in each case:
+
+```{r, fig.show = "hold"}
+## plot hwy for hondas
+plot(density(mpg$hwy[mpg$manufacturer == "honda"]))
+## plot hwy for dodges
+plot(density(mpg$hwy[mpg$manufacturer == "dodge"]))
+```
+
+What about if we want to add both histograms to the same plot?
+
+```{r}
+## add two histograms to the same plot
+plot(density(mpg$hwy[mpg$manufacturer == "honda"]))
+lines(density(mpg$hwy[mpg$manufacturer == "dodge"]))
+```
+
+> Notice the use of the `lines()` function to allow a line to be added to an existing plot.
+
+What has happened here? Lets have a look at a summary of Hondas and Dodges:
+
+```{r}
+## summary of hondas
+summary(mpg$hwy[mpg$manufacturer == "honda"])
+## summary of dodges
+summary(mpg$hwy[mpg$manufacturer == "dodges"])
+```
+
+Ah, this might explain it. The maximum `hwy` for Dodges is much lower than the minimum `hwy` for Hondas. Hence the axis ranges for the plot are determined (in this instance) by the Hondas, since they were plotted first. Let's try agian, but this time setting the bounds for the plots manually:
+
+```{r}
+## produce densities
+honda_dens <- density(mpg$hwy[mpg$manufacturer == "honda"])
+lincoln_dens <- density(mpg$hwy[mpg$manufacturer == "dodge"])
+
+## extract x-ranges and y-ranges
+xlims <- range(c(honda_dens$x, lincoln_dens$x))
+ylims <- range(c(honda_dens$y, lincoln_dens$y))
+
+## produce plot
+plot(density(mpg$hwy[mpg$manufacturer == "honda"]), xlim = xlims, ylim = ylims)
+lines(density(mpg$hwy[mpg$manufacturer == "dodge"]))
+```
+
+This is better, but still not very informative. Let's add some colour and a legend, and tidy up the axis labels.
+
+```{r}
+## produce densities
+honda_dens <- density(mpg$hwy[mpg$manufacturer == "honda"])
+lincoln_dens <- density(mpg$hwy[mpg$manufacturer == "dodge"])
+
+## extract x-ranges and y-ranges
+xlims <- range(c(honda_dens$x, lincoln_dens$x))
+ylims <- range(c(honda_dens$y, lincoln_dens$y))
+
+## produce plot
+plot(density(mpg$hwy[mpg$manufacturer == "honda"]), xlim = xlims, ylim = ylims, xlab = "Highway miles per gallon", ylab = "Density", main = "")
+lines(density(mpg$hwy[mpg$manufacturer == "dodge"]), col = "red")
+
+## add legend to top-left corner
+legend(par("usr")[1] * 1.1, par("usr")[4] * 0.95, 
+       legend = c("Honda", "Lincoln"), 
+       lty = c(1, 1), 
+       col = c("black", "red"))
+```
+
+Now let's do this in `ggplot2`:
+
+```{r}
+mpg %>%
+    filter(manufacturer == "honda" | manufacturer == "dodge") %>%
+    rename(Manufacturer = manufacturer) %>%
+    ggplot(aes(x = hwy, colour = Manufacturer)) +
+        geom_density() +
+        xlab("Highway miles per gallon") +
+        ylab("Density")
+```
+
+
+
 
 We will do this first by using R's base graphics system, before introducing a set of functions from a powerful package called [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html).
 

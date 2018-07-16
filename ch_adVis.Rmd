@@ -126,7 +126,7 @@ We have seen that the R base graphics system is highly flexible, and can be used
 
 First we load the `tidyverse` (of which `ggplot2` is included).
 
-```{r, message = F}
+```{r, message = F, cache = F}
 library(tidyverse)
 ```
 

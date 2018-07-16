@@ -3,3 +3,5 @@
 .Rhistory
 _bookdown_files
 
+# ignore cheat sheets
+cheat

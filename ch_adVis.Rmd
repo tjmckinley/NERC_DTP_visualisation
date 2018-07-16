@@ -536,7 +536,8 @@ Another chart seen in Professor Rosling's TED talk was a stacked density plot. T
 ```{r, message = F}
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap)) +
-    geom_histogram()
+    geom_histogram() +
+    scale_x_log10()
 ```
 
 This simple plot is producing a histogram of the distribution of GDP across **all countries** in 1952. How do split this by continent? Well, there are various ways. One way would be to set the `fill` aesthetic to map to the `continent` variable:
@@ -544,7 +545,8 @@ This simple plot is producing a histogram of the distribution of GDP across **al
 ```{r}
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap, fill = continent)) +
-    geom_histogram()
+    geom_histogram() +
+    scale_x_log10()
 ```
 
 This produces a **stacked histogram**, where each bar is coloured according to the relative frequency of each `continent`. This is more informative, we can see that African countries tend to have lower GDP per capita than the Americas for example. Asia and Africa were the poorest continents in the 1950s in terms of GDP. 
@@ -556,14 +558,18 @@ Another option here would be to place the bars for each continent side-by-side (
 ```{r}
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap, fill = continent)) +
-    geom_histogram(position = "dodge")
+    geom_histogram(position = "dodge") +
+    scale_x_log10()
 ```
+
+This is not very useful here, but is better used for barplots with multiple discrete groupings.
 
 > **Important**: `ggplot2` also allows you to save the plot as an object, which can be updated at a later date or used within other functions. For example,
 > ```{r}
 p <- ggplot(gapminder[gapminder$year == 1952, ],
 >        aes(x = gdpPercap, fill = continent)) +
->     geom_histogram()
+>     geom_histogram() +
+>     scale_x_log10()
 > ```
 > creates an object called `p` that contains the plot information. This will not be plotted until the objected is **printed** to the screen e.g.
 > ```{r, message = F}
@@ -581,7 +587,8 @@ Try tidying up the axis and legend titles on these plots.
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap, fill = continent)) +
     geom_histogram() +
-    xlab("GDP per capita") + 
+    scale_x_log10() +
+    xlab("log10(GDP per capita)") + 
     ylab("Count") +
     ggtitle("1952") +
     guides(fill = guide_legend(title = "Continent")) 
@@ -600,7 +607,8 @@ plotGapminder_gg <- function(data, year = 1952) {
     p <- ggplot(gapminder[gapminder$year == year, ],
        aes(x = gdpPercap, fill = continent)) +
     geom_histogram() +
-    xlab("GDP per capita") + 
+    scale_x_log10() +
+    xlab("log10(GDP per capita)") + 
     ylab("Count") +
     ggtitle(year) +
     guides(fill = guide_legend(title = "Continent"))
@@ -614,7 +622,7 @@ for(i in c(1952, 1982, 1992, 2002)) {
 ```
 
 ```{task}
-Produce a histogram of `gdpPercap` faceted by `continent`.
+Produce a histogram of `log10(gdpPercap)` faceted by `continent`.
 ```
 
 ```{solution}
@@ -622,7 +630,8 @@ Produce a histogram of `gdpPercap` faceted by `continent`.
 ``{r, message = F}
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap)) +
-    geom_histogram() +
+    geom_histogram()  +
+    scale_x_log10()  +
     facet_wrap(~ continent)
 ``
 
@@ -638,6 +647,7 @@ Now generate a stacked histogram, with colours corresponding to different contin
 ggplot(gapminder,
        aes(x = gdpPercap, fill = continent)) +
     geom_histogram() +
+    scale_x_log10() +
     facet_wrap(~ year)
 ``
 
@@ -647,10 +657,27 @@ Here the axis labels are difficult to read, due to the plot size, so perhaps we 
 ggplot(gapminder,
        aes(x = gdpPercap, fill = continent)) +
     geom_histogram() +
+    scale_x_log10() +
     facet_wrap(~ year) +
-    theme(axis.text.x = element_text(angle = 45, vjust = 0.5))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 ``
 
+```
+
+To create a **stacked density plot**, like in Professor Rosling's TED talk, you can swap the `geom_histogram()` for `geom_density()`. However, by default `ggplot2` overlaps density plots, rather than stacks them, hence you can use a `position = "stack"` argument to the geom to force the stacking. (Purely for the purposes of exposition, I have removed `Oceania` here.)
+
+```{r}
+temp <- gapminder[gapminder$year == 2002, ]
+temp <- temp[temp$continent != "Oceania", ]
+temp$continent <- droplevels(temp$continent)
+ggplot(temp,
+       aes(x = gdpPercap, fill = continent)) +
+    geom_density(position = "stack") +
+    scale_x_log10() +
+    xlab("log10(GDP per capita)") + 
+    ylab("Count") +
+    ggtitle("2002") +
+    guides(fill = guide_legend(title = "Continent")) 
 ```
 
 ## Additional task

@@ -1,4 +1,4 @@
 rmd_files:
-    html: ['index.Rmd', 'ch_adVis.Rmd', 'ch_dataWrangling.Rmd']
-    latex: ['index.Rmd', 'ch_adVis.Rmd', 'ch_dataWrangling.Rmd', 'ch_appendix.Rmd']
+    html: ['index.Rmd', 'ch_adVis.Rmd', 'ch_dataWrangling.Rmd', 'ch_epilogue.Rmd']
+    latex: ['index.Rmd', 'ch_adVis.Rmd', 'ch_dataWrangling.Rmd', 'ch_epilogue.Rmd', 'ch_appendix.Rmd']
 output_dir: "docs"

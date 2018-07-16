@@ -449,7 +449,7 @@ gp <- inner_join(gp_income, gp_hiv, by = c("year", "country"))
 gp
 ```
 
-The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, abd visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
+The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, and visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
 
 ```{r}
 anti_join(gp_income, gp_hiv, by = c("year", "country"))
@@ -475,7 +475,7 @@ We can see that there are `r nrow(anti_join(gp_income, gp_hiv, by = c("year", "c
 
 We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here.
 
-> There is a great cheat sheet for joining that I found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
+> There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
 
 Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them.
 
@@ -491,8 +491,8 @@ gp %>%
     filter(year == 1991 | year == 1997 | year == 2005 | year == 2011) %>%
     ggplot(aes(x = gdp, y = prevalence)) +
     geom_point() + 
-    scale_x_continuous(trans = "log10") +
-    xlab("GDP per capita") +
+    scale_x_log10() +
+    xlab("log10(GDP per capita)") +
     ylab("HIV prevalence in 15-49 year olds") +
     facet_wrap(~year)
 ``
@@ -543,12 +543,154 @@ gp %>%
     filter(year == 1991 | year == 1997 | year == 2005 | year == 2011) %>%
     ggplot(aes(x = gdp, y = prevalence, size = pop)) +
     geom_point() + 
-    scale_x_continuous(trans = "log10") +
+    scale_x_log10() +
     guides(size = guide_legend(title = "Population size")) +
-    xlab("GDP per capita") +
+    xlab("log10(GDP per capita)") +
     ylab("HIV prevalence in 15-49 year olds") +
     facet_wrap(~year)
 ``
 
 ```
 
+## Comprehensive example---Population pyramids
+
+[Population pyramids](https://en.wikipedia.org/wiki/Population_pyramid) are commonly used by demographers to illustrate age and sex structure of a country's population. A schematic example of a population pyramid is shown in Figure \@ref(fig:poppyramid).
+
+```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = F}
+include_graphics("images/Population_pyramid_example.svg")
+```
+
+Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: "Germanypop.csv", "Mexicopop.csv" and "USpop.csv", each with the following columns:
+
+* **male**: Population counts for males ($\times$ 1000);
+* **female**: Population counts for females ($\times$ 1000).
+
+Each row corresponds to an age class, in the order: 0--4, 5--9, 10--14, 15--19, 20--24, 25--29, 30--34, 35--39, 40--44, 45--49, 50--54, 55--59, 60--64, 65--69, 70--74 and 75--79. Mexico then has a final age class of 80+; Germany has final age classes of 80--84 and 85+; and the US has final age classes of 80--84, 85--89, 90--94 and 95+.
+
+Original source: [US Census](http://www.census.gov/)
+
+(I downloaded these data sets from the very excellent QELP website: [http://www.seattlecentral.edu/qelp/sets/032/032.html](http://www.seattlecentral.edu/qelp/sets/032/032.html), and wish to thank the authors for providing a brilliant resource for teaching statistics.)
+
+In this exercise we will load these data into R, wrangle them into a useful format and then produce a population pyramid using `ggplot2`. We will aim to do all of this using a `tidyverse` workflow where possible.
+
+### Data Wrangling
+
+Firstly, we read the three data files into R, storing them as `tibble` objects called `germany`, `mexico` and `us`. 
+
+```{r, message = F}
+## read German data in
+germany <- read_csv("Germanypop.csv")
+
+## read Mexican data in
+mexico <- read_csv("Mexicopop.csv")
+
+## read US data in
+us <- read_csv("USpop.csv")
+```
+
+We now need to bind these data sets together. One issue is that these three data sets have different age classes. If we want to join the tables together, we need to set consistent groupings in each data set. For this we will set the maximum age class for each country to be `"80+"`. Hence for Mexico we do not need to do anything, but for Germany and the US we will need to group together the latter categories.
+
+Let's do the US first.
+
+```{r}
+us <- us %>%
+    mutate(age = ifelse(age == "80-84", "80+", age)) %>%
+    mutate(age = ifelse(age == "85-89", "80+", age)) %>%
+    mutate(age = ifelse(age == "90-94", "80+", age)) %>%
+    mutate(age = ifelse(age == "95+", "80+", age)) %>%
+    group_by(age) %>%
+    summarise(male = sum(male), female = sum(female))
+```
+
+```{task}
+Go through the code above and understand what each line is doing. Repeat this task for `germany`.
+```
+
+```{solution}
+
+``{r}
+germany <- germany %>%
+    mutate(age = ifelse(age == "80-84", "80+", age)) %>%
+    mutate(age = ifelse(age == "85+", "80+", age)) %>%
+    group_by(age) %>%
+    summarise(male = sum(male), female = sum(female))
+``
+
+```
+
+We will now join the three data sets together on the `age` column, before gathering together the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
+
+However, we must be careful here since the age classes do not match. Hence we want to retain rows that don't match
+
+```{r}
+pop <- germany %>%
+        inner_join(mexico, "age", suffix = c("_Germany", "_Mexico")) %>%
+        inner_join(us, "age") %>%
+        rename(male_US = male, female_US = female) %>%
+        gather("country", "pop", -age) %>%
+        separate(country, c("sex", "country"), sep = "_") %>%
+        mutate(country = factor(country), sex = factor(sex)) %>%
+        mutate(age = factor(age, levels = unique(mexico$age)))
+pop
+```
+
+```{task}
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators.
+```
+
+### Visualisation
+
+Finally, we have wrangled our data into a useful form for data analysis. Now we will try and plot some population pyramids using `ggplot2`. We do this by tricking `ggplot` into plotting stacked barplots, with `males` being plotted below the zero line, and `females` above the zero line. We then flip the axes and use faceting and colours to denote countries and sex respectively.
+
+```{r}
+ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
+    geom_bar(stat = "identity") +
+    scale_y_continuous(breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+                     labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))) +
+    coord_flip() +
+    facet_wrap(~ country, ncol = 1) +
+    ylab("Population counts (x1000)") +
+    xlab("Age (yrs)") +
+    guides(fill = guide_legend(title = "Sex"))
+```
+
+Beautiful isn't it? (The horrendously stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
+
+### Summarisation
+
+In the year 2000, the population distribution of Mexico shows a very bottom-heavy pattern, suggesting few older people, but a large number of young and middle-age people. In fact we can quantify this directly as:
+
+```{r}
+pop %>%
+    group_by(country, age) %>%
+    summarise(pop = sum(pop)) %>%
+    arrange(country, age) %>%
+    mutate(cumprop = cumsum(pop / sum(pop))) %>%
+    select(-pop) %>%
+    spread(age, cumprop)
+```
+
+```{task}
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators. Notice that we have used the `spread()` function to produce a table that is **not** in 'tidy' format, but is better for visualising these specific outcomes.
+```
+
+We can see here that around 55% of Mexicans are younger than 25, compared to around 27% of Germans and 35% of Americans. We can also look at these figures split by sex:
+
+```{r}
+pop %>%
+    arrange(country, sex, age) %>%
+    group_by(country, sex) %>%
+    mutate(cumprop = cumsum(pop / sum(pop))) %>%
+    select(-pop) %>%
+    spread(age, cumprop)
+```
+
+Mexico also has a very high proportion of young females: in fact 33% of the current population of women are of pre-reproductive age (0--14 years) and 49% are of reproductive age (15--44). This means Mexico's population is expected to rapidly increase in the near future. A general pattern is that as countries transition from more agricultural economies to more industrialised economies, birth rates drop (due to better access to family planning, increased job opportunities for women, and various other factors). As soon as birth rates approach death rates then population growth declines, and the population pyramid becomes more top-heavy. The US is currently classed as a medium-growth country, and Germany a negative-growth country. The population pyramid plot also helps visualise the overall differences in population sizes between the three countries.
+
+A good description of population demographics can be found in this short video:
+
+```{r, screenshot.alt = "images/population.jpg", echo = F}
+include_url("https://www.youtube.com/embed/QsBT5EQt348")
+```
+
+Another great site on these sorts of topics is the [OurWorldInData](https://ourworldindata.org/) project.

@@ -23,13 +23,13 @@ link-citations: yes
 ```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
 ```
 
-This workshop requires that you're comfortable with R, and specifically with the concept of `data.frame` objects in R. Those of you that have attended the earlier "Introduction to R" and "Programming with R" workshops should be comfortable with this. The ability to work with and visualise data frames is one of the key reasons why R is so popular amongst statisticians and data scientists. Although a vast amount can be achieved using base R functionality, one of R's other key strengths is the vast array of [packages](https://cran.r-project.org/web/packages/) that it supports, which add a rich variety of additional functionality to R.
+This workshop requires that you're comfortable with R, and specifically with the concept of `data.frame` objects. The ability to work with and visualise data frames is one of the key reasons why R is so popular amongst statisticians and data scientists. Although a vast amount can be achieved using base R functionality, one of R's other key strengths is the vast array of [packages](https://cran.r-project.org/web/packages/) that it supports, which add a rich variety of additional functionality to R.
 
-A suite of packages that are fast becoming *de rigueur* for data science task is known as the [`tidyverse`](https://www.tidyverse.org/). These packages provide powerful functions for doing visualisation and manipulation of complex data sets. In this workshop we will introduce key `tidyverse` packages, such as `tidyr`, `dplyr` and `ggplot2`, and show how they can be used to efficiently process and visualise complex data.
+A suite of packages that are fast becoming *de rigueur* for performing myriad data science tasks is known as the [`tidyverse`](https://www.tidyverse.org/). These packages provide powerful functions for doing visualisation and manipulation of complex data sets. In this workshop we will introduce key `tidyverse` packages, such as `readr`, `tidyr`, `dplyr` and `ggplot2`, and show how they can be used to efficiently process and visualise complex data.
 
 ## `tidyverse` packages {-}
 
-The [`tidyverse`](https://www.tidyverse.org/) is a suite of packages, including `tidyr`, `dplyr`, `ggplot2`, `purrr`, `tibble` and `readr`. Although these packages can each be installed and loaded separately, they are designed to work together, and as such will simply install and load the `tidyverse` directly, rather thn worry too much about which functions belong to which packages.
+The [`tidyverse`](https://www.tidyverse.org/) is a suite of packages, including `tidyr`, `dplyr`, `ggplot2`, `purrr`, `tibble` and `readr`. Although these packages can each be installed and loaded separately, they are designed to work together, and as such will simply install and load the `tidyverse` directly, rather than worry too much about which functions belong to which packages.
 
 To install `tidyverse`, use:
 
@@ -45,7 +45,7 @@ library(tidyverse)
 
 in the usual way.
 
-> **Note**: if you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using $\LaTeX$, then it sometimes throws an error when loading because $\LaTeX$ can't process the correct fonts. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = F` e.g.
+> **Note**: if you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using $\LaTeX$, then it sometimes throws an error when loading because $\LaTeX$ can't process the correct fonts for the loading message. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = F` e.g.
 > ````
 > ```{r, message = F}`r ''`
 > library(tidyverse)

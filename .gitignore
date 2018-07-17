@@ -5,3 +5,6 @@ _bookdown_files
 
 # ignore cheat sheets
 cheat
+
+# ignore upload files
+uploadFiles

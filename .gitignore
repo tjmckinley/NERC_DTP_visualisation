@@ -8,3 +8,7 @@ cheat
 
 # ignore upload files
 uploadFiles
+
+# ignore docs folder
+docs
+

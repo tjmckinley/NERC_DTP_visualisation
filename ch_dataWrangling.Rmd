@@ -174,7 +174,7 @@ So, why would I choose to use functions such as `filter()` and `mutate()` above,
 > ```
 > The variable names can be removed from the search path by using `detach(iris)`. However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
 
-One final and key advantage to the `tidyverse` paradigm, is that we can use **pipes** to make our code more succinct (see next section [below](#pipes)).
+One final and key advantage to the `tidyverse` paradigm, is that we can use **pipes** to make our code more succinct.
 
 ### Pipes (`%>%`) {#pipes}
 
@@ -213,7 +213,7 @@ iris %>%
 
 I think this is neat! The code is written in a way that is much easier to understand, each part of the data wrangling process is chained together in an intuitive way (once you know the `tidyverse` functions of course). 
 
-> In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and speal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
+> In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and sepal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
 > 
 > Notice that the pipe operator must be at the end of the line if we wish to split the code over multiple lines.
 

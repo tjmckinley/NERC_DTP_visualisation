@@ -2,4 +2,5 @@
 *~
 .Rhistory
 
-
+# ignore build files
+docs

@@ -557,7 +557,7 @@ gp %>%
 [Population pyramids](https://en.wikipedia.org/wiki/Population_pyramid) are commonly used by demographers to illustrate age and sex structure of a country's population. A schematic example of a population pyramid is shown in Figure \@ref(fig:poppyramid).
 
 ```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = F}
-include_graphics("images/Population_pyramid_example.svg")
+include_graphics("images/Population_pyramid_example.png")
 ```
 
 Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: "Germanypop.csv", "Mexicopop.csv" and "USpop.csv", each with the following columns:

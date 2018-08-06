@@ -45,7 +45,7 @@ library(tidyverse)
 
 in the usual way.
 
-> **Note**: if you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using $\LaTeX$, then it sometimes throws an error when loading because $\LaTeX$ can't process the correct fonts for the loading message. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = F` e.g.
+> **Note**: if you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using LaTeX, then it sometimes throws an error when loading because LaTeX can't process the correct fonts for the loading message. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = F` e.g.
 > ````
 > ```{r, message = F}`r ''`
 > library(tidyverse)

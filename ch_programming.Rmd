@@ -74,6 +74,8 @@ print(x)
 }
 ```
 > is bad programming practice (in my opinion).
+> 
+> For those of you who are used to Python, please note that the indentations are not necessary in R, however for multi-line environments you must enclose all of the environment in curly brackets!
     
 Loops can also be **nested**:
 
@@ -290,7 +292,7 @@ sign_num(-1)
 ```{task}
 Try the following pieces of code. What do they do?
      
-1. `paste"Here is the number:", 1:10)`.
+1. `paste("Here is a number:", 1:10)`.
 2. `paste(1:10, collapse = " + ")`.
 3. `paste("Here are some numbers:", paste(1:10, collapse = ", "))`.
 4. `x <- 1:10;`
@@ -306,7 +308,7 @@ Try the following pieces of code. What do they do?
 ## 1. This creates a character vector of length 10 where each
 ## element is the result of pasting "Here is the number:" 
 ## with each number 1 to 10 respectively
-paste("Here is the number:", 1:10)
+paste("Here is a number:", 1:10)
 
 ## 2. This creates a character vector of length 1 that 
 ## has the numbers 1 to 10 separated by "+" signs
@@ -373,9 +375,13 @@ The `stop()` function is useful as a way of stopping the code if some condition 
 
 ```{r, error = T}
 whoknows <- function(x) {
-    if(length(x) > 1) stop("x argument needs to be of length 1")
+    if(length(x) > 1) {
+        stop("x argument needs to be of length 1")
+    }
     for(i in 2:x) {
-        if(x %% i == 0){ return(i) }
+        if(x %% i == 0) {
+            return(i) 
+        }
     }
     return(NULL)
 }

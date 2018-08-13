@@ -12,16 +12,16 @@ x <- 5
 ## variable x to the screen
 x 
 
-## can also assign text to a variable
+## we can also assign text to a variable
 y <- "Hello There" 
 
 ## print y
 y
 
-## can re-assign variables
+## we can re-assign variables
 y <- sqrt(10)
 
-## can assign a variable in terms 
+## or assign a variable in terms 
 ## of other variables
 ziggy <- x + y
 
@@ -52,7 +52,7 @@ ls()
 ls()[ls() == "ziggy"]
 ```
 
-> Names of variables can be chosen quite freely in R. They can be built from letters, digits and other characters, such as `_`. They can't, however, start with a digit or a `.` followed by a digit. Names are **case sensitive** and so `height` is a different variable from `Height`. Try to choose **informative** variable names where possible (`height` is more informative than `x` when talking about heights for example.)
+> Names of variables can be chosen quite freely in R. They can be built from letters, digits and other characters, such as `_`. They can't, however, start with a digit or a `.` followed by a digit. Names are **case sensitive** and so `height` is a different variable from `Height`. Try to choose **informative** variable names where possible (`height` is more informative than `x` when talking about heights for example).
 
 > Try to use avoid spaces between words in your variable names. Underscores are much safer[^1]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
 
@@ -812,11 +812,13 @@ matrix(0, 3, 4)
 
 ```
 
-Like vectors, matrices can also contain non-numerical values e.g.
+Like vectors, matrices can also contain `character` values e.g.
 
 ```{r}
 matrix(letters[1:9], 3, 3)
 ```
+
+However, all elements must be of the same type. You can have a `numeric` matrix, or a `character` matrix, but not a mixture. If you try to specify a mixture then R will convert all entries to the most complex type.
 
 #### Subsetting matrices
 
@@ -962,7 +964,11 @@ Another key aspect of matrix manipulation that is required for many algorithms i
 
 ```{r}
 x <- matrix(1:9, 3, 3)
+
+## matrix multiplication
 x %*% x
+
+## elementwise multiplication
 x * x
 ```
 

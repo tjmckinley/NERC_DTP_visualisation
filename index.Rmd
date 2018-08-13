@@ -54,9 +54,7 @@ These books are all available in the University library.
 
 Many introduction to R workshops focus on the use of R as a *statistical* computing environment. This workshop focuses instead on learning how to use R as a programming and scientific computing environment. Once you have mastered the ideas in this workshop, you will able to pick up the material in the more advanced workshops much more easily. As such this forms a pre-requisite for many subsequent workshops.
 
-R can be tricky to learn, so please feel free to e-mail any of the demonstrators with questions, though please make sure that you have thought through your question in advance. Most R problems can be solved with judicious use of Google...
-
-EXAMPLE HERE
+R can be tricky to learn, so please feel free to e-mail any of the demonstrators with questions, though please make sure that you have thought through your question in advance. Most R problems can be solved with judicious use of Google and StackOverFlow...
 
 In the workshop, R commands to be entered into the console are show in grey boxes e.g.
 
@@ -70,6 +68,8 @@ and similarly for the corresponding outputs:
 seq(0, 1, length = 11)
 ```
 
+There is a downloadable PDF version of these notes if you prefer (available via the link next to the title at the top of the page), though I think the HMTL version is easier to work from.
+
 ## Tasks {-}
 
 ```{task}
@@ -77,5 +77,5 @@ All **tasks** will be denoted in panel boxes like this one. In the HTML version,
 ```
 
 ```{solution}
-Eloquent and inspiring solution.
+The answer is, of course, 42. 
 ```

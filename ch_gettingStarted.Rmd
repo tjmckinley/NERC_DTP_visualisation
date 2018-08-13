@@ -2,16 +2,20 @@
 
 R is an **object-orientated** programming language. This means that you create objects, and give them names. You can then **do things** to those objects: you can perform calculations, statistical tests, make tables or draw plots. Objects can be single numbers, characters, vectors of numbers, matrices, multi-dimensional arrays, lists containing different objects and so on. 
 
-## RStudio
+Whilst R provides its own development environment, we will use a fantastic IDE[^i] provided by RStudio. This is free to download, provides some neat features, and crucially, looks the same on all operating systems!
 
-The RStudio window should look something like Figure \@ref(fig:rstudio).
+[^i]: Integrated Desktop Environment
+
+## RStudio
 
 ```{r, rstudio, fig.cap = "RStudio window", echo = F, out.width = '60%'}
 include_graphics("images/rstudio.png")
 ```
 
+The RStudio window should look something like Figure \@ref(fig:rstudio). It consists of:
+
 * **Script pane** (top-left): this is essentially RStudio's built-in text editor. It has all the usual features one would expect: syntax highlighting, automatic indentation, bracket matching, line highlighting and numbering and so on. You can open any type of text file in here, not just R scripts. (You might have to go to *File > New File > R Script* to open a new R script if you don't have one already open.)
-* **Console pane** (bottom-left): This is where you run R commands and view outputs. Interfaces directly with R.
+* **Console pane** (bottom-left): This is where you run R commands and view outputs.
 * **Workspace/history pane** (top-right): this shows a list of all of the objects and variables that you create during a session or a history of all of the commands that have been sent to the command window during the session.
 * **Plot/help pane** (bottom-right): this shows any plots that you create or any help files that you access.
 
@@ -19,7 +23,7 @@ You can alter the size of the various panes by clicking and dragging the grey ba
 
 ## Cheat Sheets
 
-The helpful folk at RStudio also produce a series of excellent Cheat Sheets, available [here](https://www.rstudio.com/resources/cheatsheets/). Please note, these are updated semi-regularly as new packages are added or existing packages updated. Note also that these cheat sheets focus on the use of RStudio, and a small number of subset of packages that are developed by RStudio (e.g. `tidyverse`, `shiny` and `rmarkdown`). For example, a nice Cheat Sheet for RStudio itself can be found [here](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf).
+The helpful folks at RStudio also produce a series of excellent Cheat Sheets, available [here](https://www.rstudio.com/resources/cheatsheets/). Please note, these are updated semi-regularly as new packages are added or existing packages updated. Note also that these cheat sheets focus on the use of RStudio, and a small number of subset of packages that are developed by RStudio (e.g. `tidyverse`, `shiny` and `rmarkdown`). For example, a nice Cheat Sheet for RStudio itself can be found [here](https://www.rstudio.com/wp-content/uploads/2016/01/rstudio-IDE-cheatsheet.pdf).
 
 I will provide links to some of these cheat sheets as we progress through the practicals, but please note that they might change over time, and older versions exist online. They are a brilliant resource where applicable.
 
@@ -30,7 +34,7 @@ It is worthwhile getting into a workflow when using R. General guidelines I woul
 * Use a different folder for each new project / assignment. This helps to keep all data / script / output files in one self-contained place.
 * Set the **Working Directory** for R at the outset of each session to be the folder you've specified for the particular assignment you're working on. This can be done in RStudio by going to *Session > Set Working Directory > Choose Directory*. This sets the default search path to this folder.
 * Always use [**script files**](#script) to keep a record of your work, so that it can be reproduced at a later date.
-* [**Additional**: I also initialise a [Git](https://git-scm.com/) repository in each project folder (unless the project is very small). This allows me to use version control to aid the development of the code as well as to allow me to roll back to earlier versions of the code if necessary. Linking to an online repository such as [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/product) also provides an cloud-based backup service, as well as an ability to share code and collaborate.]
+* [**Additional**: I also initialise a [Git](https://git-scm.com/) repository in each project folder (unless the project is very small). This allows me to use version control to aid the development of the code as well as to allow me to roll back to earlier versions of the code if necessary. Linking to an online repository such as [GitHub](https://github.com/) or [BitBucket](https://bitbucket.org/product) also provides an cloud-based backup service, as well as an ability to share code and collaborate. We are aiming to run a Git workshop at some point in the future, so keep your ears to the ground if you're interested...]
 
 We will explore the **console** and **script** panes below, dealing with the other panes as and when they arise.
 
@@ -42,11 +46,11 @@ The console pane provides a direct interface with R, and looks similar to comman
 10 + 5 * 3
 ```
 
-You can see here that R has returned a value of `r 10 + 5 * 3`, illustrating one of R's key features: that it can be used as an overgrown calculator, simply by entering commands into the prompt. Notice that (unlike a language such as C) you do not have to compile these commands; you simply type them into the console, hit return, and R produces an answer. R supports basic mathematical operators, such as those found in Table \@ref(tab:mathop).
+You can see here that R has returned a value of `r 10 + 5 * 3`, illustrating one of R's key features: that it can be used as an overgrown calculator, simply by entering commands into the prompt. R supports lots of basic mathematical operators, such as those found in Table \@ref(tab:mathop).
 
 Table: (\#tab:mathop) Basic mathematical operators
 
-Symbol | Meaning 
+ Symbol    | Meaning 
 :--------: | :--------:
 `+`    | addition 
 `-` | subtraction 
@@ -85,7 +89,7 @@ Function 	|	           Meaning
 
 R retains a **history** of all the commands you have used in a particular session. You can scroll back through these using the up (&#x2191;) and down (&#x2193;) arrows whilst in the console pane. (You can even save the history---though we will discuss a better option in the next section.)
 
-One important thing to note is that unlike C, R does not require the semicolon (`;`) symbol to denote the end of each command. A carriage return is sufficient. A semicolon can be used to allow multiple commands to be written on the same line if required. For example, 
+One important thing to note is that unlike a language like C, R does not require the semicolon (`;`) symbol to denote the end of each command. A carriage return is sufficient. A semicolon can be used to allow multiple commands to be written on the same line if required. For example, 
 
 ```{r, results = "hold", tidy = F}
 10 + 5 * 3; sin(10)
@@ -105,25 +109,25 @@ One thing to note is that if a command is incomplete, then R will change the `>`
 3
 ```
 
-You must either complete the line or hit the `Esc` key to cancel the command.
+You must either complete the line or hit the `Esc` key to cancel the command. 
 
 ### Script pane and R scripts {#script}
 
-The console window is the engine room of R, and one can interact directly with it. It is possible to save the command history, or run back through it using the arrow keys. However, a much better approach is to use the **script pane** to write an R script that contains all the commands necessary for a particular project. In fact, one might argue that this is probably one of the most important features of R relative to a point-and-click statistical package such as SPSS.
+The console window is the engine room of R, and one can interact directly with it. One key advantage to R is that it *records* all of the commands that you enter into the console (known as the command *history*). It is possible to save the command history, or run back through it using the arrow keys. However, a much better approach is to use the **script pane** to write an R script that contains all the commands necessary for a particular project. In fact, one might argue that this is probably one of the most important features of R relative to a point-and-click statistical package such as SPSS.
 
-Put simply, ***R scripts are just text files that contain commands to run in R***. They are vitally important for the following reasons:
+Put simply, ***R scripts are just text files that contain commands to run in R***. They are **vitally important** for the following reasons:
 
 * They keep a systematic record of your analysis, which enables you to **reproduce** your work at a later date, or can be passed to collaborators or other users to enable them to replicate your work.
 * This record means that you do not have to rely on your memory to figure out **what** you did.
 * R scripts allow you to **comment** your code, which means that you also won't forget **why** you did it.
 * In more advanced settings, R scripts can also be run in **batch** mode, which means that you can ping a script off to run remotely on a server somewhere without having to be sat in front of a computer manually entering commands.
 * Although programs like SPSS allow **outputs** to be saved, R scripts contain **inputs**, which are much more useful, since it is easier to generate the outputs from the inputs than it is to reconstruct the likely inputs from the outputs.
-* In fact, R scripts can be combined with a markup language called 'R Markdown' to generate fully reproducible documents, containing both inputs and outputs. (In fact this practical was written in 'R Markdown'.)
+* In fact, R scripts can be combined with a markup language called 'markdown' to generate fully reproducible documents, containing both inputs and outputs. It does this using the fantastic [`knitr`](https://yihui.name/knitr/) and [`rmarkdown`](https://rmarkdown.rstudio.com/) packages. (In fact this workshop was written using `rmarkdown` and a package called [`bookdown`](https://bookdown.org/yihui/bookdown/).)
 
 Some comments:
 
 * RStudio comes with its own text editor, but if you are not using RStudio, then there are plenty of others available. 
-* R is case-sensitive. If something doesn't work, it's often because you have failed to capitalise, or capitalised where you shouldn't have. **NEVER, EVER, EVER** use Word to edit your R scripts! Word often tries to correct your grammar and is an absolute nightmare to work with when writing code. If you don't like RStudio's editor, then lots of lightweight and free text editors exist that you can use. By all means use Word for writing up the work (although we will see even better ways to do this in a later **Literate Programming** workshop), but **please**, ***never*** use it for writing code.
+* R is case-sensitive. If something doesn't work, it's often because you have failed to capitalise, or capitalised where you shouldn't have. **NEVER, EVER, EVER** use Word to edit your R scripts! Word often tries to correct your grammar and is an absolute nightmare to work with when writing code. If you don't like RStudio's editor, then lots of lightweight and free text editors exist that you can use. By all means use Word for writing up the work (although we will see even better ways to do this in a later **Literate Programming** workshop), but ***please***, ***NEVER*** use it for writing code.
 
 In RStudio, you can open a new script in R using: *File > New File > R Script*. 
 
@@ -145,23 +149,23 @@ sqrt(3^2 + 4^2)
 
 > Comments are ***vital*** in code to ensure reproducibility and readability. You should ensure that all code is commented, so that both you and anyone else who wants to use your code is able to decipher it. Even if no one else is going to look at your code, it is still worthwhile to comment it. What seems obvious to you as you write a piece of code, often becomes confusing when you return to it in 6 months time and can't remember what you did or why you did it...
 
-It is conventional to save R script files using the suffix '.R' or '.r', though remember that they are simply **text files**, and can be viewed in any text editor. Make sure you have set up a folder to store the code for this practical in, and have changed the **working directory** to this folder (see the [setup](#setup) section), and then save this script file as something like "IntroToR.R".
+It is conventional to save R script files using the suffix '.R', though remember that they are simply **text files**, and can be viewed in any text editor. Make sure you have set up a folder to store the code for this practical in, and have changed the **working directory** to this folder (see the [setup](#setup) section), and then save this script file as something like "IntroToR.R".
 
 > Make sure you save your script file regularly to prevent data loss!
 
 #### Notes on legibility {#legible}
 
-> **NOTE**: that I use spaces within the code to make it clearer. R does not require this, but again I think it is good practice to think about how to make you code legible. Different coders have different preferences, but personally I prefer `plot(Worm.density ~ Vegetation, data = worms)` over `plot(Worm.density~Vegetation,data=worms)`. As [Hadley Wickham](http://style.tidyverse.org/) says: "Good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread."
+**NOTE**: that I use spaces within the code to make it clearer. R does not require this, but again I think it is good practice to think about how to make you code legible. Different coders have different preferences, but personally I prefer `plot(Worm.density ~ Vegetation, data = worms)` over `plot(Worm.density~Vegetation,data=worms)`. As [Hadley Wickham](http://style.tidyverse.org/) says: "Good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread."
 
-> Note that different coders prefer different styles---there is no universal agreement. However, it's worth getting into the habit of writing your code neatly and with a thought towards legibility. A guide that closely follows my own is the `tidyverse` guide [here](http://style.tidyverse.org/). (Note that unlike Python, R does not require specific indentation. Instead it uses curly brackets to group lines of code together. However, indentation is still key to good legibility. An example of a tidy R script is given e.g. [here](#tidyscript).)
+Note that different coders prefer different styles---there is no universal agreement. However, it's worth getting into the habit of writing your code neatly and with a thought towards legibility. A guide that is similar to my own is the `tidyverse` guide [here](http://style.tidyverse.org/). (Note that unlike Python, R does not require specific indentation. Instead it uses curly brackets to group lines of code together. However, indentation is still key to good legibility. An example of a tidy R script is given e.g. [here](#tidyscript).)
 
-> I tend to use script files to keep a record of all commands that need to be reproduced, but I often enter commands directly into the console window when I'm testing or visualising things. Try to keep redundant code out of your script files. In this practical I expect you to use script files from the outset! Make sure the code is legible and commented.
+I tend to use script files to keep a record of all commands that need to be reproduced, but I often enter commands directly into the console window when I'm testing or visualising things. Try to keep redundant code out of your script files. In this workshop I expect you to use script files from the outset! Make sure the code is legible and commented.
 
 ## R packages {#packages}
 
 R has hundreds of add-on **packages** that provide functionality for a wide range of techniques. These repositories are growing all of the time; some packages become redundant and are removed, others are updated, some are superceded or incorporated into others, and completely new ones appear regularly. A key part of becoming proficient with R is learning how to install and update packages.
 
-> **Note**: R packages can be thought of in a similar way to Matlab toolboxes.
+> **Note**: R packages can be thought of in a similar way to Matlab toolboxes or Python libraries.
 
 The principal R package repository can be found on [CRAN](https://cran.r-project.org/) (the Comprehensive R Archive Network). Another popular repository, predominantly aimed at bioinformatics packages, is [Bioconductor](https://www.bioconductor.org/), though installation of packages through Bioconductor is more difficult than through CRAN, so we will focus on the latter only here.
 
@@ -179,7 +183,7 @@ If it's not installed, then you will need to install it:
 install.packages("tidyr")
 ```
 
-> This will ask that you select a repository---choosing one close-to-home is a good idea, I usually go for Cambridge or Bristol. It might also ask you to set up a local R library in your user directory. This is a good idea, so I would just accept the default if it asks.
+> This will ask that you select a repository---choosing one close-to-home is a good idea. It might also ask you to set up a local R library in your user directory. This is a good idea, so I would just accept the default if it asks.
 
 If it installs without any errors, then you can load the library using `library(tidyr)` as above. 
 
@@ -197,7 +201,7 @@ where `PATH/TO/PACKAGENAME` is the path to the package source file (be careful t
 
 Sometimes R packages are not updated as quickly as R itself, and occasionally you might need to install an older version of a package. A really useful package to install is called [`devtools`](https://cran.r-project.org/web/packages/devtools/index.html). This provides functions to install R packages directly from CRAN archives, which can be found by going to [https://cran.r-project.org/](https://cran.r-project.org/), and clicking on the *Packages* link followed by the *Archived* link. This provides a list of older versions of a package, which can be installed using the `install_version()` function in `devtools`.
 
-For example, I recently had an issue with a package [`cowplot`](https://cran.r-project.org/web/packages/cowplot/) not existing for my version of R:
+For example, I recently had an issue with a package [`cowplot`](https://cran.r-project.org/web/packages/cowplot/) not existing for my version of R, returning the following error message:
 
 ```{r, eval = F}
 install.packages("cowplot")
@@ -218,6 +222,7 @@ include_graphics("images/cowplot.png")
 I noted the version number, and then used a function from `devtools` called `install_version()` as follows:
 
 ```{r, eval = F}
+library(devtools)
 install_version("cowplot", version = "0.6.3", repos = "https://cran.r-project.org/")
 ```
 
@@ -228,7 +233,6 @@ In order to upload a package to CRAN, the package must pass a series of tests. T
 For example, the `gganimate` package is only available on GitHub, the source code can be found [here](https://github.com/dgrtwo/gganimate). It can be installed using `devtools` as follows (**don't run the code now**):
 
 ```{r, eval = F}
-library(devtools)
 install_github("dgrtwo/gganimate")
 ```
 

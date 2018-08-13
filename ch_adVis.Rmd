@@ -52,10 +52,10 @@ plot(density(iris$Sepal.Length[iris$Species == "versicolor"]))
 plot(density(iris$Sepal.Length[iris$Species == "virginica"]))
 ```
 
-What about if we want to add all three histograms to the same plot?
+What about if we want to add all three density lines to the same plot?
 
 ```{r}
-## add two histograms to the same plot
+## place kernel density estimates on the same plot
 plot(density(iris$Sepal.Length[iris$Species == "setosa"]), main = "")
 lines(density(iris$Sepal.Length[iris$Species == "versicolor"]))
 lines(density(iris$Sepal.Length[iris$Species == "virginica"]))
@@ -122,7 +122,7 @@ legend(par("usr")[2] * 0.8, par("usr")[4] * 0.98,
 
 ## Introduction to `ggplot2`
 
-We have seen that the R base graphics system is highly flexible, and can be used to produce high-quality, bespoke visualisations. However, it was a lot of work! Let's show an alternative way to produce similar plots using the `ggplot2` package. We will introduce the code first, and then talk through it.
+We have seen that the R base graphics system is highly flexible, and it can be used to produce high-quality, bespoke visualisations. However, doing so can be a lot of work! Let's show an alternative way to produce similar plots using the `ggplot2` package. We will introduce the code first, and then talk through it.
 
 First we load the `tidyverse` (of which `ggplot2` is included).
 
@@ -181,18 +181,18 @@ The `aes(x = Sepal.Length, y = Sepal.Width, colour = Species)` part sets the **a
 
 ### Geoms
 
-> A **geom** defines the type of plot we want. In this case we want a **scatterplot**, which can be defined by the `geom_point()` function. Geoms can be layered, allowing us to built complex plots in different ways. Common geoms are:
-> 
-> * `geom_point()`
-> * `geom_line()`
-> * `geom_histogram()`
-> * `geom_density()`
-> * `geom_bar()`
-> * `geom_violin()`
-> 
-> Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
+A **geom** defines the type of plot we want. In this case we want a **scatterplot**, which can be defined by the `geom_point()` function. Geoms can be layered, allowing us to built complex plots in different ways. Common geoms are:
 
-> **Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot (including the aesthetics) using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point()`. The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
+* `geom_point()`
+* `geom_line()`
+* `geom_histogram()`
+* `geom_density()`
+* `geom_bar()`
+* `geom_violin()`
+
+Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
+
+**Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot (including the aesthetics) using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point()`. The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
 
 Let's see how this works:
 
@@ -353,7 +353,7 @@ ggplot(iris) +
     facet_wrap(~ Species)
 ```
 
-**Aside**: this is a neat example of [Simpson's Paradox](https://en.wikipedia.org/wiki/Simpson%27s_paradox), which an apparent trend in the data disappears or reverses when the trend is explored in subsets of the data. (In this case the linear model suggested a negative correlation between sepal length and width when the species information was ignored, but a positive correlation within each species.)
+> **Aside**: this is a neat example of [Simpson's Paradox](https://en.wikipedia.org/wiki/Simpson%27s_paradox), which an apparent trend in the data disappears or reverses when the trend is explored in subsets of the data. (In this case the linear model suggested a negative correlation between sepal length and width when the species information was ignored, but a positive correlation within each species.)
 
 ### **Aside**: "global" vs. "local" options
 

@@ -182,8 +182,9 @@ Have a play with including inline code and typesetting commands using this test 
 Take the R script you created in the first task of the [Reproducibility](#reproducibility) section. Make a **copy** of this and save it as an R Markdown file (e.g. if you script was called "ff.R", copy it to a file called "ff.Rmd". Edit this file and turn it into a working R Markdown document, with explanations of the analysis interspersed with the code and the output. Make sure you add a title and author to the YAML.
 
 **Note**: in the solution below I've added some further information about the study---for interest's sake.
+```
 
-A solution file is provided on the workshop web page.
+```{solution, code = readLines("ff.Rmd")}
 ```
 
 ## Purling
@@ -247,6 +248,9 @@ For guidance, please see a great LaTeX tutorial by Andy Roberts at [http://www.a
 Write a function that calculates the **cumulative distribution function**, $P(X \leq x)$, for a Poisson random variable evaluated at some value $x$. Write a short R Markdown document that explains the function, including the mathematical detail using LaTeX equations. Include a plot of the CDF for a Poisson random variable with rate $\lambda = 10$ (for $x \leq 20$).
 
 A solution file is given on the workshop web page.
+```
+
+```{solution, code = readLines("poisson.Rmd")}
 ```
 
 ## Presentations

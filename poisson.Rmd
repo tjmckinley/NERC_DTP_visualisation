@@ -1,0 +1,80 @@
+``{r, echo = F, results = "asis"}
+x <- paste("
+---
+title: \"Poisson distribution\"
+author: TJ McKinley
+output: html_document
+---
+
+`{r, include = F, purl = F}
+knitr::opts_chunk$set(echo = TRUE)
+`{e}
+
+A random variable $X$ follows a **Poisson distribution** with rate parameter $\\lambda > 0$ if it has a **probability mass function** given by:
+$$
+    P(X = x) = \\frac{\\lambda^x e^{-\\lambda}}{x!} \\quad \\mbox{for $x = 0, 1, 2, \\dots$}.
+$$
+The **cumulative distribution function** is given by
+$$
+    P(X \\leq x) = \\sum_{k = 0}^x \\frac{\\lambda^k e^{-\\lambda}}{k!} \\quad \\mbox{for $x = 0, 1, 2, \\dots$}.
+$$
+
+We can write a simple function in R to calculate this as:
+
+`{r}
+## function to calculate the CDF for a Poisson random variable
+## up to some value x
+poisCDF <- function(rate, x){
+    
+    ## check inputs are single values
+    stopifnot(length(rate) == 1 & length(x) == 1)
+    ## check inputs are numeric
+    stopifnot(is.numeric(x) & is.numeric(rate))
+    ## check inputs in correct range
+    stopifnot(rate > 0 & x >= 0)
+    ## check x is an integer
+    stopifnot(x %% 1 == 0)
+    
+    ## calculate CDF using vectorised operations
+    x <- 0:x
+    Px <- (rate^x) * exp(-rate) / factorial(x)
+    Cx <- sum(Px)
+    
+    ## return CDF at x
+    return(Cx)
+}
+`{e}
+
+The cumulative distribution function for a Poisson random variable with $\\lambda = 10$ for the range $x = 0, 1, 2, \\dots, 20$ can be plotted as:
+
+`{r}
+## set range for plot
+x <- 0:20
+
+## evaluate CDF at each value of x
+Cx <- rep(NA, length(x))
+for(i in 1:length(x)) {
+    Cx[i] <- poisCDF(rate = 10, x = x[i])
+}
+
+## plot CDF
+plot(x, Cx, type = \"l\", 
+     main = expression(\"Poisson CDF for\" ~ lambda == 10),
+     xlab = expression(x),
+     ylab = \"Cumulative distribution function\")
+`{e}
+
+## Notes
+
+This is ***very*** inefficient code, much better to use `ppois()`---see help file.")
+
+x <- gsub("`\\{r", "``\\{r", x)
+x <- gsub("`\\{e\\}", "``", x)
+if(opts_knit$get("rmarkdown.pandoc.to") == "html") {
+    x <- paste("<pre><code>\n", x, "</code></pre>")
+} else {
+    x <- paste("\\begin{lstlisting}\n", x, "\\end{lstlisting}")
+}
+cat(x)
+``
+

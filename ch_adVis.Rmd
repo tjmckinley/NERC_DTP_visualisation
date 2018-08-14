@@ -203,7 +203,7 @@ ggplot(iris) +
 
 Nice! With one tiny function we have added colours *and* legends. All nicely formatted to work together in one plot!
 
-> **Important**: Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (will will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`. 
+> **Important**: Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (we will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`. 
 
 ### Labels and titles
 
@@ -211,7 +211,8 @@ Labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `
 
 ```{r}
 ggplot(iris) +
-    geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) + xlab("Sepal Length (cm)") + ylab("Sepal Width (cm)") +
+    geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species)) + 
+    xlab("Sepal Length (cm)") + ylab("Sepal Width (cm)") +
     ggtitle("Scatterplot of sepal lengths and widths")
 ```
 
@@ -324,9 +325,10 @@ ggplot(iris) +
     facet_wrap(~ Species)
 ```
 
-Though in this case it doesn't add anything more since the colours are redundant. Later we will see a better example of this.
+This doesn't add anything more to the plot here since the colours are redundant. Later we will see a better example of this.
 
 > **Note** there is also a `facet_grid()` option that allows us to facet by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more details.
+
 ### Statistical transformations
 
 Another feature of `ggplot2` is that we can layer transformations over the top of our raw data. For example, there is a `stat_smooth()` function that allows us to overlay a smoothed non-parametric line to a scatterplot. For example:
@@ -336,7 +338,9 @@ ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width)) +
     stat_smooth(aes(x = Sepal.Length, y = Sepal.Width))
 ```
-Notice that this has added a `loess` smoothed line to the plot. We could instead add a linear line if we prefer, by setting a `method` argument to `stat_smooth` e.g.
+Notice that this has added a `loess` smoothed line to the plot[^loess]. We could instead add a linear line if we prefer, by setting a `method` argument to `stat_smooth` e.g.
+
+[^loess]: just think of this as a smoothed line-of-best-fit through the data for the time being
 
 ```{r}
 ggplot(iris) +
@@ -374,7 +378,6 @@ ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
 ```
 
 Mixtures of "global" and "local" aesthetics can be used where necessary, which is particularly useful when layering information from different data sets onto the same plot.
-
 
 ### Scales
 
@@ -418,6 +421,8 @@ Let's just clarify the data:
 * **`lifeExp`**: life expectancy at birth (in years) (`numeric`);
 * **`pop`**: population size (`numeric`);
 * **`gdpPercap`**: GDP per capita, in dollars, by Purchasing Power Parities and adjusted for inflation (`numeric`).
+
+### GDP against life expectancy
 
 Let's think about Figure \@ref(fig:gapminder) and try to map the various aesthetics in the plot to our data set. We have:
 
@@ -471,111 +476,99 @@ ggplot(gapminder[gapminder$year == 1952, ],
 The plots differ purely in the labels for the $x$-axis.
 ```
 
-`ggplot2` has lots of built in transformations e.g. `"log"`, `"exp"`, `"sqrt"`, `"log10"` and so on. Or you can define your own. An alternative is `scale_x_continuous(trans = "log10")` function tells `ggplot2` to plot the *continuous* `x` aesthetic (which is `gdpPercap` here) on the $\log_{10}$ scale. Notice that we have not transformed the data, we have merely told `ggplot()` on what scale to plot it. This sorts out the axis labelling automatically. 
-
-We can also scale other aesthetics. For example, although the relative areas of the points are scaled nicely, we probably want the largest points to be slightly larger. Hence we can scale the area of the maximum point by using the `scale_size_area()` function: 
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ], 
-       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
-    geom_point() + 
-    scale_x_log10() +
-    scale_size_area(max_size = 10)
-```
-
-Again, labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `ggtitle()` functions:
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ], 
-       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
-    geom_point() + 
-    scale_x_log10() +
-    scale_size_area(max_size = 10) +
-    xlab("GDP per capita") +
-    ylab("Life expectancy at birth (years)") +
-    ggtitle("1952")
-```
-
-Changing the legend titles is a bit less intuitive unfortunately, but can be done using the `guides()` options (I had to Google this one). (Notice that the legends map to the aesthetics, so there is a `colour` legend that maps to the colour aesthetic, and a `size` legend that maps to the size aesthetic.)
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ], 
-       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
-    geom_point() + 
-    scale_x_log10() +
-    scale_size_area(max_size = 10) +
-    xlab("GDP per capita") +
-    ylab("Life expectancy at birth (years)") +
-    ggtitle("1952") +
-    guides(colour = guide_legend(title = "Continent")) +
-    guides(size = guide_legend(title = "Population size")) 
-```
-
-Not bad. Finally notice that by default `ggplot2` uses a light-grey background. This seems to prove somewhat divisive. There is a solid theory behind choosing this as the default, since it provides clarity without having too much contrast. However, some people don't like it, and so there are options to turn this off (using `theme()`). In this case we can simply turn this off using `theme_bw()` (a black-and-white theme).
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ], 
-       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
-    geom_point() + 
-    scale_x_log10() +
-    scale_size_area(max_size = 10) +
-    xlab("GDP per capita") +
-    ylab("Life expectancy at birth (years)") +
-    ggtitle("1952") +
-    guides(colour = guide_legend(title = "Continent")) +
-    guides(size = guide_legend(title = "Population size")) +
-    theme_bw()
-```
-
-There are many, many possible options with `ggplot2`. Far too many to cover here. We can only really get a flavour of what can be achieved. I have often found [Google](www.google.com) to be invaluable for learning `ggplot2`. Let's have a look at a couple of other examples.
-
-### GDP per continent
-
-Another chart seen in Professor Rosling's TED talk was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_histogram()` geom, which requires only an `x` aesthetic---see `?geom_histogram`---since it calculates the counts on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
-
-```{r, message = F}
-ggplot(gapminder[gapminder$year == 1952, ],
-       aes(x = gdpPercap)) +
-    geom_histogram() +
-    scale_x_log10()
-```
-
-This simple plot is producing a histogram of the distribution of GDP across **all countries** in 1952. How do split this by continent? Well, there are various ways. One way would be to set the `fill` aesthetic to map to the `continent` variable:
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ],
-       aes(x = gdpPercap, fill = continent)) +
-    geom_histogram() +
-    scale_x_log10()
-```
-
-This produces a **stacked histogram**, where each bar is coloured according to the relative frequency of each `continent`. This is more informative, we can see that African countries tend to have lower GDP per capita than the Americas for example. Asia and Africa were the poorest continents in the 1950s in terms of GDP. 
-
-#### Positions
-
-Another option here would be to place the bars for each continent side-by-side (rather than stacked). To do this we can add a `position` argument to `geom_histogram()`:
-
-```{r}
-ggplot(gapminder[gapminder$year == 1952, ],
-       aes(x = gdpPercap, fill = continent)) +
-    geom_histogram(position = "dodge") +
-    scale_x_log10()
-```
-
-This is not very useful here, but is better used for barplots with multiple discrete groupings.
-
 > **Important**: `ggplot2` also allows you to save the plot as an object, which can be updated at a later date or used within other functions. For example,
 > ```{r}
-p <- ggplot(gapminder[gapminder$year == 1952, ],
->        aes(x = gdpPercap, fill = continent)) +
->     geom_histogram() +
->     scale_x_log10()
+p <- ggplot(gapminder[gapminder$year == 1952, ], 
+>       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+>    geom_point()
 > ```
 > creates an object called `p` that contains the plot information. This will not be plotted until the objected is **printed** to the screen e.g.
 > ```{r, message = F}
 > p
 > ```
 > **Note**: If using `ggplot` inside functions you may have to explicitly use the `print()` function (e.g. `print(p)`).
+> 
+> This can be useful if we want to add things to an existing plot at a later stage without having to rewrite the entire plot. For example, to set the scales on plot `p` we can do:
+> ```{r, message = F}
+> p <- p + scale_x_log10()
+> p
+> ```
+
+`ggplot2` has lots of built in transformations e.g. `"log"`, `"exp"`, `"sqrt"`, `"log10"` and so on. Or you can define your own. Notice that we have not transformed the data, we have merely told `ggplot()` on what scale to plot it. This sorts out the axis tick labelling automatically. 
+
+We can also scale other aesthetics. For example, although the relative areas of the points are scaled nicely, we probably want the largest points to be slightly larger. Hence we can scale the area of the maximum point by using the `scale_size_area()` function: 
+
+```{r}
+p <- p + scale_size_area(max_size = 10)
+p
+```
+
+Again, labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `ggtitle()` functions:
+
+```{r}
+p <- p + xlab("log10(GDP per capita)") +
+    ylab("Life expectancy at birth (years)") +
+    ggtitle("1952")
+p
+```
+
+Changing the legend titles is a bit less intuitive unfortunately, but can be done using the `guides()` options (I had to Google this one). (Notice that the legends map to the aesthetics, so there is a `colour` legend that maps to the colour aesthetic, and a `size` legend that maps to the size aesthetic.)
+
+```{r}
+p <- p + guides(colour = guide_legend(title = "Continent")) +
+    guides(size = guide_legend(title = "Population size"))
+p
+```
+
+Not bad. Finally notice that by default `ggplot2` uses a light-grey background. This seems to prove somewhat divisive. There is a solid theory behind choosing this as the default, since it provides clarity without having too much contrast. However, some people don't like it, and so there are options to turn this off (using `theme()`). In this case we can simply turn this off using `theme_bw()` (a black-and-white theme).
+
+```{r}
+p <- p + theme_bw()
+p
+```
+
+There are many, many possible options with `ggplot2`. Far too many to cover here. We can only really get a flavour of what can be achieved. I have often found Google to be invaluable for learning `ggplot2`. Let's have a look at a couple of other examples.
+
+### GDP per continent
+
+Another chart seen in Professor Rosling's TED talk was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_density()` geom as in the earlier example, which requires only an `x` aesthetic---see `?geom_density`---since it calculates the density on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
+
+```{r, message = F}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap)) +
+    geom_density() +
+    scale_x_log10()
+```
+
+This simple plot is producing a density plot of the distribution of GDP across **all countries** in 1952. How do split this by continent? Well, there are various ways. One way would be to set the `fill` aesthetic to map to the `continent` variable:
+
+```{r}
+ggplot(gapminder[gapminder$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_density() +
+    scale_x_log10()
+```
+
+This produces an **overlapped** density plot by default. The patterns are quite difficult to see here, due to the `Oceania` data, so for the purposes of exposition only we're going to remove `Oceania` from the subsequent plots. This is an informative plot. We can see that African countries tend to have lower GDP per capita than the Americas for example; with Asia and Africa the poorest continents in the 1950s in terms of GDP. 
+
+> **Aside**: what does the `Oceania` density plot tell us about the range of GDPs in the Oceania continent?
+
+#### Positions
+
+Professor Rosling uses a **stacked** density plot, rather than overlapping density plots. We can use a `position = "stack"` argument to the geom to force the stacking. 
+
+```{r}
+## remove Oceania (for exposition purposes only)
+gapminderNoOc <- gapminder[gapminder$continent != "Oceania", ]
+
+## produce stacked density plot
+ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_density(position = "stack") +
+    scale_x_log10() 
+```
+
+Histograms and barplots have equivalent `position = "dodge"` and `position = "stack"` commands. By default histograms use the latter. The former is not very useful for histograms, but very useful for barplots with multiple discrete groupings.
 
 ```{task}
 Try tidying up the axis and legend titles on these plots.
@@ -584,9 +577,9 @@ Try tidying up the axis and legend titles on these plots.
 ```{solution}
 
 ``{r}
-ggplot(gapminder[gapminder$year == 1952, ],
+ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
        aes(x = gdpPercap, fill = continent)) +
-    geom_histogram() +
+    geom_density(position = "stack") +
     scale_x_log10() +
     xlab("log10(GDP per capita)") + 
     ylab("Count") +
@@ -597,16 +590,16 @@ ggplot(gapminder[gapminder$year == 1952, ],
 ```
 
 ```{task}
-Write a function in R that takes a `year` argument and plots a histogram for a given year. Use this to plot the data for 1952, 1982, 1992 and 2002.
+Write a function in R that takes a `data` and a `year` argument and plots a stacked density plot for a given year. Use this to plot the data for 1952, 1982, 1992 and 2002. (Remember that if you want to plot a `ggplot2` figure from inside a function, you will have to call `print()` explicitly.)
 ```
 
 ```{solution}
 
 ``{r}
 plotGapminder_gg <- function(data, year = 1952) {
-    p <- ggplot(gapminder[gapminder$year == year, ],
+    p <- ggplot(data[data$year == year, ],
        aes(x = gdpPercap, fill = continent)) +
-    geom_histogram() +
+    geom_density(position = "stack") +
     scale_x_log10() +
     xlab("log10(GDP per capita)") + 
     ylab("Count") +
@@ -615,22 +608,22 @@ plotGapminder_gg <- function(data, year = 1952) {
     print(p)
 }
 for(i in c(1952, 1982, 1992, 2002)) {
-    plotGapminder_gg(gapminder, i)
+    plotGapminder_gg(gapminderNoOc, i)
 }
 ``
 
 ```
 
 ```{task}
-Produce a histogram of `log10(gdpPercap)` faceted by `continent`.
+Produce a density plot of `log10(gdpPercap)` faceted by `continent`, for the year 1952.
 ```
 
 ```{solution}
 
 ``{r, message = F}
-ggplot(gapminder[gapminder$year == 1952, ],
+ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
        aes(x = gdpPercap)) +
-    geom_histogram()  +
+    geom_density()  +
     scale_x_log10()  +
     facet_wrap(~ continent)
 ``
@@ -638,46 +631,19 @@ ggplot(gapminder[gapminder$year == 1952, ],
 ```
 
 ```{task}
-Now generate a stacked histogram, with colours corresponding to different continents, but faceted by different years, to see how the relative distributions change over time.
+Now generate a series of stacked density plots, with colours corresponding to different continents, but faceted by different years, to see how the relative distributions change over time.
 ```
 
 ```{solution}
 
 ``{r, message = F}
-ggplot(gapminder,
+ggplot(gapminderNoOc,
        aes(x = gdpPercap, fill = continent)) +
-    geom_histogram() +
+    geom_density(position = "stack") +
     scale_x_log10() +
     facet_wrap(~ year)
 ``
 
-Here the axis labels are difficult to read, due to the plot size, so perhaps we could rotate them. A quick Google search came up with [this](http://www.cookbook-r.com/Graphs/Axes_(ggplot2)/) page from the R Graphics Cookbook, so let's try:
-
-``{r}
-ggplot(gapminder,
-       aes(x = gdpPercap, fill = continent)) +
-    geom_histogram() +
-    scale_x_log10() +
-    facet_wrap(~ year) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
-``
-
-```
-
-To create a **stacked density plot**, like in Professor Rosling's TED talk, you can swap the `geom_histogram()` for `geom_density()`. However, by default `ggplot2` overlaps density plots, rather than stacks them, hence you can use a `position = "stack"` argument to the geom to force the stacking. (Purely for the purposes of exposition, I have removed `Oceania` here.)
-
-```{r}
-temp <- gapminder[gapminder$year == 2002, ]
-temp <- temp[temp$continent != "Oceania", ]
-temp$continent <- droplevels(temp$continent)
-ggplot(temp,
-       aes(x = gdpPercap, fill = continent)) +
-    geom_density(position = "stack") +
-    scale_x_log10() +
-    xlab("log10(GDP per capita)") + 
-    ylab("Count") +
-    ggtitle("2002") +
-    guides(fill = guide_legend(title = "Continent")) 
 ```
 
 ## Additional task
@@ -697,7 +663,7 @@ The data should have the following columns:
 Source: [Partridge and Farquhar (1981)](http://www.annualreviews.org/doi/pdf/10.1146/annurev.pu.04.050183.001103)
 
 ```{task}
-The file "ff.rds" contains the data from this experiment. Read the data in using the command:
+The file "ff.rds" contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
     
 ``{r}
 ff <- readRDS("ff.rds")

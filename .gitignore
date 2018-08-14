@@ -7,7 +7,7 @@ _bookdown_files
 cheat
 
 # ignore upload files
-uploadFiles
+#uploadFiles
 
 # ignore docs folder
 docs

@@ -100,7 +100,8 @@ Now let's say that we wish to select just the `Species`, `Sepal.Length` and `Sep
 iris[, match(c("Species", "Sepal.Length", "Sepal.Width"), colnames(iris))]
 
 ## option 2
-cbind(Species = iris$Species, Sepal.Length = iris$Sepal.Length, Sepal.Width = iris$Sepal.Width)
+cbind(Species = iris$Species, Sepal.Length = iris$Sepal.Length, 
+      Sepal.Width = iris$Sepal.Width)
 
 ## option 3 (requires knowing which columns are which)
 iris[, c(5, 1, 2)]
@@ -160,7 +161,7 @@ Once again (you should notice a theme here) the first argument to `mutate()` is 
 
 ### Why bother?
 
-So, why would I choose to use functions such as `filter()` and `mutate()` above, when I could have just extracted the correct column of the data, done the appropriate manipulation, and then overwrote or added a new column. There are various reasons:
+So, why would I choose to use functions such as `filter()` and `mutate()` above, when I could have just extracted the correct column of the data, done the appropriate manipulation, and then overwrote or added a new column? There are various reasons:
 
 1. These functions are all written in a **consistent** way. That is, they all take a `data.frame` or `tibble` object as their initial argument, and they all return a revised `data.frame` or `tibble` object. 
 2. Their names are informative. In fact they are **verbs**, corresponding to us **doing something specific** to our data. This makes the code much more readable, as we will see subsequently.
@@ -172,7 +173,9 @@ So, why would I choose to use functions such as `filter()` and `mutate()` above,
 > attach(iris)
 > Sepal.Length2 <- Sepal.Length^2
 > ```
-> The variable names can be removed from the search path by using `detach(iris)`. However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
+> The variable names can be removed from the search path by using `detach(iris)`. 
+> 
+> However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
 
 One final and key advantage to the `tidyverse` paradigm, is that we can use **pipes** to make our code more succinct.
 
@@ -190,7 +193,7 @@ iris %>% filter(Species == "versicolor")
 iris %>% filter(Species == "versicolor") %>% head()
 ```
 
-> **Notice**: when we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator, is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
+> **Notice**: when we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
 
 Pipes can be chained together multiple times. For example:
 
@@ -211,11 +214,11 @@ iris %>%
     head()
 ```
 
-I think this is neat! The code is written in a way that is much easier to understand, each part of the data wrangling process is chained together in an intuitive way (once you know the `tidyverse` functions of course). 
+I think this is neat! The code is written in a way that is much easier to understand, with each part of the data wrangling process chained together in an intuitive way (once you know the `tidyverse` functions of course). 
 
-> In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and sepal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
-> 
 > Notice that the pipe operator must be at the end of the line if we wish to split the code over multiple lines.
+
+In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and sepal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
 
 Try doing the same level of data cleaning in Excel as easily...
 
@@ -231,7 +234,7 @@ Once we've got our head around pipes, we can begin to use some of the other usef
 
 A common thing we might want to do is to produce summaries of some variable for different subsets of the data. For example, we might want to produce an estimate of the mean of the sepal lengths for each species of iris. The `dplyr` package provides a function `group_by()` that allows us to group data, and `summarise()` that allows us to summarise data.
 
-In this case we can think of "grouping" the data by `Species` and then averaging the `Sepal.Length` values within each group. Hence,
+In this case we can think of what we want to do as "grouping" the data by `Species` and then averaging the `Sepal.Length` values within each group. Hence,
 
 ```{r}
 iris %>% 
@@ -258,7 +261,7 @@ iris %>%
 
 ## Reshaping data sets
 
-Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `gather()` and `spread()`. The `gather()` function takes multiple columns, and gathers them into key-value pairs. The `spread()` function is its converse, it takes two columns (`key` and `value`) and spreads in to multiple columns. These ideas are best illustrated by an example.
+Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `gather()` and `spread()`. The `gather()` function takes multiple columns, and gathers them into key-value pairs. The `spread()` function is its converse, it takes two columns (`key` and `value`) and spreads these into multiple columns. These ideas are best illustrated by an example.
 
 ### Example: Gapminder
 
@@ -268,8 +271,13 @@ Download this file and save it into your working directory. Now let's read in th
 
 [^2]: Note that this is different than the `read.csv()` function in base R. It doesn't convert `character` columns to  `factor` columns, and returns a `tibble` by default.
 
-```{r, message = F}
+```{r, message = F, eval = F}
 gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv")
+gp_income
+```
+
+```{r, message = F, echo = F}
+gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
 
@@ -285,11 +293,11 @@ Before we go any further, notice that the first column is labelled incorrectly a
 
 ```{r}
 gp_income <- gp_income %>%
-    rename(country = `GDP per capita`)
+    rename(country = "GDP per capita")
 gp_income
 ```
 
-> **Note** that we can use backticks to enclose names that include spaces (which `read_csv()` allows).
+> **Note** we can also use backticks to enclose names that include spaces (which `read_csv()` allows).
 
 Notice that the `rename()` function takes the same form as other `tidyverse` functions such as `filter()` or `arrange()`. We then overwrite the original data frame to keep our workspace neat.
 
@@ -351,8 +359,18 @@ Phew! this took some effort, but we've managed to end up with a fairly clean dat
 
 To do all of the previous data cleaning operation using pipes, we can write:
 
-```{r, message = F}
+```{r, message = F, eval = F}
 gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
+                rename(country = `GDP per capita`) %>%
+                gather(year, gdp, -country) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(gdp)) %>%
+                filter(year > 1990)
+```
+
+```{r, include = F}
+gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -392,8 +410,19 @@ Load in the file "indicator hiv estimated prevalence% 15-49.csv" that can be fou
 
 ```{solution}
 
-``{r, message = F}
+``{r, message = F, eval = F}
 gp_hiv <- read_csv("indicator hiv estimated prevalence% 15-49.csv") %>%
+            rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
+            gather(year, prevalence, -country) %>%
+            mutate(year = as.numeric(year)) %>%
+            filter(!is.na(country)) %>%
+            filter(!is.na(prevalence)) %>%
+            filter(year > 1990) %>%
+            mutate(prevalence = as.numeric(prevalence))
+``
+
+``{r, message = F, echo = F}
+gp_hiv <- read_csv("uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
             mutate(year = as.numeric(year)) %>%
@@ -406,7 +435,7 @@ gp_hiv <- read_csv("indicator hiv estimated prevalence% 15-49.csv") %>%
 ```
 
 ```{r, include = F}
-gp_hiv <- readRDS("gp_hiv.rds")
+gp_hiv <- readRDS("uploadFiles/gp_hiv.rds")
 ```
 
 ```{task}
@@ -460,24 +489,26 @@ We can see that there are `r nrow(anti_join(gp_income, gp_hiv, by = c("year", "c
 
 ### Types of join
 
-> **Inner joins** return ***only*** those rows that can be matched in both data sets, it discards any rows from either data frame that can't be matched.
+**Inner joins** return ***only*** those rows that can be matched in both data sets, it discards any rows from either data frame that can't be matched.
 
-> **Outer joins** retain rows that don't match, depending on the type of join. **Left** outer joins retain rows from the left-hand side that don't match the right, but discard rows from the right that don't match the left. **Right** outer joins retain rows from the right-hand side that don't match the left, but discard rows from the left that don't match the right. **Full** outer joins return all rows that don't match. R uses missing values (`NA`) to fill in gaps that it can't match. For example,
-> ```{r}
-> left_join(gp_income, gp_hiv, by = c("year", "country"))
-> ```
-> Here we can see that there is no prevalence data for `Afghanistan` in `1991`, so R has included the row but with a missing value (`NA`) in place of the prevalence data. In the `inner_join` above, this row was removed. Try exploring **right-** and **full-** outer joins.
-> ```{r}
-> right_join(gp_income, gp_hiv, by = c("year", "country"))
-> full_join(gp_income, gp_hiv, by = c("year", "country"))
-> ```
-> What do you notice about the **left-** and **full-** outer joins here? Why is this so?
+**Outer joins** retain rows that don't match, depending on the type of join. **Left** outer joins retain rows from the left-hand side that don't match the right, but discard rows from the right that don't match the left. **Right** outer joins retain rows from the right-hand side that don't match the left, but discard rows from the left that don't match the right. **Full** outer joins return all rows that don't match. R uses missing values (`NA`) to fill in gaps that it can't match. For example,
 
-We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here.
+```{r}
+left_join(gp_income, gp_hiv, by = c("year", "country"))
+```
+
+Here we can see that there is no prevalence data for `Afghanistan` in `1991`, so R has included the row but with a missing value (`NA`) in place of the prevalence data. In the `inner_join` above, this row was removed. Try exploring **right-** and **full-** outer joins.
+
+```{r}
+right_join(gp_income, gp_hiv, by = c("year", "country"))
+full_join(gp_income, gp_hiv, by = c("year", "country"))
+```
+
+What do you notice about the **left-** and **full-** outer joins here? Why is this so?
 
 > There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
 
-Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them.
+Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them. We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here. 
 
 ```{task}
 Using `ggplot2`, produce a plot of HIV prevalence in 15-49 year olds against $\log_{10}$ (GDP per capita) for 1991, 1997, 2005 and 2011, where each point represents a `country`.
@@ -505,9 +536,27 @@ Total population data are available in the "indicator gapminder population.csv" 
 
 ```{solution}
 
-``{r, message = F}
+``{r, message = F, eval = F}
 ## read in data
 gp_pop <- read_csv("indicator gapminder population.csv") %>%
+                gather(year, pop, -`Total population`) %>%
+                rename(country = `Total population`) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(pop)) %>%
+                filter(year > 1990)
+
+## check no population data are missing
+## hence all rows of gp can be matched
+anti_join(gp, gp_pop, by = c("year", "country"))
+
+## join to gp table
+gp <- inner_join(gp, gp_pop, by = c("year", "country"))
+``
+
+``{r, message = F, echo = F}
+## read in data
+gp_pop <- read_csv("uploadFiles/indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -526,8 +575,8 @@ gp <- inner_join(gp, gp_pop, by = c("year", "country"))
 ```
 
 ```{r, include = F}
-gp_pop <- readRDS("gp_pop.rds")
-gp <- readRDS("gp.rds")
+gp_pop <- readRDS("uploadFiles/gp_pop.rds")
+gp <- readRDS("uploadFiles/gp.rds")
 ```
 
 ```{task}
@@ -577,7 +626,7 @@ In this exercise we will load these data into R, wrangle them into a useful form
 
 Firstly, we read the three data files into R, storing them as `tibble` objects called `germany`, `mexico` and `us`. 
 
-```{r, message = F}
+```{r, message = F, eval = F}
 ## read German data in
 germany <- read_csv("Germanypop.csv")
 
@@ -586,6 +635,17 @@ mexico <- read_csv("Mexicopop.csv")
 
 ## read US data in
 us <- read_csv("USpop.csv")
+```
+
+```{r, message = F, echo = F}
+## read German data in
+germany <- read_csv("uploadFiles/Germanypop.csv")
+
+## read Mexican data in
+mexico <- read_csv("uploadFiles/Mexicopop.csv")
+
+## read US data in
+us <- read_csv("uploadFiles/USpop.csv")
 ```
 
 We now need to bind these data sets together. One issue is that these three data sets have different age classes. If we want to join the tables together, we need to set consistent groupings in each data set. For this we will set the maximum age class for each country to be `"80+"`. Hence for Mexico we do not need to do anything, but for Germany and the US we will need to group together the latter categories.
@@ -645,8 +705,10 @@ Finally, we have wrangled our data into a useful form for data analysis. Now we 
 ```{r}
 ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
     geom_bar(stat = "identity") +
-    scale_y_continuous(breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
-                     labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))) +
+    scale_y_continuous(
+        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+        labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
+    ) +
     coord_flip() +
     facet_wrap(~ country, ncol = 1) +
     ylab("Population counts (x1000)") +

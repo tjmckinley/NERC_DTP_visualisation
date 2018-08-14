@@ -1,5 +1,5 @@
 --- 
-title: "Skeleton Tutorial Template"
+title: "Reproducibility and literate programming in R"
 author: "TJ McKinley"
 site: bookdown::bookdown_site
 output:
@@ -16,131 +16,21 @@ output:
 linkcolor: blue
 documentclass: book
 link-citations: yes
-description: "Skeleton Tutorial Template"
 ---
 
-# Opening page
+# Introduction
 
 ```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
 ```
 
-Basically a standard Bookdown template with a few tweaks. New chapters need to be in separate '.Rmd' files, where each file starts with a chapter heading as seen [here](https://bookdown.org/yihui/bookdown/usage.html). In order to use the task and solution blocks in \LaTeX, you must input the order of the files into the `_bookdown.yml` file, and the first file must be called `index.Rmd` e.g.
+In this practical we will focus on the important concepts of **reproducibility** and **literate programming**. We will assume that you are familiar with R and RStudio.
 
-```
-rmd_files:
-    html: ['index.Rmd', 'ch1.Rmd']
-    latex: ['index.Rmd', 'ch1.Rmd', 'ch_appendix.Rmd']
-output_dir: "docs"
-```
-
-The `latex:` path above ***must*** have `'ch_appendix.Rmd'` as its last entry. This ensures that the appendix is properly formatted for the solutions to the problems.
-
-There are a couple of useful special blocks. A `task` block, and a `solution` block. These can be used as e.g.
-
-````
-```{task}`r ''`
-Here is a task written in **markdown**.
-```
-````
-
-which renders as:
+## Tasks
 
 ```{task}
-Here is a task written in **markdown**.
-```
-
-You can include chunks within the `task` chunk, but you need to use double backticks *within* the chunk, and leave carriage returns around the internal chunk e.g.
-
-````
-
-```{task}`r ''`
-
-``{r}
-x <- 2 + 2
-x
-``
-
-```
-
-````
-
-which renders as:
-
-```{task}
-
-``{r}
-x <- 2 + 2
-x
-``
-
-```
-
-Be careful to have suitable carriage returns around e.g. `enumerate` or `itemize` environments inside the chunk also. For example:
-
-````
-
-```{task}`r ''`
-Here is a list:
-1. item 1
-2. item 2
-```
-
-```` 
-
-will not render nicely. But
-
-````
-
-```{task}`r ''`
-Here is a list:
-
-1. item 1
-2. item 2
-
-```
-
-```` 
-
-will:
-
-```{task}
-Here is a list:
-
-1. item 1
-2. item 2
-
-```
-
-The `solution` chunk works in the same way, and the numbers will follow the previous `task` chunk (so you can set tasks without solutions) e.g.
-
-````
-
-```{task}`r ''`
-Add 2 and 2 together
-```
-
-```{solution}`r ''`
-
-``{r}
-2 + 2
-``
-
-```
-
-````
-
-gives:
-
-```{task}
-Add 2 and 2 together
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked below.
 ```
 
 ```{solution}
-
-``{r}
-2 + 2
-``
-
+The answer is, of course, 42.
 ```
-
-To compile, run the `_build.sh` script which will compile into multiple formats. 

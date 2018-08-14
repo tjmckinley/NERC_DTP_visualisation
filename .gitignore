@@ -2,4 +2,9 @@
 *~
 .Rhistory
 
+## ignore bookdown files
+_bookdown_files
+
+## ignore docs
+docs
 

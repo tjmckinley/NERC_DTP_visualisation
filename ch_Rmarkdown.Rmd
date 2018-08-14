@@ -158,7 +158,7 @@ summary(cars)
 
 R Markdown also allows for **inline chunks**. These are code chunks enclosed in single backtick characters. For example, a line written in R Markdown as, 
 
-> The mean speed of cars is `` `r '\x60r mean(cars$speed)\x60'` ``
+> The mean speed of cars is `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "<code> &#96;r mean(cars$speed)&#96;</code>", "\\texttt{\\textasciigrave r mean(cars\\$speed)\\textasciigrave}")`
 
 then this will typeset as, 
 
@@ -166,9 +166,9 @@ then this will typeset as,
 
 Removing the `r` from the inline chunk will simply typeset the command as a piece of code, but does not evaluate it. Hence, 
 
-> `` `r '\x60mean(cars$speed)\x60'` ``
+> `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "<code> &#96;mean(cars$speed)&#96;</code>", "\\texttt{\\textasciigrave mean(cars\\$speed)\\textasciigrave}")`
 
-(note this is enclosed in single backticks `` ` ``), typesets as 
+(note this is enclosed in single backticks `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "&#96;</code>", "\\texttt{\\textasciigrave}")`, typesets as 
 
 > `mean(cars$speed)`.
 

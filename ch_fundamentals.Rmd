@@ -170,7 +170,9 @@ Examples: | This should be a set of R commands that you can copy-and-paste into 
 
 If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics. In the Help menu, choose 'search r-project.org' and work through the search pages. Beware though, these are busy people who will often ignore directly emailed requests for help. Ask your resident experts first, before e-mailing the R-search email lists! 
 
-I also tend to succeed mostly by Googling the problem. For example, Google 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
+I also tend to succeed mostly by Googling the problem. For example, Googling 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
+
+\pagebreak 
 
 ## Objects in R
 

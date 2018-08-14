@@ -6,8 +6,13 @@ Let's start with a motivating example.
 
 [Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
 
-```{r, screenshot.alt = "images/hans.jpg", echo = F}
+```{r, screenshot.alt = "images/hans.jpg", echo = F, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
 include_url("https://www.youtube.com/embed/jbkSRLYSojo")
+```
+
+```{r, eval = opts_knit$get("rmarkdown.pandoc.to") == "latex", echo = F, results = "asis"}
+## cat("[![Text](images/hans1.jpg)](https://www.youtube.com/embed/jbkSRLYSojo)")
+cat("\\begin{center}\\href{https://www.youtube.com/embed/jbkSRLYSojo}{\\includegraphics[width = 0.8\\textwidth]{images/hans.jpg}}\\end{center}")
 ```
 
 For a slightly longer presentation, his TED talk on global development has been watched over 11 million times. If you have 20 minutes, it can be found [here](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread), and is well worth a watch!
@@ -16,7 +21,7 @@ For a slightly longer presentation, his TED talk on global development has been 
 
 The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
 
-```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = F}
+```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = F, out.width = "70%", out.height = "70%"}
 include_graphics("images/gapminder.png")
 ```
 

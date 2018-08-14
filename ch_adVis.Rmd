@@ -665,7 +665,7 @@ Source: [Partridge and Farquhar (1981)](http://www.annualreviews.org/doi/pdf/10.
 ```{task}
 The file "ff.rds" contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
     
-``{r}
+``{r, eval = F}
 ff <- readRDS("ff.rds")
 ``
 
@@ -676,10 +676,11 @@ and use `ggplot2` to reproduce something similar to the plot below:
 
 ```{solution}
 
-``{r, fig.height = 4, fig.width = 8}
-## load data
-ff <- readRDS("ff.rds")
+``{r, echo = F}
+ff <- readRDS("uploadFiles/ff.rds")
+``
 
+``{r, fig.height = 4, fig.width = 8}
 ## produce summary plot
 ggplot(ff, aes(y = longevity, x = thorax, 
                linetype = type, shape = type)) +

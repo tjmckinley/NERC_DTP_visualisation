@@ -12,7 +12,7 @@ One way in which script files can be used is simply as a means to record a serie
 
 Here is a simple of a *reproducible script*: 
 <a id="wormscript"></a>
-```{r code = readLines("worms.R"), eval = F}
+```{r code = readLines("uploadFiles/worms.R"), eval = F}
 ```
 
 The **purpose** of this script was to import some data from a *.csv* file, summarise the data and produce some histograms of key variables, before visually exploring the relationship between worm density and area (note that in practice we could do this more succinctly using `tidyverse`). This script has several key features:
@@ -27,6 +27,10 @@ Although there are not hard and fast rules for writing these scripts, I think th
 > Please note that often I will have different script files for different aspects of an analysis, or for testing and trialling different pieces of code. More recently, I have started to use [Git](https://git-scm.com/) to manage versions of my code, allowing me to roll-back to earlier versions, or even create trial versions of my code without compromising the final **"clean"** script file. You choose whatever way suits you best, but be warned, if submitting code for assessment by me I **expect** it to follow the above rules where possible!
 
 Recently, the advent of electronic supplementary information for journal articles enables us to potentially overcome reproducibility issues by providing all the code required to reproduce an analysis exactly as part of the paper. 
+
+```{task}
+The data file ('worms.csv') and script file ('worms.R') can be found on the workshop website. Download these and run the full script using: `source("worms.R")`. Run the commands in the script file line-by-line and understand what they are doing.
+```
 
 ```{task}
 The file "ff.rds" contains data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies. Download this data set to your working directory, and create a script file that loads in the data, summarises the data set, and produces plots of `thorax` against `group`, `longevity` against `group`, and `longevity` against `thorax`. 

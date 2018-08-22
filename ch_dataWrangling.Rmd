@@ -66,7 +66,7 @@ filter(iris, Species == "versicolor")
 head(filter(iris, Species == "versicolor"))
 ```
 
-Notice some minor differences. The first argument to the `filter()` function is the data, and the second corresponds to the criteria for filtering. Notice that we did not need to use the `$` operator in the `filter()` function, as with `ggplot2` the `filter()` function knows to look for the column `Species` in the data set `iris`.
+Notice some minor differences. The first argument to the `filter()` function is the data, and the second corresponds to the criteria for filtering. Notice that we did not need to use the `$` operator in the `filter()` function. As with `ggplot2` the `filter()` function knows to look for the column `Species` in the data set `iris`.
 
 ### Sort rows
 
@@ -679,8 +679,6 @@ germany <- germany %>%
 ```
 
 We will now join the three data sets together on the `age` column, before gathering together the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
-
-However, we must be careful here since the age classes do not match. Hence we want to retain rows that don't match
 
 ```{r}
 pop <- germany %>%

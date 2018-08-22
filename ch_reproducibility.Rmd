@@ -6,11 +6,11 @@ The same issues are also true of statistical analyses, and although scientific p
 
 We have already seen that R allows us to write **script files**, that details our exact analysis, and that can be used to make our code **reproducible**. I would argue that the transition from a **basic** script file (i.e. a text file that contains some code), to a **reproducible** script file hinges on the **purpose** of the script. Allow me to elaborate...
 
-One way in which script files can be used is simply as a means to record a series of commands that run some functions. Taken to its extreme, an [.Rhistory](http://stat.ethz.ch/R-manual/R-devel/library/utils/html/savehistory.html) file can be generated, which saves every command entered into the console window during a given R session. Whilst this is better than no record at all, it is difficult to discern exactly what is going on. The file contains **no commenting**, **no formatting**, and will often include many entries that are simply **not relevant** to the end result (such as when we are testing code out or trying to fix errors). In this sense, the *.Rhistory* file enables us to **reproduce** all the steps we have taken in a given R session, but it is not a **reproducible** document in the sense of helping us to make sense of what our goals were and **why** we did the analysis in the way we did.
+One way in which script files can be used is simply as a means to record a series of commands that run some functions. Taken to its extreme, an [.Rhistory](http://stat.ethz.ch/R-manual/R-devel/library/utils/html/savehistory.html) file can be generated, which saves every command entered into the console window during a given R session. Whilst this is better than no record at all, it is difficult to discern exactly what is going on. The file contains **no commenting**, **no formatting**, and will often include many entries that are simply **not relevant** to the end result (such as when we are testing code out or trying to fix errors). In this sense, the .Rhistory file enables us to **reproduce** all the steps we have taken in a given R session, but it is not a **reproducible** document in the sense of helping us to make sense of what our goals were and **why** we did the analysis in the way we did.
 
 > I am defining **reproducibility** here, not only to mean that the steps of an analysis can be repeated, but also to mean that the steps of an analysis can be **understood**. Scripts should help us understand both **how** and **why** we did things. A key focus is therefore on **clarity**!
 
-Here is a simple of a *reproducible script*: 
+Here is a simple example of a *reproducible script*: 
 <a id="wormscript"></a>
 ```{r code = readLines("uploadFiles/worms.R"), eval = F}
 ```

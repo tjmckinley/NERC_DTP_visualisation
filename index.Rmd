@@ -18,17 +18,17 @@ documentclass: book
 link-citations: yes
 ---
 
-# Introduction
+# Introduction {-}
 
 ```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
 ```
 
 In this practical we will focus on the important concepts of **reproducibility** and **literate programming**. We will assume that you are familiar with R and RStudio.
 
-## Tasks
+## Tasks {-}
 
 ```{task}
-All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked below.
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked via the **Show Solution** buttons.
 ```
 
 ```{solution}

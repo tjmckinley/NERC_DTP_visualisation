@@ -12,3 +12,6 @@ cheat
 # ignore docs folder
 docs
 
+# ignore zip file
+docs.zip
+

@@ -197,7 +197,7 @@ A **geom** defines the type of plot we want. In this case we want a **scatterplo
 
 Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
 
-**Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot (including the aesthetics) using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point()`. The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
+**Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))` (in this case including the aesthetics in the `geom_*` call). The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
 
 Let's see how this works:
 
@@ -532,7 +532,9 @@ p <- p + theme_bw()
 p
 ```
 
-There are many, many possible options with `ggplot2`. Far too many to cover here. We can only really get a flavour of what can be achieved. I have often found Google to be invaluable for learning `ggplot2`. Let's have a look at a couple of other examples.
+There are many, many possible options with `ggplot2`. Far too many to cover here. We can only really get a flavour of what can be achieved. I have often found Google to be invaluable for learning `ggplot2`. 
+
+Let's have a look at a couple of other examples.
 
 ### GDP per continent
 
@@ -554,7 +556,9 @@ ggplot(gapminder[gapminder$year == 1952, ],
     scale_x_log10()
 ```
 
-This produces an **overlapped** density plot by default. The patterns are quite difficult to see here, due to the `Oceania` data, so for the purposes of exposition only we're going to remove `Oceania` from the subsequent plots. This is an informative plot. We can see that African countries tend to have lower GDP per capita than the Americas for example; with Asia and Africa the poorest continents in the 1950s in terms of GDP. 
+This produces an **overlapped** density plot by default. (The patterns are quite difficult to see here, due to the `Oceania` data, so for the purposes of exposition only we're going to remove `Oceania` from the subsequent plots.)
+
+This is an informative plot. We can see that African countries tend to have lower GDP per capita than the Americas for example; with Asia and Africa the poorest continents in the 1950s in terms of GDP. 
 
 > **Aside**: what does the `Oceania` density plot tell us about the range of GDPs in the Oceania continent?
 

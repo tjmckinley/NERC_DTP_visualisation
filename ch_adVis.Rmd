@@ -558,6 +558,17 @@ ggplot(gapminder[gapminder$year == 1952, ],
 
 This produces an **overlapped** density plot by default. (The patterns are quite difficult to see here, due to the `Oceania` data, so for the purposes of exposition only we're going to remove `Oceania` from the subsequent plots.)
 
+```{r}
+## remove Oceania (for exposition purposes only)
+gapminderNoOc <- gapminder[gapminder$continent != "Oceania", ]
+
+## produce overlapped density plot
+ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
+       aes(x = gdpPercap, fill = continent)) +
+    geom_density(alpha = 0.5) +
+    scale_x_log10()
+```
+
 This is an informative plot. We can see that African countries tend to have lower GDP per capita than the Americas for example; with Asia and Africa the poorest continents in the 1950s in terms of GDP. 
 
 > **Aside**: what does the `Oceania` density plot tell us about the range of GDPs in the Oceania continent?
@@ -567,9 +578,6 @@ This is an informative plot. We can see that African countries tend to have lowe
 Professor Rosling uses a **stacked** density plot, rather than overlapping density plots. We can use a `position = "stack"` argument to the geom to force the stacking. 
 
 ```{r}
-## remove Oceania (for exposition purposes only)
-gapminderNoOc <- gapminder[gapminder$continent != "Oceania", ]
-
 ## produce stacked density plot
 ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
        aes(x = gdpPercap, fill = continent)) +

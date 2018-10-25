@@ -449,7 +449,7 @@ gp_hiv %>%
     filter(country == "Brazil" | country == "Uganda") %>%
     ggplot(aes(x = year, y = prevalence, colour = country)) +
         geom_line() + xlab("Year") + ylab("Prevalence") +
-        guides(colour = guide_legend(title = "Country"))
+        labs(colour = "Country")
 ``
 
 ```
@@ -593,7 +593,7 @@ gp %>%
     ggplot(aes(x = gdp, y = prevalence, size = pop)) +
     geom_point() + 
     scale_x_log10() +
-    guides(size = guide_legend(title = "Population size")) +
+    labs(size = "Population size") +
     xlab("log10(GDP per capita)") +
     ylab("HIV prevalence in 15-49 year olds") +
     facet_wrap(~year)
@@ -711,7 +711,7 @@ ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) +
     facet_wrap(~ country, ncol = 1) +
     ylab("Population counts (x1000)") +
     xlab("Age (yrs)") +
-    guides(fill = guide_legend(title = "Sex"))
+    labs(fill = "Sex")
 ```
 
 Beautiful isn't it? (The horrendously stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.

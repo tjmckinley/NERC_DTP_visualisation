@@ -517,11 +517,10 @@ p <- p + xlab("log10(GDP per capita)") +
 p
 ```
 
-Changing the legend titles is a bit less intuitive unfortunately, but can be done using the `guides()` options (I had to Google this one). (Notice that the legends map to the aesthetics, so there is a `colour` legend that maps to the colour aesthetic, and a `size` legend that maps to the size aesthetic.)
+Changing the legend titles can also be done using the `labs()` option. Notice that the legends map to the aesthetics, so there is a `colour` legend that maps to the colour aesthetic, and a `size` legend that maps to the size aesthetic.)
 
 ```{r}
-p <- p + guides(colour = guide_legend(title = "Continent")) +
-    guides(size = guide_legend(title = "Population size"))
+p <- p + labs(colour = "Continent", size = "Population size")
 p
 ```
 
@@ -601,7 +600,7 @@ ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
     xlab("log10(GDP per capita)") + 
     ylab("Count") +
     ggtitle("1952") +
-    guides(fill = guide_legend(title = "Continent")) 
+    labs(fill = "Continent")
 ``
     
 ```
@@ -621,7 +620,7 @@ plotGapminder_gg <- function(data, year = 1952) {
     xlab("log10(GDP per capita)") + 
     ylab("Count") +
     ggtitle(year) +
-    guides(fill = guide_legend(title = "Continent"))
+    labs(fill = "Continent")
     print(p)
 }
 for(i in c(1952, 1982, 1992, 2002)) {
@@ -704,8 +703,7 @@ ggplot(ff, aes(y = longevity, x = thorax,
     geom_point() +
     geom_smooth(method = lm, se = F) +
     facet_wrap(~ partners) +
-    guides(linetype = guide_legend(title = "Partner Type")) +
-    guides(shape = guide_legend(title = "Partner Type")) +
+    labs(linetype = "Partner Type", shape = "Partner Type") +
     ylab("Longevity (days)") +
     xlab("Thorax length (mm)")
 ``

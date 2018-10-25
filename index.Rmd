@@ -52,6 +52,10 @@ in the usual way.
 > ```
 > ```` 
 
+## Data
+
+All data files can be downloaded as a ZIP file from [here](run:dataFiles.zip).
+
 ## Tasks {-}
 
 ```{task}

@@ -677,7 +677,7 @@ The data should have the following columns:
 * **longevity**: lifespan, in days.
 * **thorax**: length of thorax, in mm.
 
-Source: [Partridge and Farquhar (1981)](http://www.annualreviews.org/doi/pdf/10.1146/annurev.pu.04.050183.001103)
+Source: [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0)
 
 ```{task}
 The file "ff.rds" contains the data from this experiment. Download this data set to your working directory, read it into R using the command:

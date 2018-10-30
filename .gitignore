@@ -15,3 +15,5 @@ docs
 # ignore zip file
 docs.zip
 
+# ignore slides files
+slides/slides*pdf

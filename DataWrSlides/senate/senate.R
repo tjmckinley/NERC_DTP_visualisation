@@ -11,6 +11,7 @@ senate <- senate %>%
     filter(forecastdate == max(forecastdate)) %>%
     filter(model == "classic") %>%
     filter(party != "false") %>%
+    filter(class == 1) %>%
     select(state, party, win_probability) %>%
     mutate(id = 1:n()) %>%
     spread(party, win_probability) %>%
@@ -19,7 +20,7 @@ senate <- senate %>%
 ## save output
 saveRDS(senate, "senate.rds")
 
-## check
+## check that probabilities add up
 senate %>%
     gather(party, prob, -state) %>%
     filter(!is.na(prob)) %>%

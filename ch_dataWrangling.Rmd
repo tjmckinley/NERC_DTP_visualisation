@@ -230,7 +230,7 @@ Once we've got our head around pipes, we can begin to use some of the other usef
 > 
 > If you load the `magrittr` package, then there is much more you can do with these ideas. See [here](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) for a useful vignette.
 
-### Grouping and summaries
+## Grouping and summarising
 
 A common thing we might want to do is to produce summaries of some variable for different subsets of the data. For example, we might want to produce an estimate of the mean of the sepal lengths for each species of iris. The `dplyr` package provides a function `group_by()` that allows us to group data, and `summarise()` that allows us to summarise data.
 

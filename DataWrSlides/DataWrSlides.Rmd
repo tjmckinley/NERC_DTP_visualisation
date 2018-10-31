@@ -232,7 +232,7 @@ comics %>%
 
 Have a read through Sections 2.1 and 2.2 of the notes, and have a go at the tasks.
 
-## Grouping and Summarising
+## Grouping and summarising
 
 Another common operation we often want to do is to produce summaries of the data.
 
@@ -242,7 +242,7 @@ We can summarise the whole data set using `summary()` e.g.
 summary(comics)
 ```
 
-## Grouping and Summarising
+## Grouping and summarising
 \small
 We may also want to produce summaries for different **subsets** of the data. For example, let's say we want to produce a mean number of appearances for superheroes with different eye colours^[not very interesting I know...]. We do this using the `group_by()` and `summarise()` functions e.g.
 
@@ -270,6 +270,20 @@ comics %>%
 \ecols
 
 ## Gather and spread
+
+Other really important functions are `gather()` and `spread()`.
+
+These functions are used to **manipulate** `data.frame` objects into different forms.
+
+They are often key to wrangling 'messy' data sets into 'tidy' data sets.
+
+## Example: Senate predictions 2018
+
+Let's look at an example from the [FiveThirtyEight](https://projects.fivethirtyeight.com/2018-midterm-election-forecast/senate/?ex_cid=rrpromo) website.
+
+These data show the predicted probability of each party winning each seat, based on a statistical model fitted on 30th October 2018.
+
+I have filtered and wrangled these data to illustrate these methods, the original data were in fact 'tidy'!
 
 ## tibbles
 

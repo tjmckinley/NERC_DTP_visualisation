@@ -64,6 +64,35 @@ Cheat Sheets can be found at:
 
 These are really useful resources!
 
+## Further reading
+\small
+I would highly recommend:
+
+\bcols
+\bcol{0.48}
+\centering
+
+**R for Data Science**
+\gap
+
+\includegraphics[width = 0.5\textwidth]{images/RforDS.png}
+
+Link: [here](https://r4ds.had.co.nz/)
+
+\ecol
+\bcol{0.48}
+\centering
+
+**ggplot2**
+\gap
+
+\includegraphics[width = 0.45\textwidth]{images/ggplot2.jpg}
+
+Link: [here](https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/331924275X/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=ggplot2-20&linkId=4b4de5146fdafd09b8035e8aa656f300)
+
+\ecol
+\ecols
+
 ## Structure of the workshop
 
 Full (and more comprehensive notes) are provided at:
@@ -72,9 +101,9 @@ Full (and more comprehensive notes) are provided at:
 
 You are encouraged to go through these in more detail outside of the workshop.
 
-Today we will discuss the main concepts, and work through some (although not all) of the examples in the notes.
+Today we will discuss the main concepts, and work through some (although not all) of the examples in Section 1 of the notes.
 
-A PDF can be downloaded from the website, but I would encourage you to work from the HTML here.
+I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
 
 ## Example: Titanic survival data
 
@@ -105,6 +134,10 @@ titanic <- titanic %>%
     mutate(survived = as.character(survived)) %>%
     as.data.frame()
 head(titanic)
+```
+
+```{r, include = F}
+saveRDS(titanic, "titanic.rds")
 ```
 
 Are these data 'tidy'?

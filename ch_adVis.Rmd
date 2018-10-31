@@ -612,7 +612,7 @@ Write a function in R that takes a `data` and a `year` argument and plots a stac
 ```{solution}
 
 ``{r}
-plotGapminder_gg <- function(data, year = 1952) {
+plotGapminder_gg <- function(data, year) {
     p <- ggplot(data[data$year == year, ],
        aes(x = gdpPercap, fill = continent)) +
     geom_density(position = "stack") +

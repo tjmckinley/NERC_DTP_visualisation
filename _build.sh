@@ -10,3 +10,5 @@ cp .nojekyll docs/
 
 ## copy required files for workshop
 cp dataFiles.zip docs/
+cp AdVisSlides/AdVisHandout.pdf docs/
+cp DataWrSlides/DataWrHandout.pdf docs/

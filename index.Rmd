@@ -52,9 +52,12 @@ in the usual way.
 > ```
 > ```` 
 
-## Data {-}
+## Data files and slides {-}
 
-All data files can be downloaded as a ZIP file from [here](https://exeter-data-analytics.github.io/AdVis/dataFiles.zip).
+All data files can be downloaded as a ZIP file from [here](https://exeter-data-analytics.github.io/AdVis/dataFiles.zip). PDF copies of the workshop slides can be found through the following links:
+
+* [Advanced Visualisation](https://exeter-data-analytics.github.io/AdVis/AdVisHandout.pdf)
+* [Data Wrangling](https://exeter-data-analytics.github.io/AdVis/DataWrHandout.pdf)
 
 ## Tasks {-}
 

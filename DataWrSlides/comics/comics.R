@@ -58,7 +58,9 @@ year_published <- dc %>%
 comics <- dc %>%
     select(name, EYE, HAIR, SEX, APPEARANCES) %>%
     rbind(marvel) %>%
-    select(-SEX)
+    select(-SEX) %>%
+    mutate(name = map_chr(strsplit(name, "\\("), 1)) %>%
+    mutate_if(is.character, factor) 
 rm(marvel, dc)
 
 ## write tables out

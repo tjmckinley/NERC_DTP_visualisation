@@ -69,6 +69,11 @@ Today we will discuss the main concepts, and work through some (although not all
 
 I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
 
+## What we're aiming for...
+
+\centering
+\includegraphics[width=0.8\textwidth]{images/poppyramid.pdf}
+
 ## Basic operations
 
 We will assume here that we are working with `data.frame`^[or `tibble`---see later] objects^[note that the `purrr` package provides functionality to wrangle different types of object, such as standard `list`. We will ont cover this here, but see Hadley's book for more details]. Common data wrangling tasks include:
@@ -175,6 +180,54 @@ To *transform* or *add* columns, we can use the `mutate()` function^[see also `?
 mutate(comics, logApp = log(APPEARANCES))
 ```
 
+## Pipes
+
+One of the most useful^[in my opinion] features of `tidyverse` is the ability to use **pipes**.
+
+Piping comes from Unix scripting, and simply allows you to run a chain of commands, such that the results from each command feed into the next one. 
+
+`tidyverse` does this using the `%>%` operator^[note that the fantastic [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) package does this more generally in R].
+
+## Pipes
+\small
+The pipe operator in R works by passing the **result** of the *left-hand side* function into the **first** argument of the *right-hand side* function.
+
+Since all the functions we've seen so far take a `data.frame` as their first argument, and return a `data.frame`, then we can chain these together e.g.
+
+```{r, size = "scriptsize", eval = F}
+comics %>%
+    select(name, APPEARANCES) %>%
+    arrange(-APPEARANCES) %>%
+    mutate(logApp = log(APPEARANCES))
+```
+
+## Pipes
+\small
+
+\bcols
+\bcol{0.58}
+
+```{r, size = "scriptsize"}
+comics %>%
+    select(name, APPEARANCES) %>%
+    arrange(-APPEARANCES) %>%
+    mutate(logApp = log(APPEARANCES))
+```
+
+\ecol
+\bcol{0.38}
+
+**Notice**:
+
+* No need for *temporary* variables;
+* less verbose;
+* can be read like prose (easier to understand)
+
+\ecol
+\ecols
+
+**Note**: if splitting over multiple lines, the pipe operator must be at the end of the previous line.
+
 ## Your turn
 
 Have a read through Sections 2.1 and 2.2 of the notes, and have a go at the tasks.
@@ -193,11 +246,28 @@ summary(comics)
 \small
 We may also want to produce summaries for different **subsets** of the data. For example, let's say we want to produce a mean number of appearances for superheroes with different eye colours^[not very interesting I know...]. We do this using the `group_by()` and `summarise()` functions e.g.
 
-```{r, size = "scriptsize", results = 'hold'}
-comics <- group_by(comics, EYE)
-summarise(comics, meanApp = mean(APPEARANCES))
-comics <- ungroup(comics)
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = 'hold', eval = F}
+comics %>% 
+    group_by(EYE) %>%
+    summarise(
+        meanApp = mean(APPEARANCES))
 ```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = 'hold', echo = F}
+comics %>% 
+    group_by(EYE) %>%
+    summarise(
+        meanApp = mean(APPEARANCES))
+```
+
+\ecol
+\ecols
 
 ## Gather and spread
 

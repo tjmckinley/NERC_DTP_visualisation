@@ -154,7 +154,7 @@ titanic <- titanic %>%
 head(titanic)
 ```
 
-```{r, include = F}
+```{r, echo = F, eval = F}
 saveRDS(titanic, "titanic.rds")
 ```
 

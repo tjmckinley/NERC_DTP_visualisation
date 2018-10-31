@@ -285,6 +285,160 @@ These data show the predicted probability of each party winning each seat, based
 
 I have filtered and wrangled these data to illustrate these methods, the original data were in fact 'tidy'!
 
+## Example: Senate predictions 2018
+
+Let's have a look at the data.
+
+\bcols
+\bcol{0.58}
+
+```{r, size = "scriptsize", echo = -c(1, 2)}
+## load data
+senate <- readRDS("senate/senate.rds")
+head(senate)
+```
+
+\ecol
+\bcol{0.38}
+
+**Key**:
+
+* **D**: Democrat
+* **O**: Other
+* **R**: Republican
+
+\ecol
+\ecols
+
+These are **not** in 'tidy' format!
+
+## Gather
+
+To coerce these into 'tidy' format we can use the `gather()` function, which takes multiple columns, and gathers them into key-value pairs.
+
+It takes the form:
+
+```{r, eval = F}
+gather(data, key, value, ...)
+```
+
+where  `...` is replaced with the names of the columns we wish to gather together (or the ones we wish to exclude from gathering).
+
+This is best illustrated by an example.
+
+## Example: Senate predictions 2018
+\small
+
+\bcols
+\bcol{0.45}
+
+```{r, size = "scriptsize", echo = F}
+as.data.frame(senate[1, ])
+```
+
+\ecol
+\bcol{0.55}
+
+Here we want to collapse the columns labelled `D`, `O` and `R` into a new column called `party` (the **key**), with the predicted proportions in a column called `prop` (the **value**). We do not want `state` to be gathered.
+
+\ecol
+\ecols
+
+```{r, size = "scriptsize", eval = F}
+senate %>%
+    gather(party, prop, -state)
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    gather(party, prop, -state) %>%
+    as.data.frame() %>%
+    head()
+```
+
+## Example: Senate predictions 2018
+
+Note that the following are **equivalent**:
+
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+senate %>%
+    gather(party, prop, -state)
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+senate %>%
+    gather(party, prop, D, O, R)
+```
+
+\ecol
+\ecols
+
+You can chose whichever option is the most sensible.
+
+You can also pipe together to remove the extraneous `NA`s:
+
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+senate %>%
+    gather(party, prop, -state) %>%
+    filter(!is.na(prop))
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    gather(party, prop, -state) %>%
+    filter(!is.na(prop)) %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\ecols
+
+## Example: Senate predictions 2018
+
+We can now do some more complex analyses. For example, to produce a table of likely outcomes:
+
+```{r, size = "scriptsize"}
+senate %>%
+    gather(party, prop, -state) %>%
+    filter(!is.na(prop)) %>%
+    group_by(state) %>%
+    filter(prop > 0.5) %>%
+    mutate(outcome = cut(prop, breaks = c(0.5, 0.6, 0.75, 0.95, 1), include.lowest = T, right = F)) %>%
+    mutate(outcome = fct_recode(outcome, 
+        "Toss-up" = "[0.5,0.6)", 
+        "Lean" = "[0.6,0.75)",
+        "Likely" = "[0.75,0.95)",
+        "Solid" = "[0.95,1]")) %>%
+    group_by(outcome, party) %>%
+    count() %>%
+    ungroup() %>%
+    mutate(outcome = fct_relevel(outcome, "Solid", "Likely", "Lean", "Toss-up")) %>%
+    filter(party != "O") %>%
+    mutate(outcome1 = as.numeric(outcome)) %>%
+    mutate(outcome1 = ifelse(party == "R", -outcome1, outcome1)) %>%
+    arrange(party, outcome1) %>%
+    mutate(party = ifelse(outcome == "Toss-up", "", party)) %>%
+    unite(outcome, outcome, party, sep = " ") %>%
+    mutate(outcome = factor(outcome)) %>%
+    mutate(outcome1 = ifelse(outcome == "Toss-up ", 0, outcome1)) %>%
+    mutate(outcome = fct_reorder(outcome, outcome1)) %>%
+    select(-outcome1) %>%
+    spread(outcome, n)
+ ```   
+
 ## tibbles
 
 ## pipes

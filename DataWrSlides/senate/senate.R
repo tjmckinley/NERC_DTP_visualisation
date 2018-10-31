@@ -13,6 +13,12 @@ senate <- senate %>%
     filter(party != "false") %>%
     filter(class == 1) %>%
     select(state, party, win_probability) %>%
+    mutate(party = ifelse(party == "G", "O", party)) %>%
+    mutate(party = ifelse(party == "L", "O", party)) %>%
+    mutate(party = ifelse(party == "I", "O", party)) %>%
+    group_by(state, party) %>%
+    summarise(win_probability = sum(win_probability)) %>%
+    ungroup() %>%
     mutate(id = 1:n()) %>%
     spread(party, win_probability) %>%
     select(-id)

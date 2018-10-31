@@ -263,7 +263,34 @@ comics %>%
 comics %>% 
     group_by(EYE) %>%
     summarise(
-        meanApp = mean(APPEARANCES))
+        meanApp = mean(APPEARANCES)) %>%
+    as.data.frame()
+```
+
+\ecol
+\ecols
+
+## Grouping and summarising
+\small
+A particularly useful function is `count()`, which tabulates the numbers of observations. This is particularly useful when combined with `group_by()` e.g.
+
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = 'hold', eval = F}
+comics %>% 
+    group_by(EYE) %>%
+    count()
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = 'hold', echo = F}
+comics %>% 
+    group_by(EYE) %>%
+    count() %>%
+    as.data.frame()
 ```
 
 \ecol
@@ -357,7 +384,7 @@ senate %>%
 ```
 
 ## Example: Senate predictions 2018
-
+\gap[-1]
 Note that the following are **equivalent**:
 
 \bcols
@@ -381,13 +408,13 @@ senate %>%
 
 You can chose whichever option is the most sensible.
 
-You can also pipe together to remove the extraneous `NA`s:
+You can also pipe together to remove the extraneous `NA`s (and overwrite the original `senate` object):
 
 \bcols
 \bcol{0.48}
 
-```{r, size = "scriptsize", eval = F}
-senate %>%
+```{r, size = "scriptsize", results = "hide"}
+senate <- senate %>%
     gather(party, prop, -state) %>%
     filter(!is.na(prop))
 ```
@@ -397,8 +424,40 @@ senate %>%
 
 ```{r, size = "scriptsize", echo = F}
 senate %>%
-    gather(party, prop, -state) %>%
-    filter(!is.na(prop)) %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\ecols
+
+## Spread
+\small
+`spread()` does the opposite of `gather()`: it takes two columns (`key` and `value`) and spreads these into multiple columns e.g.
+
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+senate
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    as.data.frame() %>% head()
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+senate %>%
+    spread(party, prop)
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    spread(party, prop) %>%
     as.data.frame() %>%
     head()
 ```
@@ -408,36 +467,101 @@ senate %>%
 
 ## Example: Senate predictions 2018
 
-We can now do some more complex analyses. For example, to produce a table of likely outcomes:
+We can now do some more complex analyses. For example, to produce a table of binary predictions based on $p > 0.5$ (using the 'tidy' version of the data):
 
-```{r, size = "scriptsize"}
+```{r, size = "scriptsize", eval = F}
 senate %>%
-    gather(party, prop, -state) %>%
-    filter(!is.na(prop)) %>%
-    group_by(state) %>%
-    filter(prop > 0.5) %>%
-    mutate(outcome = cut(prop, breaks = c(0.5, 0.6, 0.75, 0.95, 1), include.lowest = T, right = F)) %>%
-    mutate(outcome = fct_recode(outcome, 
-        "Toss-up" = "[0.5,0.6)", 
-        "Lean" = "[0.6,0.75)",
-        "Likely" = "[0.75,0.95)",
-        "Solid" = "[0.95,1]")) %>%
-    group_by(outcome, party) %>%
+    mutate(outcome = ifelse(prop > 0.5, 1, 0)) %>%
+    group_by(party, outcome) %>%
     count() %>%
-    ungroup() %>%
-    mutate(outcome = fct_relevel(outcome, "Solid", "Likely", "Lean", "Toss-up")) %>%
-    filter(party != "O") %>%
-    mutate(outcome1 = as.numeric(outcome)) %>%
-    mutate(outcome1 = ifelse(party == "R", -outcome1, outcome1)) %>%
-    arrange(party, outcome1) %>%
-    mutate(party = ifelse(outcome == "Toss-up", "", party)) %>%
-    unite(outcome, outcome, party, sep = " ") %>%
-    mutate(outcome = factor(outcome)) %>%
-    mutate(outcome1 = ifelse(outcome == "Toss-up ", 0, outcome1)) %>%
-    mutate(outcome = fct_reorder(outcome, outcome1)) %>%
-    select(-outcome1) %>%
-    spread(outcome, n)
- ```   
+    spread(party, n)
+```  
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    mutate(outcome = ifelse(prop > 0.5, 1, 0)) %>%
+    group_by(party, outcome) %>%
+    count() %>%
+    spread(party, n) %>%
+    as.data.frame()
+```
+
+## Unite and separate
+
+Other useful functions are `unite()` and `separate()`, the former takes multiple columns and binds them together, and the latter takes a single column and splits it apart. For example:
+
+\bcols
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = "hide"}
+senate <- senate %>%
+    mutate(outcome = 
+      ifelse(prop > 0.5, 1, 0)) %>%
+    group_by(party, outcome) %>%
+    count()
+senate
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, size = "scriptsize", results = "hide"}
+senate <- senate %>%
+    unite(outcome, 
+          party, outcome, sep = "_")
+senate
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\ecols
+
+## Unite and separate
+
+To reverse this, we can use `separate()`:
+
+\bcols
+\bcol{0.38}
+
+```{r, size = "scriptsize", results = "hide"}
+senate
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\bcol{0.58}
+
+```{r, size = "scriptsize", results = "hide"}
+senate <- senate %>%
+    separate(outcome, 
+      c("party", "outcome"), sep = "_")
+senate
+```
+
+```{r, size = "scriptsize", echo = F}
+senate %>%
+    as.data.frame() %>%
+    head()
+```
+
+\ecol
+\ecols
 
 ## tibbles
 

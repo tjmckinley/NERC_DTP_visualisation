@@ -1,0 +1,209 @@
+---
+title: "Data Wrangling (Made Easy) in R Workshop"
+author: "T. J. McKinley ([t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk))"
+fontsize: 12pt
+output: 
+    beamer_presentation:
+        latex_engine: xelatex
+header-includes:
+    - \input{header.tex}
+---
+
+```{r, include = F}
+library(knitr)
+knitr::opts_chunk$set(cache = F, echo = T, fig.align = "center", fig.width = 5, fig.height = 5, resize.width = "0.9\\textwidth", resize.height = "0.9\\textwidth")
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+## Recap: 'Tidy' data
+
+Specifically, a **tidy** data set is one in which:
+
+* **rows** contain different **observations**;
+* **columns** contain different **variables**;
+* **cells** contain values.
+
+> "Tidy datasets are all alike but every messy dataset is messy in its own way."---[Hadley Wickham](http://hadley.nz/)
+
+## The `tidyverse`
+
+In the previous session we explored the use of `ggplot2` to produce visualisations of complex data sets.
+
+This utilised the fact that the data sets we had available were **'tidy'** (in the Wickham sense)!
+
+However, it is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0).
+
+In this session we will explore the use of other `tidyverse` packages, such as `dplyr` and `tidyr`, that facilitate effective **data wrangling**.
+
+## Cheat sheets
+
+As before, useful cheat Sheets can be found at:
+
+[https://www.rstudio.com/resources/cheatsheets/](https://www.rstudio.com/resources/cheatsheets/).
+
+I would highly recommend downloaded the appropriate ones (note that they do get updated from time-to-time as the packages are further developed).
+
+## Further reading
+\small
+I would highly recommend [Hadley Wickham's](http://hadley.nz/) **"R for Data Science"** book:
+
+\begin{center}
+\includegraphics[width = 0.2\textwidth]{images/RforDS.png}
+\end{center}
+
+Can be bought as a hard copy, or a link to a free HTML version is [here](https://r4ds.had.co.nz/).
+
+## Structure of the workshop
+
+Full (and more comprehensive notes) are provided at:
+
+[https://exeter-data-analytics.github.io/AdVis/](https://exeter-data-analytics.github.io/AdVis/)
+
+You are encouraged to go through these in more detail outside of the workshop.
+
+Today we will discuss the main concepts, and work through some (although not all) of the examples in Section 2 of the notes.
+
+I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
+
+## Basic operations
+
+We will assume here that we are working with `data.frame`^[or `tibble`---see later] objects^[note that the `purrr` package provides functionality to wrangle different types of object, such as standard `list`. We will ont cover this here, but see Hadley's book for more details]. Common data wrangling tasks include:
+
+* sorting;
+* **filtering**;
+* **selecting** columns;
+* transforming columns.
+
+## Basic operations
+
+These basic operators all have an associated function:
+
+* sorting: `arrange()`;
+* **filtering**: `filter()`;
+* **selecting** columns: `select()`;
+* transforming columns: `mutate()`.
+
+However, each of these operations can be done in base R. So why bother to use these functions?
+
+## Why bother?
+\small
+\gap[-1]
+
+1. These functions are written in a **consistent** way: they all take a `data.frame`/`tibble` objects as their initial argument and return a revised `data.frame`/`tibble` object. 
+2. Their names are informative. In fact they are **verbs**, corresponding to us **doing something specific** to our data. This makes the code much more readable, as we will see subsequently.
+3. They do not require extraneous operators: such as `$` operators to extract columns, or quotations around column names.
+4. Functions adhering to these criteria can be developed and expanded to perform all sorts of other operations, such as summarising data over groups.
+5. They can be used in **pipes** (see later).
+
+## Example: Superheroes
+
+These data have been extracted from some data scraped by [FiveThirtyEight](https://fivethirtyeight.com/), and available [here](https://github.com/fivethirtyeight/data/tree/master/comic-characters).
+
+We will assume the data consist of three tables:
+
+* `comics`: a table of characters and characteristics;
+* `publisher`: a table of characters and who publishes them ([Marvel](https://www.marvel.com/) or [DC](https://www.dccomics.com/));
+* `year_published`: characters against the year they were first published.
+
+## Example: Superheroes
+
+Let's have a look at the `comics` data frame:
+
+```{r, echo = -c(1, 2), message = F, warning = F, size = "scriptsize"}
+library(tidyverse)
+comics <- readRDS("comics/comics.rds")
+comics
+```
+
+## Example: Superheroes
+
+To extract a subset of these data, we can use the `filter()` function e.g.
+
+```{r, size = "scriptsize"}
+filter(comics, HAIR == "Black Hair")
+```
+
+## Example: Superheroes
+
+We can also filter by multiple variables and with negation e.g.
+
+```{r, size = "scriptsize"}
+filter(comics, HAIR == "Black Hair" & EYE != "Blue Eyes")
+```
+
+## Example: Superheroes
+
+To sort these data, we can use the `arrange()` function e.g.
+
+```{r, size = "scriptsize"}
+arrange(comics, APPEARANCES)
+```
+
+## Example: Superheroes
+
+We can prefix with a `-` sign to sort is descending order, and can sort by multiple variables e.g.
+
+```{r, size = "scriptsize"}
+arrange(comics, -APPEARANCES, HAIR)
+```
+
+## Example: Superheroes
+
+To extract a subset of ***columns*** of these data, we can use the `select()` function e.g.
+
+```{r, size = "scriptsize"}
+select(comics, name, HAIR, APPEARANCES)
+```
+
+## Example: Superheroes
+
+A `-` prefix *removes* a column e.g.
+
+```{r, size = "scriptsize"}
+select(comics, -APPEARANCES)
+```
+
+## Example: Superheroes
+
+To *transform* or *add* columns, we can use the `mutate()` function^[see also `?transmute`] e.g.
+
+```{r, size = "scriptsize"}
+mutate(comics, logApp = log(APPEARANCES))
+```
+
+## Your turn
+
+Have a read through Sections 2.1 and 2.2 of the notes, and have a go at the tasks.
+
+## Grouping and Summarising
+
+Another common operation we often want to do is to produce summaries of the data.
+
+We can summarise the whole data set using `summary()` e.g.
+
+```{r, size = "scriptsize"}
+summary(comics)
+```
+
+## Grouping and Summarising
+\small
+We may also want to produce summaries for different **subsets** of the data. For example, let's say we want to produce a mean number of appearances for superheroes with different eye colours^[not very interesting I know...]. We do this using the `group_by()` and `summarise()` functions e.g.
+
+```{r, size = "scriptsize", results = 'hold'}
+comics <- group_by(comics, EYE)
+summarise(comics, meanApp = mean(APPEARANCES))
+comics <- ungroup(comics)
+```
+
+## Gather and spread
+
+## tibbles
+
+## pipes
+
+## nested data frames etc.
+

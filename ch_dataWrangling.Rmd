@@ -714,7 +714,22 @@ ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) +
     labs(fill = "Sex")
 ```
 
-Beautiful isn't it? (The horrendously stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
+```{r, echo = F, eval = F}
+p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
+    geom_bar(stat = "identity") +
+    scale_y_continuous(
+        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+        labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
+    ) +
+    coord_flip() +
+    facet_wrap(~ country, ncol = 1) +
+    ylab("Population counts (x1000)") +
+    xlab("Age (yrs)") +
+    labs(fill = "Sex")
+ggsave("DataWrSlides/images/poppyramid.pdf", p)
+```
+
+Beautiful isn't it? (The stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
 
 ### Summarisation
 

@@ -97,13 +97,31 @@ Link: [here](https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/33
 
 Full (and more comprehensive notes) are provided at:
 
+\bc
+
 [https://exeter-data-analytics.github.io/AdVis/](https://exeter-data-analytics.github.io/AdVis/)
+
+\ec
 
 You are encouraged to go through these in more detail outside of the workshop.
 
-Today we will discuss the main concepts, and work through some (although not all) of the examples in Section 1 of the notes.
+Today we will discuss the main concepts, and work through some (although not all) of the examples in **Section 1** of the notes.
 
 I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
+
+## RStudio server
+
+CLES have kindly offered the use of their RStudio server in case anyone needs it:
+
+\bc
+
+[https://rstudio04.cles.ex.ac.uk](https://rstudio04.cles.ex.ac.uk)
+
+\ec
+
+**Please note that this server is only for use for this workshop, unless you otherwise have permission to use it .**
+
+You will need to log-in using your University log-in details.
 
 ## Example: Titanic survival data
 

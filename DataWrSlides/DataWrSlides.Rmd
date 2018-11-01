@@ -27,6 +27,8 @@ Specifically, a **tidy** data set is one in which:
 * **columns** contain different **variables**;
 * **cells** contain values.
 
+Remember:
+
 > "Tidy datasets are all alike but every messy dataset is messy in its own way."---[Hadley Wickham](http://hadley.nz/)
 
 ## The `tidyverse`
@@ -41,15 +43,17 @@ In this session we will explore the use of other `tidyverse` packages, such as `
 
 ## Cheat sheets
 
-As before, useful cheat Sheets can be found at:
+As before, useful cheat sheets can be found at:
+\bc
 
-[https://www.rstudio.com/resources/cheatsheets/](https://www.rstudio.com/resources/cheatsheets/).
+[https://www.rstudio.com/resources/cheatsheets/](https://www.rstudio.com/resources/cheatsheets/)
 
-I would highly recommend downloaded the appropriate ones (note that they do get updated from time-to-time as the packages are further developed).
+\ec
+I would highly recommend downloading the appropriate ones (note that they do get updated from time-to-time as the packages are further developed).
 
 ## Further reading
 \small
-I would highly recommend [Hadley Wickham's](http://hadley.nz/) **"R for Data Science"** book:
+I would highly recommend Hadley Wickham and Garrett Grolemund's [**"R for Data Science"**](https://r4ds.had.co.nz/) book:
 
 \begin{center}
 \includegraphics[width = 0.2\textwidth]{images/RforDS.png}
@@ -61,13 +65,31 @@ Can be bought as a hard copy, or a link to a free HTML version is [here](https:/
 
 Full (and more comprehensive notes) are provided at:
 
+\bc
+
 [https://exeter-data-analytics.github.io/AdVis/](https://exeter-data-analytics.github.io/AdVis/)
+
+\ec
 
 You are encouraged to go through these in more detail outside of the workshop.
 
-Today we will discuss the main concepts, and work through some (although not all) of the examples in Section 2 of the notes.
+Today we will discuss the main concepts, and work through some (although not all) of the examples in **Section 2** of the notes.
 
 I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
+
+## RStudio server
+
+CLES have kindly offered the use of their RStudio server in case anyone needs it:
+
+\bc
+
+[https://rstudio04.cles.ex.ac.uk](https://rstudio04.cles.ex.ac.uk)
+
+\ec
+
+**Please note that this server is only for use for this workshop, unless you otherwise have permission to use it .**
+
+You will need to log-in using your University log-in details.
 
 ## What we're aiming for...
 
@@ -76,7 +98,7 @@ I would encourage you to work from the HTML here, but a PDF is available as a li
 
 ## Basic operations
 
-We will assume here that we are working with `data.frame`^[or `tibble`---see later] objects^[note that the `purrr` package provides functionality to wrangle different types of object, such as standard `list`. We will ont cover this here, but see Hadley's book for more details]. Common data wrangling tasks include:
+We will assume here that we are working with `data.frame`^[or `tibble`---see later] objects^[note that the `purrr` package provides functionality to wrangle different types of object, such as standard `list`s. We won't cover these here, but see Hadley's book, or the tutorials on the [`tidyverse`](https://www.tidyverse.org/) website for more details]. Common data wrangling tasks include:
 
 * sorting;
 * **filtering**;
@@ -87,12 +109,26 @@ We will assume here that we are working with `data.frame`^[or `tibble`---see lat
 
 These basic operators all have an associated function:
 
-* sorting: `arrange()`;
-* **filtering**: `filter()`;
-* **selecting** columns: `select()`;
-* transforming columns: `mutate()`.
+\bcols
+\bcolt{0.48}
 
-However, each of these operations can be done in base R. So why bother to use these functions?
+* sorting:
+* **filtering**:
+* **selecting** columns:
+* transforming columns:
+
+\ecol
+\bcolt{0.48}
+
+* `arrange()`;
+* `filter()`;
+* `select()`;
+* `mutate()`.
+
+\ecol
+\ecols
+
+However, each of these operations can be done in base R. So why bother to use these functions at all?
 
 ## Why bother?
 \small
@@ -104,11 +140,43 @@ However, each of these operations can be done in base R. So why bother to use th
 4. Functions adhering to these criteria can be developed and expanded to perform all sorts of other operations, such as summarising data over groups.
 5. They can be used in **pipes** (see later).
 
+## Aside: `tibble`s
+
+`tidyverse` introduces a new object known as a `tibble`. Paraphrased from the `tibble` webpage:
+
+> A `tibble` is an opinionated `data.frame`; keeping the bits that are effective, and throwing out what is not. Tibbles are **lazy** and **surly**: they do less (i.e. they don’t change variable names or types, and don’t do partial matching) and complain more (e.g. when a variable does not exist). **This forces you to confront problems earlier, typically leading to cleaner, more expressive code.**^[`tibble`s also have an enhanced `print()` method].
+
+## Aside: `tibble`s
+\small
+The `readr` package (part of `tidyverse`) introduces a `read_csv()`^[note the underscore (`read_csv`) **not** `read.csv()`] function to read .csv files in  as `tibble` objects e.g.
+
+```{r, size = "scriptsize", eval = F}
+gapminder <- read_csv("gapminder.csv")
+gapminder
+```
+
+```{r, size = "tiny", echo = F, message = F, warning = F}
+library(tidyverse)
+gapminder <- read_csv("gapminder/gapminder.csv")
+gapminder
+```
+
+## Aside: `tibble`s
+
+**Notice**:
+
+* `read_csv()` does not convert `characters` into `factors` automatically;
+* the `print()` method includes information about the type of each variable (e.g. `integer`, `logical`, `character` etc.), as well as information on the number of rows and columns.
+
+There is also an `as.tibble()` function that will convert standard `data.frame` objects into `tibble`s. 
+
+In almost all of the `tidyverse` functions, you can use `data.frame` or `tibble` objects interchangeably.
+
 ## Example: Superheroes
 
 These data have been extracted from some data scraped by [FiveThirtyEight](https://fivethirtyeight.com/), and available [here](https://github.com/fivethirtyeight/data/tree/master/comic-characters).
 
-We will assume the data consist of three tables:
+We will assume the complete data consist of three tables:
 
 * `comics`: a table of characters and characteristics;
 * `publisher`: a table of characters and who publishes them ([Marvel](https://www.marvel.com/) or [DC](https://www.dccomics.com/));
@@ -118,8 +186,7 @@ We will assume the data consist of three tables:
 
 Let's have a look at the `comics` data frame:
 
-```{r, echo = -c(1, 2), message = F, warning = F, size = "scriptsize"}
-library(tidyverse)
+```{r, echo = -1, message = F, warning = F, size = "scriptsize"}
 comics <- readRDS("comics/comics.rds")
 comics
 ```
@@ -153,7 +220,7 @@ arrange(comics, APPEARANCES)
 We can prefix with a `-` sign to sort is descending order, and can sort by multiple variables e.g.
 
 ```{r, size = "scriptsize"}
-arrange(comics, -APPEARANCES, HAIR)
+arrange(comics, HAIR, -APPEARANCES)
 ```
 
 ## Example: Superheroes
@@ -232,19 +299,54 @@ comics %>%
 
 Have a read through Sections 2.1 and 2.2 of the notes, and have a go at the tasks.
 
-## Grouping and summarising
+## Aside: `*_if` and `*_all`
 
-Another common operation we often want to do is to produce summaries of the data.
+There are some useful shortcut functions, notably: 
 
-We can summarise the whole data set using `summary()` e.g.
+* `mutate_if()`;
+* `mutate_all()`;
+* `summarise_if()`;
+* `summarise_all()`.
 
-```{r, size = "scriptsize"}
+The `*_if()` functions apply a transformation or summary to a column **if** it adheres to some criteria. The `*_all()` functions apply the transformation or summary to **all** columns^[you will see the `summarise()` function shortly...].
+
+## Aside: `*_if` and `*_all`
+
+As a simple example, let's summarise the data:
+
+```{r, size = "scriptsize", eval = F}
 summary(comics)
 ```
 
+```{r, size = "tiny", echo = F}
+summary(comics)
+```
+
+Here the `character` columns do not provide a helpful summary. We could temporarily convert each `character` column to a `factor` to produce a better summary.
+
+## Aside: `*_if` and `*_all`
+
+Instead let's try:
+
+```{r, size = "scriptsize", eval = F}
+comics %>% 
+    mutate_if(is.character, as.factor) %>%
+    summary()
+```
+
+```{r, size = "tiny", echo = F}
+comics %>% 
+    mutate_if(is.character, as.factor) %>%
+    summary()
+```
+
+This is much neater, and doesn't change the original data frame.
+
 ## Grouping and summarising
 \small
-We may also want to produce summaries for different **subsets** of the data. For example, let's say we want to produce a mean number of appearances for superheroes with different eye colours^[not very interesting I know...]. We do this using the `group_by()` and `summarise()` functions e.g.
+We may also want to produce summaries for different **subsets** of the data. 
+
+For example, let's say we want to produce a mean number of appearances for superheroes with different eye colours^[not very interesting I know...]. We do this using the `group_by()` and `summarise()` functions e.g.
 
 \bcols
 \bcol{0.48}
@@ -295,6 +397,10 @@ comics %>%
 
 \ecol
 \ecols
+
+## Your turn
+
+Have a crack at Section 2.3 of the workshop.
 
 ## Gather and spread
 
@@ -563,9 +669,172 @@ senate %>%
 \ecol
 \ecols
 
-## tibbles
+## Your turn
 
-## pipes
+Have a crack at Section 2.4 of the workshop.
 
-## nested data frames etc.
+## Joins
+\small
+A key data analytics skill is to be able to **join**  different tables together. This can be done using `*_join()` functions. Key types of join are:
+
+* `inner_join()`
+* `left_join()` / `right_join()`
+* `full_join()`
+* `semi_join()` / `anti_join()`
+
+You can join tables by **cross-referencing** against **key variables**. As an example, let's join two tables relating to information on superheroes...
+
+## Joins
+
+```{r, size = "scriptsize"}
+comics
+```
+
+\bcols 
+\bcol{0.48}
+
+```{r, size = "scriptsize", eval = F}
+year_published
+```
+
+```{r, size = "scriptsize", echo = F}
+year_published <- readRDS("comics/year_published.rds")
+year_published
+```
+
+\ecol
+\bcol{0.48}
+
+Here we will join the two tables by **`name`**.
+
+\ecol
+\ecols
+
+## `inner_join()`
+
+The simplest type of join is an **inner join**. This joins two data frames and *retains only those rows in each data frame that can be matched* e.g.
+
+```{r, size = "scriptsize"}
+inner_join(comics, year_published, by = "name")
+```
+
+## `left_join()`
+
+A **left join** retains *all rows* in the **left** data frame, but *only* rows in the **right** data frame that *can be matched* e.g.
+
+```{r, size = "scriptsize"}
+left_join(comics, year_published, by = "name")
+```
+
+Here R replaces elements it can't match with `NA`.
+
+## `right_join()`
+
+A **right join** retains *all rows* in the **right** data frame, but *only* rows in the **left** data frame that *can be matched* e.g.
+
+```{r, size = "scriptsize"}
+right_join(comics, year_published, by = "name")
+```
+
+This is the same as the `inner_join()` in this case. Why?
+
+## `full_join()`
+
+A **full join** retains *all rows* in the **both** data frames e.g.
+
+```{r, size = "scriptsize"}
+full_join(comics, year_published, by = "name")
+```
+
+This is the same as the `left_join()` in this case. Why?
+
+## `semi_join()`
+
+A **semi join** return *all rows* from the **left** data frame where there *are matching* values in the **right** data frame. It returns just columns in the **left** data frame, and does not duplicate rows (i.e. it is a *filtering* join):
+
+```{r, size = "scriptsize"}
+semi_join(comics, year_published, by = "name")
+```
+
+## `anti_join()`
+
+An **anti join** return *all rows* from the **left** data frame where there *are* ***not*** *matching* values in the **right** data frame. It returns just columns in the **left** data frame, and does not duplicate rows (i.e. it is a *filtering* join):
+
+```{r, size = "scriptsize"}
+anti_join(comics, year_published, by = "name")
+```
+
+## Joins
+\small
+\gap[-1.5]
+We can also join multiple tables together using e.g. **pipes** (or similar)
+
+```{r, size = "scriptsize"}
+comics
+```
+\gap[-1.4]
+\bcols 
+\bcolt{0.48}
+
+```{r, size = "scriptsize", eval = F}
+year_published
+```
+
+```{r, size = "scriptsize", echo = F}
+year_published
+```
+
+\ecol
+\bcolt{0.48}
+
+```{r, size = "scriptsize", eval = F}
+publisher
+```
+
+```{r, size = "scriptsize", echo = F}
+publisher <- readRDS("comics/publisher.rds")
+publisher
+```
+
+\ecol
+\ecols
+
+## Joins
+
+```{r, size = "scriptsize"}
+comics %>%
+    full_join(year_published, by = "name") %>%
+    full_join(publisher, by = "name")
+```
+
+## Joins
+
+**Note**: you can also join by more than one variable e.g.
+
+```{r, eval = F, size = "scriptsize"}
+inner_join(x, y, by = c("variable1", "variable2"))
+```
+
+## Your turn
+
+Have a crack at Section 2.5 of the workshop.
+
+## Epilogue
+
+You should now be ready to work through the final (more comprehensive) example in Section 2.6 of the workshop notes.
+
+This brings together various aspects of the last two-days. We take multiple 'messy' data sets, join them together, wrangle them into the correct format and then plot them using `ggplot2`.
+
+Along the way we use a few features of `tidyverse` that we haven't introduced, so I wouldn't expect you to be able to recreate this plot from scratch, but I want you to go through the code and understand what is happening.
+
+## Epilogue
+
+Hopefully these workshops have given you a flavour of the power of `tidyverse`.
+
+I for one do most of my data analyses using `tidyverse` now, although remember that it may not be suitable for all types of data / analysis method, so you should view it as one tool in your data sicence arsenal.
+
+If this has whetted your appetite, I can thoroughly recommend Hadley Wickham and Garrett Grolemund's [**"R for Data Science"**](https://r4ds.had.co.nz/) book!
+
+Please feel free to e-mail me if you have any further questions.
+
 

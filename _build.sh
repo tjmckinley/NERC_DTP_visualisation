@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm -rf docs/
+
 Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
 Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
 #Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
@@ -12,3 +14,7 @@ cp .nojekyll docs/
 cp dataFiles.zip docs/
 cp AdVisSlides/AdVisHandout.pdf docs/
 cp DataWrSlides/DataWrHandout.pdf docs/
+cd docs
+zip slides.zip AdVisHandout.pdf DataWrHandout.pdf
+cd ..
+

@@ -735,6 +735,23 @@ Now we will put all of these ideas together to produce a complex bubblechart of 
 
 Work through the tasks in Section 1.4 of the workshop, and don't forget to ask demonstrators if you don't understand anything.
 
+## One more thing...
+\small
+\gap[-1]
+One thing I haven't discussed is that it is possible to use different data sets for different geoms (analogous to **global** and **local** aethetics).
+
+For example, if you have a data set `SCATTER_DATA` (with columns: `XVAR` and `YVAR`), and a second data set containing predictions from a linear model say (called `PRED_DATA`, with columns: `XVAR`, `YPRED`, `YMIN` and `YMAX`), then you can write:
+
+```{r, size = "scriptsize", eval = F}
+ggplot() +
+    geom_point(aes(x = XVAR, y = YVAR), data = SCATTER_DATA) +
+    geom_line(aes(x = XVAR, y = YPRED), data = PRED_DATA) +
+    geom_ribbon(aes(x = XVAR, ymin = YMIN, ymax = YMAX), 
+                data = PRED_DATA, alpha = 0.5)
+```
+
+Here the `geom_point()` uses a different data set than the `geom_line()` and `geom_ribbon()` functions.
+
 ## Epilogue
 
 To illustrate the importance of good data visualisation, I urge you to watch [Hans Rosling's](https://en.wikipedia.org/wiki/Hans_Rosling) TED talk: [The best stats you've ever seen](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread).

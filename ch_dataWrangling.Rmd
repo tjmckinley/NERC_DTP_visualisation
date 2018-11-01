@@ -405,7 +405,7 @@ Notice that although `year` is a numerical variable, R can still group by unique
 We must be a bit careful here, since we may have less samples for some countries/years than for others. This affects the uncertainty in our estimates, though it is not too difficult to extract standard errors for each grouping and thus produce confidence intervals to quantify which estimates are more uncertain than others (this is where proper **statistical modelling** is paramount).
 
 ```{task}
-Load in the file "indicator hiv estimated prevalence% 15-49.csv" that can be found on ELE. This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
+Load in the file "indicator hiv estimated prevalence% 15-49.csv". This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
 ```
 
 ```{solution}
@@ -531,7 +531,7 @@ gp %>%
 ```
 
 ```{task}
-Total population data are available in the "indicator gapminder population.csv" document on ELE. Load this into R, tidy it up, and then join it to the `gp` data you have already created.
+Total population data are available in the "indicator gapminder population.csv" document. Load this into R, tidy it up, and then join it to the `gp` data you have already created.
 ```
 
 ```{solution}

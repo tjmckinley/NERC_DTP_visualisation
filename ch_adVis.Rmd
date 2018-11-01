@@ -701,7 +701,7 @@ ff <- readRDS("uploadFiles/ff.rds")
 ggplot(ff, aes(y = longevity, x = thorax, 
                linetype = type, shape = type)) +
     geom_point() +
-    geom_smooth(method = lm, se = F) +
+    stat_smooth(method = "lm", se = F) +
     facet_wrap(~ partners) +
     labs(linetype = "Partner Type", shape = "Partner Type") +
     ylab("Longevity (days)") +

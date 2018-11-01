@@ -58,9 +58,13 @@ We will use functionality from some of these packages in these workshops, though
 
 The architect of the `tidyverse` , [Hadley Wickham](http://hadley.nz/), is now Chief Scientist at RStudio, and so these packages are well supported and well-documented.
 
-Cheat Sheets can be found at:
+Cheat sheets can be found at:
+
+\bc
 
 [https://www.rstudio.com/resources/cheatsheets/](https://www.rstudio.com/resources/cheatsheets/).
+
+\ec
 
 These are really useful resources!
 

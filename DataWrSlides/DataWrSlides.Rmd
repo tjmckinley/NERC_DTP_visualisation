@@ -831,7 +831,7 @@ Along the way we use a few features of `tidyverse` that we haven't introduced, s
 
 Hopefully these workshops have given you a flavour of the power of `tidyverse`.
 
-I for one do most of my data analyses using `tidyverse` now, although remember that it may not be suitable for all types of data / analysis method, so you should view it as one tool in your data sicence arsenal.
+I for one do most of my data analyses using `tidyverse` now, although remember that it may not be suitable for all types of data / analysis method, so you should view it as one tool in your data science arsenal.
 
 If this has whetted your appetite, I can thoroughly recommend Hadley Wickham and Garrett Grolemund's [**"R for Data Science"**](https://r4ds.had.co.nz/) book!
 

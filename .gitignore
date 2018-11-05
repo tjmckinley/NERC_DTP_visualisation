@@ -18,3 +18,4 @@ docs.zip
 # ignore slides files
 AdVisSlides/AdVis*pdf
 DataWrSlides/DataWr*pdf
+.Rproj.user

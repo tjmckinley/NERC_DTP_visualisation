@@ -25,6 +25,10 @@ link-citations: yes
 
 In this practical we will focus on the important concepts of **reproducibility** and **literate programming**. We will assume that you are familiar with R and RStudio.
 
+## Data files {-}
+
+All data and script files files can be downloaded as a ZIP file from [here](https://exeter-data-analytics.github.io/LitProg/dataFiles.zip).
+
 ## Tasks {-}
 
 ```{task}

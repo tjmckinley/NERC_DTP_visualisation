@@ -16,12 +16,10 @@ plot(longevity ~ group, data = ff,
      ylab = "Longevity (days)", 
      xlab = "Experimental group")
 
-## plot longevity against thorax with points stratified
-## by experimental group
+## plot longevity against thorax
 plot(longevity ~ thorax, data = ff, 
      pch = 20, 
      xlab = "Length of thorax (mm)",
      ylab = "Longevity (days)")
-legend(0.65, 95, legend = paste("Group", 1:5), pch = 20)
 ``
 

@@ -487,7 +487,7 @@ p <- ggplot(gapminder[gapminder$year == 1952, ],
 >       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
 >    geom_point()
 > ```
-> creates an object called `p` that contains the plot information. This will not be plotted until the objected is **printed** to the screen e.g.
+> creates an object called `p` that contains the plot information. This will not be plotted until the object is **printed** to the screen e.g.
 > ```{r, message = F}
 > p
 > ```

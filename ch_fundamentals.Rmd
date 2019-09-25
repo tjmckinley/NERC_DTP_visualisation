@@ -154,7 +154,7 @@ include_graphics("images/histhelp.png")
 ```
 
 This new window contains all of the information you need to understand how to use the `hist()` function. Although these help files can seem daunting (and not particularly helpful) at first, once you get used to them they will provide the route for your continued exploration of R. Help files provide all of the details that the author of the command saw fit to include. They all aim to be comprehensive but some authors assume that you are more
-familiar with what’s going on than others. Most help files will have the following sections:
+familiar with what's going on than others. Most help files will have the following sections:
 
 Table: (\#tab:helpfile) General structure of R helpfiles
 
@@ -165,7 +165,7 @@ Arguments: | This gives an explanation of what each argument does and what sort 
 Details: | This section tells you what the function should do along with any subtleties in its usage or clarifications.
 Value: | This tells you what actually happens when you run the function and specifically what sort of R object the function produces. In this case it produces a special `histogram` object (which is actually just a normal list with certain specific components).
 References: | This gives you some selected text books that the author feels explains the theory behind the function in greater detail.
-See Also: | This should be a list of other R commands that are related to the current function. They might be of more use to you, or their help files might be better written and clarify what you’re trying to do.
+See Also: | This should be a list of other R commands that are related to the current function. They might be of more use to you, or their help files might be better written and clarify what you're trying to do.
 Examples: | This should be a set of R commands that you can copy-and-paste into either a script file or the console pane. These should give you a practical example of how to use the function in several different settings.
 
 If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics. In the Help menu, choose 'search r-project.org' and work through the search pages. Beware though, these are busy people who will often ignore directly emailed requests for help. Ask your resident experts first, before e-mailing the R-search email lists! 
@@ -1071,7 +1071,7 @@ The important difference (to R at least) between a `matrix` object and a `data.f
 
 `data.frames` are very important for statistical analysis, as they frequently fit the form of available data. They are so important in fact that a lot of statistical functions actually expect this, and we devote an entire later practical to reading, summarising, plotting and manipulating data.
 
-## Saving outputs
+## Saving outputs {#save}
 
 R allows you to save various things, with regards to inputs we can save:
 
@@ -1083,3 +1083,55 @@ With regards to outputs we can save:
 * the current R workspace---via `save.image()`. This creates a **binary** file with a '.RData' suffix. This can be reloaded into R using the `load()` function, and includes all objects in the current workspace.
 * A selection of objects---via the `save()` function. Here we can extract subsets of objects and save them. For example, `save(x, y, file = "practical1.RData")` will save only the objects `x` and `y` into a file called "practical1.RData". Alternatively a character vector of objects can be supplied e.g. `save(list = c("x", "y"), file = "practical1.RData")` will do the same thing as the previous command.
 * A single object can be saved using `saveRDS()`. This saves into a binary file with a suffix '.rds'. This is really useful for saving single objects, often cleaned `data.frame` objects, which can be loaded into R without having to recreate from a '.csv' file for example. For example, `saveRDS(x, "x.rds")` would save the `x` object into a file called "x.rds". This can be loaded into a new session via the `readRDS()` function. Another useful feature is that `readRDS()` can be used to pass the contents of a .rds file directly into an object of your choice e.g. `y <- readRDS("x.rds")` will create a new object called `y`, that contains the contents of the file "x.rds".
+
+## Reading in data
+
+Although some packages allow Excel files to be read directly into R, it is (in my opinion) much better practice to save the data as a **text file**, since this strips out unnecessary formatting and results in smaller file that can be universally used by any end user.
+
+> **Aside**: You can save Excel spreadsheets as comma-separated text files using e.g. *File > Save As > ...*, then from the 'Save as type' options choose 'CSV (comma separated)'. There is no need to add a suffix, because Excel will automatically add '.csv' to your file name.
+
+.csv files can be read into R directly as `data.frame` objects, using the `read.csv()` function.
+
+> **Note**: A .csv file is simply a text file where each element is separated by a comma (the delimiter). This can be easily viewed and manipulated in any text editor (such as Notepad). Many R users prefer to use 'Text – Tab delimited' data files. In this case each entry is delimited by a tab. In fact, one can use any delimiter one prefers, but I often prefer commas, which are so common they have their own suffix! If you choose the tab-delimited route, you have to be **extra careful** about spaces between words in your spreadsheet, and to read the data file into R you should use `read.table()` instead of `read.csv()` (where you can explicitly specify the delimiter as an argument to the function). This is similarly true if using .csv files: one must be careful not to include entries with commas in them.
+
+> **Note**: `read.csv()` might fail if there are any spaces between words within data cells. If this happens, replace all these spaces by underscores `_` before saving the spreadsheet in Excel.
+
+In fact, it is good practice to store your data in a much simpler way than many people are used to. Generally, try to avoid spaces between words at all in your data, even in column headers. Underscores are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements), and often I will try to convert as much to lower case as possible (since R is case sensitive, so it speeds up your typing).
+
+Download a sample data file: [worms.csv](https://exeter-data-analytics.github.io/IntroToR/worms.csv). We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
+
+```{r, loadworms}
+worms <- read.csv("worms.csv")
+```
+
+> If R can't find the file, check it's in the working directory, or pass the full path to `read.csv()`.
+
+```{r, sumworms}
+head(worms)
+summary(worms)
+```
+
+Looking at the data we can see a number of things:
+
+* Since the original data had spaces in the column names, these spaces have been replaced by dots.
+* Columns that can be converted into numbers in sensible ways are stored as such (e.g. the `Area` column). You can tell this because the `summary()` function returns numerical summaries.
+* Columns that can be converted into logical objects are stored as such (e.g. the `Damp` column).
+* Columns that can't be easily converted are stored as `factor`s (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns counts of observations in each group.
+
+These defaults can be useful sometimes for finding errors. For example, if a column of numbers contains a typo that prevents an entry from being converted to a number, then the whole column will be read in as a `factor()`. Thus if you spot this you can often track down the typo and correct it. Please see the section on [converting between types](#convert) for further details on how to manually convert between types.
+
+> **Important**: it is a good idea to always check and read-in data to ensure each column is in the correct format before progressing any further with your analysis. A common error is that often categorical variables are coded as numbers. For example, a data set might contain numbers `0` or `1` to denote e.g. died/survived. In this case R will read the column in as a `numeric`, when it should be a `factor`. In this case you would want to manually convert your column to a `factor` before proceeding.
+
+Objects saved as an ['.rds' file](#save) can be read in and assigned to objects using the `readRDS()` function e.g.
+
+```{r, eval = F, saveworms}
+## save worms data frame as an .rds file
+saveRDS(worms, "worms.rds")
+
+## read in as a new object
+worms1 <- readRDS("worms.rds")
+```
+
+Here the new `worms1` object is identical to the original `worms` object. I often read in .csv files, clean them up into the correct formats, and then save as an .rds file for further analysis. Since the .rds file stores R objects directly, then reading in the .rds file means I don't have to do all the cleaning up again.
+
+Alternative approaches can be found in other packages, and indeed a good package is `readr`, which is part of the `tidyverse` suite of packages, which we will introduce in the [Advanced Visualisation and Data Wrangling tutorials](https://exeter-data-analytics.github.io/AdVis/index.html)---see [here](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for a useful cheat sheet. Some other options can be found [here](http://www.r-tutor.com/r-introduction/data-frame/data-import).

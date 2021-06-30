@@ -1,0 +1,70 @@
+--- 
+title: "Advanced Visualisation and Data Wrangling in R"
+author: "TJ McKinley"
+site: bookdown::bookdown_site
+output:
+    bookdown::gitbook:
+        config:
+            sharing: null
+        css: 'style.css'
+        includes:
+            in_header: _toggle.html
+    bookdown::pdf_book:
+        keep_tex: yes
+        includes:
+            in_header: header.tex
+linkcolor: blue
+documentclass: book
+link-citations: yes
+---
+
+# Introduction {-}
+
+```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
+```
+
+This workshop requires that you're comfortable with R, and specifically with the concept of `data.frame` objects. The ability to work with and visualise data frames is one of the key reasons why R is so popular amongst statisticians and data scientists. Although a vast amount can be achieved using base R functionality, one of R's other key strengths is the vast array of [packages](https://cran.r-project.org/web/packages/) that it supports, which add a rich variety of additional functionality to R.
+
+A suite of packages that are fast becoming *de rigueur* for performing myriad data science tasks is known as the [`tidyverse`](https://www.tidyverse.org/). These packages provide powerful functions for doing visualisation and manipulation of complex data sets. In this workshop we will introduce key `tidyverse` packages, such as `readr`, `tidyr`, `dplyr` and `ggplot2`, and show how they can be used to efficiently process and visualise complex data.
+
+## `tidyverse` packages {-}
+
+The [`tidyverse`](https://www.tidyverse.org/) is a suite of packages, including `tidyr`, `dplyr`, `ggplot2`, `purrr`, `tibble` and `readr`. Although these packages can each be installed and loaded separately, they are designed to work together, and as such will simply install and load the `tidyverse` directly, rather than worry too much about which functions belong to which packages.
+
+To install `tidyverse`, use:
+
+```{r, eval = F}
+install.packages("tidyverse")
+```
+
+and once installed, it can be loaded using:
+
+```{r, eval = F}
+library(tidyverse)
+```
+
+in the usual way.
+
+> **Note**: if you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using LaTeX, then it sometimes throws an error when loading because LaTeX can't process the correct fonts for the loading message. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = F` e.g.
+> ````
+> ```{r, message = F}`r ''`
+> library(tidyverse)
+> ```
+> ```` 
+
+## Data files and slides {-}
+
+All data files can be downloaded as a ZIP file from [here](https://exeter-data-analytics.github.io/AdVis/dataFiles.zip). PDF copies of the workshop slides can be found through the following links:
+
+* [Advanced Visualisation](https://exeter-data-analytics.github.io/AdVis/AdVisHandout.pdf)
+* [Data Wrangling](https://exeter-data-analytics.github.io/AdVis/DataWrHandout.pdf)
+
+## Tasks {-}
+
+```{task}
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked via the **Show Solution** buttons.
+```
+
+```{solution}
+The answer is, of course, 42.
+```

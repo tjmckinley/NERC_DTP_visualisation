@@ -1,0 +1,771 @@
+# Data Wrangling
+
+It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 
+
+> Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^3].
+
+[^3]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
+
+Before we go any further, if you haven't already, please load `tidyverse`:
+
+```{r, message = F}
+library(tidyverse)
+```
+
+## Tidy data
+
+The architect behind the `tidyverse`, [Hadley Wickham](http://hadley.nz/), distinguishes between two types of data set: **tidy** and **messy**. This is not to be pejorative towards different ways in which people store and visualise data; rather it is to make a distinction between a specific way of arranging data that is useful to most R analyses, and anything else. In fact Hadley has a neat analogy to a famous Tolstoy quote:
+
+> "Tidy datasets are all alike but every messy dataset is messy in its own way."---Hadley Wickham
+
+Specifically, a **tidy** data set is one in which:
+
+* rows contain different **observations**;
+* columns contain different **variables**;
+* cells contain values.
+
+The idea of 'tidy' data gives rise to the nomenclature of the `tidyverse`. In this workshop we will see various ways in which datasets can be manipulated to and from the 'tidy' format.
+
+## Simple manipulations
+
+Let's look at a simple example. The `iris` data set we saw in the last session.
+
+```{r}
+head(iris)
+```
+
+```{task}
+Is this data set 'tidy'?
+```
+
+```{solution}
+Yes, this data set is tidy. Each row corresponds to an individual observation, each column to a variable and each cell to a specific value.
+```
+
+Let's start by looking at some basic operations, such as subsetting, sorting and adding new columns. We will compare the `tidyverse` notation with base R.
+
+### Filter rows
+
+One operation we often want to do is to extract a subset of rows according to some criterion. For example, we may want to extract all rows of the `iris` dataset that correspond to the `versicolor` species. In base R we can do this as:
+
+```{r, eval = F}
+iris[iris$Species == "versicolor", ]
+```
+
+```{r, echo = F}
+head(iris[iris$Species == "versicolor", ])
+```
+
+In `tidyverse`, we can use a function called `filter()`:
+
+```{r, eval = F}
+filter(iris, Species == "versicolor")
+```
+
+```{r, echo = F}
+head(filter(iris, Species == "versicolor"))
+```
+
+Notice some minor differences. The first argument to the `filter()` function is the data, and the second corresponds to the criteria for filtering. Notice that we did not need to use the `$` operator in the `filter()` function. As with `ggplot2` the `filter()` function knows to look for the column `Species` in the data set `iris`.
+
+### Sort rows
+
+Another common operation is to sort rows according to some criterion. Let's say we want to sort rows by `Species` and then `Sepal.Length`. In base R we could do this as:
+
+```{r, eval = F}
+iris[order(iris$Species, iris$Sepal.Length), ]
+```
+
+```{r, echo = F}
+head(iris[order(iris$Species, iris$Sepal.Length), ])
+```
+In `tidyverse` we can use the `arrange()` function.
+
+```{r, eval = F}
+arrange(iris, Species, Sepal.Length)
+```
+
+```{r, echo = F}
+head(arrange(iris, Species, Sepal.Length))
+```
+
+Notice once again that the first argument to `arrange()` is the data set, and then subsequent arguments are the columns that we wish to order by. Again, we do not require the `$` operator here.
+
+### Select columns
+
+Now let's say that we wish to select just the `Species`, `Sepal.Length` and `Sepal.Width` columns from the data set. There are various ways that we could do this in base R. Here are a few options:
+
+```{r, eval = F}
+## option 1
+iris[, match(c("Species", "Sepal.Length", "Sepal.Width"), colnames(iris))]
+
+## option 2
+cbind(Species = iris$Species, Sepal.Length = iris$Sepal.Length, 
+      Sepal.Width = iris$Sepal.Width)
+
+## option 3 (requires knowing which columns are which)
+iris[, c(5, 1, 2)]
+```
+
+In `tidyverse` we can use the `select()` function:
+
+```{r, eval = F}
+select(iris, Species, Sepal.Length, Sepal.Width)
+```
+
+```{r, echo = F}
+head(select(iris, Species, Sepal.Length, Sepal.Width))
+```
+
+Notice once again that the first argument to `select()` is the data set, and then subsequent arguments are the columns that we wish to select; no `$` operators required. There is even a set of functions to help extract columns based on pattern matching e.g.
+
+```{r, eval = F}
+select(iris, Species, starts_with("Sepal"))
+```
+
+See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) for more examples.
+
+Note that we can also remove columns using a `-` operator e.g.
+
+```{r, eval = F}
+select(iris, -starts_with("Petal"))
+```
+
+or 
+
+```{r, eval = F}
+select(iris, -Petal.Length, -Petal.Width)
+```
+
+would remove the petal columns.
+
+### Adding columns
+
+Finally, let's add a new column called `Sepal.Length2` that contains the square of the sepal length. In base R:
+
+```{r, eval = F}
+iris$Sepal.Length2 <- iris$Sepal.Length^2
+```
+
+In `tidyverse`:
+
+```{r, eval = F}
+mutate(iris, Sepal.Length2 = Sepal.Length^2)
+```
+
+```{r, echo = F}
+head(mutate(iris, Sepal.Length2 = Sepal.Length^2))
+```
+
+Once again (you should notice a theme here) the first argument to `mutate()` is the data set, and then the new column as a function of the original column; no `$` operators required.
+
+### Why bother?
+
+So, why would I choose to use functions such as `filter()` and `mutate()` above, when I could have just extracted the correct column of the data, done the appropriate manipulation, and then overwrote or added a new column? There are various reasons:
+
+1. These functions are all written in a **consistent** way. That is, they all take a `data.frame` or `tibble` object as their initial argument, and they all return a revised `data.frame` or `tibble` object. 
+2. Their names are informative. In fact they are **verbs**, corresponding to us **doing something specific** to our data. This makes the code much more readable, as we will see subsequently.
+3. They do not require lots of extraneous operators: such as `$` operators to extract columns, or quotations around column names.
+4. Functions adhering to these criteria can be developed and expanded to perform all sorts of other operations, such as summarising data over groups.
+
+> **Note**: Some R users like to use a function called `attach`. For example, `attach(iris)` would load the names of the variables in the `iris` data frame into the search path in R. This means that you don't have to use the `$` command to extract a column. The advantage of this is that the code can often be made clearer e.g. 
+> ```
+> attach(iris)
+> Sepal.Length2 <- Sepal.Length^2
+> ```
+> The variable names can be removed from the search path by using `detach(iris)`. 
+> 
+> However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
+
+One final and key advantage to the `tidyverse` paradigm, is that we can use **pipes** to make our code more succinct.
+
+### Pipes (`%>%`) {#pipes}
+
+> **Aside**: piping comes from Unix scripting, and simply means a chain of commands, such that the results from each command feed into the next one. 
+
+Recently, the [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) package, and subsequently `tidyverse` have introduced the pipe operator `%>%` that enables us to chain functions together. Let's look at an example:
+
+```{r, eval = F}
+iris %>% filter(Species == "versicolor")
+```
+
+```{r, echo = F}
+iris %>% filter(Species == "versicolor") %>% head()
+```
+
+> **Notice**: when we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
+
+Pipes can be chained together multiple times. For example:
+
+```{r, eval = F}
+iris %>%
+    filter(Species == "versicolor") %>%
+    select(Species, starts_with("Sepal")) %>%
+    mutate(Sepal.Length2 = Sepal.Length^2) %>%
+    arrange(Sepal.Length)
+```
+
+```{r, echo = F}
+iris %>%
+    filter(Species == "versicolor") %>%
+    select(Species, starts_with("Sepal")) %>%
+    mutate(Sepal.Length2 = Sepal.Length^2) %>%
+    arrange(Sepal.Length) %>%
+    head()
+```
+
+I think this is neat! The code is written in a way that is much easier to understand, with each part of the data wrangling process chained together in an intuitive way (once you know the `tidyverse` functions of course). 
+
+> Notice that the pipe operator must be at the end of the line if we wish to split the code over multiple lines.
+
+In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and sepal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
+
+Try doing the same level of data cleaning in Excel as easily...
+
+> **Note**: we can also pass the result of the right-hand side out using the assignment operator `<-` e.g. `iris <- iris %>% filter(Species = "versicolor")` would overwrite the `iris` data to produce a new data set with only `versicolor` entries. 
+
+Once we've got our head around pipes, we can begin to use some of the other useful functions in `tidyverse` to do some really useful things.
+
+> **Final point about pipes**: the package `magrittr` (on which the pipe is implemented) is more general than for just `tidyverse` functions. In fact, one can use the pipe to output any object from the left-hand side to the **first** argument of a function on the right-hand side of the pipe. This is really useful for using functions such as `summary()` or `head()`, that take data frame arguments. Hence I often use pipes like : `iris %>% filter(Species == "versicolor") %>% summary()`.
+> 
+> If you load the `magrittr` package, then there is much more you can do with these ideas. See [here](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) for a useful vignette.
+
+## Grouping and summarising
+
+A common thing we might want to do is to produce summaries of some variable for different subsets of the data. For example, we might want to produce an estimate of the mean of the sepal lengths for each species of iris. The `dplyr` package provides a function `group_by()` that allows us to group data, and `summarise()` that allows us to summarise data.
+
+In this case we can think of what we want to do as "grouping" the data by `Species` and then averaging the `Sepal.Length` values within each group. Hence,
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(mn = mean(Sepal.Length))
+```
+
+The `summarise()` function (note, this is different to the `summary()` function), applies a function to a `data.frame` or subsets of a `data.frame`. Think of it a bit like the `tapply` function, but with more consistent notation and more power.
+
+```{task}
+Produce a table of estimates for the mean *and* variance of both sepal lengths and widths, within each species.
+```
+
+```{solution}
+
+``{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(mnL = mean(Sepal.Length), varL = var(Sepal.Length),
+              mnW = mean(Sepal.Width), varW = var(Sepal.Width))
+``
+
+```
+
+## Reshaping data sets
+
+Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `gather()` and `spread()`. The `gather()` function takes multiple columns, and gathers them into key-value pairs. The `spread()` function is its converse, it takes two columns (`key` and `value`) and spreads these into multiple columns. These ideas are best illustrated by an example.
+
+### Example: Gapminder
+
+Let's pull up some data. You should have access to a .csv file called "indicator gapminder gdp_per_capita_ppp.csv". This is a digital download of the [Gapminder](https://www.gapminder.org/) GDP per capita data that can be found in the `gapminder` package. All the data sets used in the [Gapminder](https://www.gapminder.org/) project can be downloaded from [https://www.gapminder.org/data/](https://www.gapminder.org/data/).
+
+Download this file and save it into your working directory. Now let's read in the data using the `read_csv()` function in `tidyverse`[^2]
+
+[^2]: Note that this is different than the `read.csv()` function in base R. It doesn't convert `character` columns to  `factor` columns, and returns a `tibble` by default.
+
+```{r, message = F, eval = F}
+gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv")
+gp_income
+```
+
+```{r, message = F, echo = F}
+gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv")
+gp_income
+```
+
+```{task}
+Is this data in 'tidy' format?
+```
+
+```{solution}
+No, this data is not in 'tidy' format. We can see that each row corresponds to a different `country`, but each column corresponds to a different `year`. For this to be 'tidy', we would need one column containing the `country`, one containing the `year`, and a third containing the GDP for each country in each year.
+```
+
+Before we go any further, notice that the first column is labelled incorrectly as `GDP per capita` (this is an artefact from the original data set), so let's rename the first column using the `rename()` function:
+
+```{r}
+gp_income <- gp_income %>%
+    rename(country = "GDP per capita")
+gp_income
+```
+
+> **Note** we can also use backticks to enclose names that include spaces (which `read_csv()` allows).
+
+Notice that the `rename()` function takes the same form as other `tidyverse` functions such as `filter()` or `arrange()`. We then overwrite the original data frame to keep our workspace neat.
+
+> **Note**: this is OK here because we have a copy of our **raw** data saved in an external file. This, combined with the use of **scripts**, means we have a backup of the original data in case anything goes wrong. Don't overwrite your original data set!
+
+The next thing we need to do is to collapse the **year** columns down. Ideally we want a column corresponding to **country**, a column corresponding to **year** and a final column corresponding to **GDP**. We are going to do this by using the `gather()` function. Note that the arguments to `gather()` are:
+
+* `data`: this gives the name of the data frame;
+* `key`: gives the name of the column that will contain the collapsed column names (e.g. `1800`, `1801` etc.);
+* `value`: gives the name of the columns that will contain the **values** in each of the cells of the collapsed column (e.g. the corresponding GDP values);
+* the final set of arguments correspond to those columns we wish to collapse. Here we want to collapse everything ***except*** `country`, which we can do using the `-` operator.
+
+```{r}
+gp_income <- gp_income %>%
+    gather(key = year, value = gdp, -country)
+gp_income
+```
+
+Great! This is almost there now. Notice that R has left the new `year` column as a `character` vector, so we want to change that:
+
+```{r}
+gp_income <- gp_income %>%
+        mutate(year = as.numeric(year))
+```
+
+Also, there is quite a lot of extraneous information in the data. Firstly, there were some mostly empty rows in Excel, which manifest as missing values when the data were read into R:
+
+```{r}
+sum(is.na(gp_income$country))
+```
+
+We can examine these rows by filtering. 
+
+```{r}
+gp_income %>% filter(is.na(country)) %>% summary()
+```
+
+We can see from the summary that only one row has any GDP information, and indeed in the original data there was a single additional point that could be found in cell HE263 of the original Excel file. I think this is an artefact of the original data, and as such we will remove it here:
+
+```{r}
+gp_income <- gp_income %>% filter(!is.na(country))
+```
+
+We can also remove the rows that have no GDP information if we so wish (which are denoted by **missing values**---`NA`):
+
+```{r}
+gp_income <- gp_income %>% filter(!is.na(gdp))
+```
+
+Finally, we will restrict ourselves to looking at the data from 1990 onwards:
+
+```{r}
+gp_income <- gp_income %>% filter(year > 1990)
+head(gp_income)
+summary(gp_income)
+```
+
+Phew! this took some effort, but we've managed to end up with a fairly clean data set that we can plot, summarise etc.
+
+To do all of the previous data cleaning operation using pipes, we can write:
+
+```{r, message = F, eval = F}
+gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
+                rename(country = `GDP per capita`) %>%
+                gather(year, gdp, -country) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(gdp)) %>%
+                filter(year > 1990)
+```
+
+```{r, include = F}
+gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
+                rename(country = `GDP per capita`) %>%
+                gather(year, gdp, -country) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(gdp)) %>%
+                filter(year > 1990)
+```
+
+Now we can begin to motor. For example, we might want to produce a mean GDP for each country, averaging over years. In this case we can think of "grouping" the data by country and then averaging the GDP values within each group (as we have seen before):
+
+```{r}
+gp_income %>% 
+    group_by(country) %>%
+    summarise(mn = mean(gdp))
+```
+
+```{task}
+Produce the mean GDP for each year, averaged across countries.
+```
+
+```{solution}
+
+``{r}
+gp_income %>% 
+    group_by(year) %>%
+    summarise(mn = mean(gdp))
+``
+
+Notice that although `year` is a numerical variable, R can still group by unique values here.
+```
+
+We must be a bit careful here, since we may have less samples for some countries/years than for others. This affects the uncertainty in our estimates, though it is not too difficult to extract standard errors for each grouping and thus produce confidence intervals to quantify which estimates are more uncertain than others (this is where proper **statistical modelling** is paramount).
+
+```{task}
+Load in the file "indicator hiv estimated prevalence% 15-49.csv". This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
+```
+
+```{solution}
+
+``{r, message = F, eval = F}
+gp_hiv <- read_csv("indicator hiv estimated prevalence% 15-49.csv") %>%
+            rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
+            gather(year, prevalence, -country) %>%
+            mutate(year = as.numeric(year)) %>%
+            filter(!is.na(country)) %>%
+            filter(!is.na(prevalence)) %>%
+            filter(year > 1990) %>%
+            mutate(prevalence = as.numeric(prevalence))
+``
+
+``{r, message = F, echo = F}
+gp_hiv <- read_csv("uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
+            rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
+            gather(year, prevalence, -country) %>%
+            mutate(year = as.numeric(year)) %>%
+            filter(!is.na(country)) %>%
+            filter(!is.na(prevalence)) %>%
+            filter(year > 1990) %>%
+            mutate(prevalence = as.numeric(prevalence))
+``
+
+```
+
+```{r, include = F}
+gp_hiv <- readRDS("uploadFiles/gp_hiv.rds")
+```
+
+```{task}
+Produce a line plot of HIV prevalence over time for Uganda and Brazil. Use different colours for the different countries. [Use `ggplot2`, and notice that the first argument to the `ggplot()` function is a `data.frame`! You might also have to convert the `year` column to a `numeric`...]
+```
+
+```{solution}
+
+``{r}
+gp_hiv %>%
+    filter(country == "Brazil" | country == "Uganda") %>%
+    ggplot(aes(x = year, y = prevalence, colour = country)) +
+        geom_line() + xlab("Year") + ylab("Prevalence") +
+        labs(colour = "Country")
+``
+
+```
+    
+## Joins
+
+We now have two data sets: `gp_income` and `gp_hiv`. In order to visualise and analyse them, we need to link them together. A key skill to have in data manipulation is the ability to **join** data sets (or tables) together. The `dplyr` package provides various functions to do this, depending on ***how*** you want to join the tables.
+
+> In case you haven't managed to complete the last task, the `gp_hiv` data is available as "gp_hiv.rds". You can read this into R using `gp_hiv <- readRDS("gp_hiv.rds")` and continue with the practical.
+
+In order to join two tables, you must have one or more variables **in common**. In this case we want to match by `country` and `year`, to produce a data set that contains `country`, `year`, `gdp` and `prevalence`.
+
+There should be *at most* one entry for each `country` $\times$ `year` combination. We can check this using the `count()` function in `dplyr`:
+
+```{r}
+gp_income %>% count(country, year) %>% summary()
+gp_hiv %>% count(country, year) %>% summary()
+```
+
+> `count()` counts the numbers of entries in each combination of the provided variables: in this case `year` and `country`. The `summary()` function is to provide a straightforward way to see that all the `country` $\times$ `year` combinations have one entry only.
+
+This should make it straightforward to join. Hence,
+
+```{r}
+gp <- inner_join(gp_income, gp_hiv, by = c("year", "country"))
+gp
+```
+
+The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, and visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
+
+```{r}
+anti_join(gp_income, gp_hiv, by = c("year", "country"))
+anti_join(gp_hiv, gp_income, by = c("year", "country"))
+```
+
+We can see that there are `r nrow(anti_join(gp_income, gp_hiv, by = c("year", "country")))` entries present in `gp_income` that can't be matched to `gp_hiv`, but `r nrow(anti_join(gp_hiv, gp_income, by = c("year", "country")))` entries in `gp_hiv` that can't be matched to `gp_income`. 
+
+### Types of join
+
+**Inner joins** return ***only*** those rows that can be matched in both data sets, it discards any rows from either data frame that can't be matched.
+
+**Outer joins** retain rows that don't match, depending on the type of join. **Left** outer joins retain rows from the left-hand side that don't match the right, but discard rows from the right that don't match the left. **Right** outer joins retain rows from the right-hand side that don't match the left, but discard rows from the left that don't match the right. **Full** outer joins return all rows that don't match. R uses missing values (`NA`) to fill in gaps that it can't match. For example,
+
+```{r}
+left_join(gp_income, gp_hiv, by = c("year", "country"))
+```
+
+Here we can see that there is no prevalence data for `Afghanistan` in `1991`, so R has included the row but with a missing value (`NA`) in place of the prevalence data. In the `inner_join` above, this row was removed. Try exploring **right-** and **full-** outer joins.
+
+```{r}
+right_join(gp_income, gp_hiv, by = c("year", "country"))
+full_join(gp_income, gp_hiv, by = c("year", "country"))
+```
+
+What do you notice about the **left-** and **full-** outer joins here? Why is this so?
+
+> There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
+
+Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them. We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here. 
+
+```{task}
+Using `ggplot2`, produce a plot of HIV prevalence in 15-49 year olds against $\log_{10}$ (GDP per capita) for 1991, 1997, 2005 and 2011, where each point represents a `country`.
+```
+
+```{solution}
+
+``{r}
+## here is one solution using filtering, piping and faceting
+gp %>%
+    filter(year == 1991 | year == 1997 | year == 2005 | year == 2011) %>%
+    ggplot(aes(x = gdp, y = prevalence)) +
+    geom_point() + 
+    scale_x_log10() +
+    xlab("log10(GDP per capita)") +
+    ylab("HIV prevalence in 15-49 year olds") +
+    facet_wrap(~year)
+``
+
+```
+
+```{task}
+Total population data are available in the "indicator gapminder population.csv" document. Load this into R, tidy it up, and then join it to the `gp` data you have already created.
+```
+
+```{solution}
+
+``{r, message = F, eval = F}
+## read in data
+gp_pop <- read_csv("indicator gapminder population.csv") %>%
+                gather(year, pop, -`Total population`) %>%
+                rename(country = `Total population`) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(pop)) %>%
+                filter(year > 1990)
+
+## check no population data are missing
+## hence all rows of gp can be matched
+anti_join(gp, gp_pop, by = c("year", "country"))
+
+## join to gp table
+gp <- inner_join(gp, gp_pop, by = c("year", "country"))
+``
+
+``{r, message = F, echo = F}
+## read in data
+gp_pop <- read_csv("uploadFiles/indicator gapminder population.csv") %>%
+                gather(year, pop, -`Total population`) %>%
+                rename(country = `Total population`) %>%
+                mutate(year = as.numeric(year)) %>%
+                filter(!is.na(country)) %>%
+                filter(!is.na(pop)) %>%
+                filter(year > 1990)
+
+## check no population data are missing
+## hence all rows of gp can be matched
+anti_join(gp, gp_pop, by = c("year", "country"))
+
+## join to gp table
+gp <- inner_join(gp, gp_pop, by = c("year", "country"))
+``
+
+```
+
+```{r, include = F}
+gp_pop <- readRDS("uploadFiles/gp_pop.rds")
+gp <- readRDS("uploadFiles/gp.rds")
+```
+
+```{task}
+Produce a new plot of HIV prevalence against GDP per capita for 1991, 1997, 2005 and 2011, where each point represents a `country` and where the point sizes are scaled by population size.
+```
+
+```{solution}
+
+``{r}
+## here is one solution using filtering, piping and faceting
+gp %>%
+    mutate(year = as.numeric(year)) %>%
+    filter(year == 1991 | year == 1997 | year == 2005 | year == 2011) %>%
+    ggplot(aes(x = gdp, y = prevalence, size = pop)) +
+    geom_point() + 
+    scale_x_log10() +
+    labs(size = "Population size") +
+    xlab("log10(GDP per capita)") +
+    ylab("HIV prevalence in 15-49 year olds") +
+    facet_wrap(~year)
+``
+
+```
+
+## Comprehensive example---Population pyramids
+
+[Population pyramids](https://en.wikipedia.org/wiki/Population_pyramid) are commonly used by demographers to illustrate age and sex structure of a country's population. A schematic example of a population pyramid is shown in Figure \@ref(fig:poppyramid).
+
+```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = F}
+include_graphics("images/Population_pyramid_example.png")
+```
+
+Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: "Germanypop.csv", "Mexicopop.csv" and "USpop.csv", each with the following columns:
+
+* **male**: Population counts for males ($\times$ 1000);
+* **female**: Population counts for females ($\times$ 1000).
+
+Each row corresponds to an age class, in the order: 0--4, 5--9, 10--14, 15--19, 20--24, 25--29, 30--34, 35--39, 40--44, 45--49, 50--54, 55--59, 60--64, 65--69, 70--74 and 75--79. Mexico then has a final age class of 80+; Germany has final age classes of 80--84 and 85+; and the US has final age classes of 80--84, 85--89, 90--94 and 95+.
+
+Original source: [US Census](http://www.census.gov/)
+
+(I downloaded these data sets from the very excellent QELP website: [http://www.seattlecentral.edu/qelp/sets/032/032.html](http://www.seattlecentral.edu/qelp/sets/032/032.html), and wish to thank the authors for providing a brilliant resource for teaching statistics.)
+
+In this exercise we will load these data into R, wrangle them into a useful format and then produce a population pyramid using `ggplot2`. We will aim to do all of this using a `tidyverse` workflow where possible.
+
+### Data Wrangling
+
+Firstly, we read the three data files into R, storing them as `tibble` objects called `germany`, `mexico` and `us`. 
+
+```{r, message = F, eval = F}
+## read German data in
+germany <- read_csv("Germanypop.csv")
+
+## read Mexican data in
+mexico <- read_csv("Mexicopop.csv")
+
+## read US data in
+us <- read_csv("USpop.csv")
+```
+
+```{r, message = F, echo = F}
+## read German data in
+germany <- read_csv("uploadFiles/Germanypop.csv")
+
+## read Mexican data in
+mexico <- read_csv("uploadFiles/Mexicopop.csv")
+
+## read US data in
+us <- read_csv("uploadFiles/USpop.csv")
+```
+
+We now need to bind these data sets together. One issue is that these three data sets have different age classes. If we want to join the tables together, we need to set consistent groupings in each data set. For this we will set the maximum age class for each country to be `"80+"`. Hence for Mexico we do not need to do anything, but for Germany and the US we will need to group together the latter categories.
+
+Let's do the US first.
+
+```{r}
+us <- us %>%
+    mutate(age = ifelse(age == "80-84", "80+", age)) %>%
+    mutate(age = ifelse(age == "85-89", "80+", age)) %>%
+    mutate(age = ifelse(age == "90-94", "80+", age)) %>%
+    mutate(age = ifelse(age == "95+", "80+", age)) %>%
+    group_by(age) %>%
+    summarise(male = sum(male), female = sum(female))
+```
+
+```{task}
+Go through the code above and understand what each line is doing. Repeat this task for `germany`.
+```
+
+```{solution}
+
+``{r}
+germany <- germany %>%
+    mutate(age = ifelse(age == "80-84", "80+", age)) %>%
+    mutate(age = ifelse(age == "85+", "80+", age)) %>%
+    group_by(age) %>%
+    summarise(male = sum(male), female = sum(female))
+``
+
+```
+
+We will now join the three data sets together on the `age` column, before gathering together the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
+
+```{r}
+pop <- germany %>%
+        inner_join(mexico, "age", suffix = c("_Germany", "_Mexico")) %>%
+        inner_join(us, "age") %>%
+        rename(male_US = male, female_US = female) %>%
+        gather("country", "pop", -age) %>%
+        separate(country, c("sex", "country"), sep = "_") %>%
+        mutate(country = factor(country), sex = factor(sex)) %>%
+        mutate(age = factor(age, levels = unique(mexico$age)))
+pop
+```
+
+```{task}
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators.
+```
+
+### Visualisation
+
+Finally, we have wrangled our data into a useful form for data analysis. Now we will try and plot some population pyramids using `ggplot2`. We do this by tricking `ggplot` into plotting stacked barplots, with `males` being plotted below the zero line, and `females` above the zero line. We then flip the axes and use faceting and colours to denote countries and sex respectively.
+
+```{r}
+ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
+    geom_bar(stat = "identity") +
+    scale_y_continuous(
+        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+        labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
+    ) +
+    coord_flip() +
+    facet_wrap(~ country, ncol = 1) +
+    ylab("Population counts (x1000)") +
+    xlab("Age (yrs)") +
+    labs(fill = "Sex")
+```
+
+```{r, echo = F, eval = F}
+p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
+    geom_bar(stat = "identity") +
+    scale_y_continuous(
+        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+        labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
+    ) +
+    coord_flip() +
+    facet_wrap(~ country, ncol = 1) +
+    ylab("Population counts (x1000)") +
+    xlab("Age (yrs)") +
+    labs(fill = "Sex")
+ggsave("DataWrSlides/images/poppyramid.pdf", p)
+```
+
+Beautiful isn't it? (The stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
+
+### Summarisation
+
+In the year 2000, the population distribution of Mexico shows a very bottom-heavy pattern, suggesting few older people, but a large number of young and middle-age people. In fact we can quantify this directly as:
+
+```{r}
+pop %>%
+    group_by(country, age) %>%
+    summarise(pop = sum(pop)) %>%
+    arrange(country, age) %>%
+    mutate(cumprop = cumsum(pop / sum(pop))) %>%
+    select(-pop) %>%
+    spread(age, cumprop)
+```
+
+```{task}
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators. Notice that we have used the `spread()` function to produce a table that is **not** in 'tidy' format, but is better for visualising these specific outcomes.
+```
+
+We can see here that around 55% of Mexicans are younger than 25, compared to around 27% of Germans and 35% of Americans. We can also look at these figures split by sex:
+
+```{r}
+pop %>%
+    arrange(country, sex, age) %>%
+    group_by(country, sex) %>%
+    mutate(cumprop = cumsum(pop / sum(pop))) %>%
+    select(-pop) %>%
+    spread(age, cumprop)
+```
+
+Mexico also has a very high proportion of young females: in fact 33% of the current population of women are of pre-reproductive age (0--14 years) and 49% are of reproductive age (15--44). This means Mexico's population is expected to rapidly increase in the near future. A general pattern is that as countries transition from more agricultural economies to more industrialised economies, birth rates drop (due to better access to family planning, increased job opportunities for women, and various other factors). As soon as birth rates approach death rates then population growth declines, and the population pyramid becomes more top-heavy. The US is currently classed as a medium-growth country, and Germany a negative-growth country. The population pyramid plot also helps visualise the overall differences in population sizes between the three countries.
+
+A good description of population demographics can be found in this short video:
+
+```{r, screenshot.alt = "images/population.jpg", echo = F}
+include_url("https://www.youtube.com/embed/QsBT5EQt348")
+```
+
+Another great site on these sorts of topics is the [OurWorldInData](https://ourworldindata.org/) project.

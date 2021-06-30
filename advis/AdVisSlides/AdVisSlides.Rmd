@@ -1,0 +1,772 @@
+---
+title: "Advanced Visualisation (Made Easy) in R Workshop"
+author: "T. J. McKinley ([t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk))"
+fontsize: 12pt
+output: 
+    beamer_presentation:
+        latex_engine: xelatex
+header-includes:
+    - \input{header.tex}
+---
+
+```{r, include = F}
+library(knitr)
+knitr::opts_chunk$set(cache = F, echo = T, fig.align = "center", fig.width = 5, fig.height = 5, resize.width = "0.9\\textwidth", resize.height = "0.9\\textwidth")
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+## 'Tidy' data
+
+> "Tidy datasets are all alike but every messy dataset is messy in its own way."---[Hadley Wickham](http://hadley.nz/)
+
+Specifically, a **tidy** data set is one in which:
+
+* **rows** contain different **observations**;
+* **columns** contain different **variables**;
+* **cells** contain values.
+
+The idea of 'tidy' data gives rise to the nomenclature of the `tidyverse`.
+
+## The `tidyverse`
+
+The [`tidyverse`](https://www.tidyverse.org/) is a suite of R packages designed for **data science**. All packages share an underlying design philosophy and grammar. All exploit the power of 'tidy' datasets.
+
+Rather than load each separate package, we will load them all^[they can be installed using `install.packages("tidyverse")`, though this takes some time...] using:
+
+```{r, message = F, warning = F}
+library(tidyverse)
+```
+
+## The `tidyverse`
+
+`tidyverse` packages include:
+
+* tidyr
+* ggplot2
+* dplyr
+* purrr
+* readr
+* tibble
+
+We will use functionality from some of these packages in these workshops, though we will not distinguish which functions come from which packages (which is OK as long as you load the whole `tidyverse`).
+
+## Cheat sheets
+
+The architect of the `tidyverse` , [Hadley Wickham](http://hadley.nz/), is now Chief Scientist at RStudio, and so these packages are well supported and well-documented.
+
+Cheat sheets can be found at:
+
+\bc
+
+[https://www.rstudio.com/resources/cheatsheets/](https://www.rstudio.com/resources/cheatsheets/).
+
+\ec
+
+These are really useful resources!
+
+## Further reading
+\small
+I would highly recommend:
+
+\bcols
+\bcol{0.48}
+\centering
+
+**R for Data Science**
+\gap
+
+\includegraphics[width = 0.5\textwidth]{images/RforDS.png}
+
+Link: [here](https://r4ds.had.co.nz/)
+
+\ecol
+\bcol{0.48}
+\centering
+
+**ggplot2**
+\gap
+
+\includegraphics[width = 0.45\textwidth]{images/ggplot2.jpg}
+
+Link: [here](https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/331924275X/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=ggplot2-20&linkId=4b4de5146fdafd09b8035e8aa656f300)
+
+\ecol
+\ecols
+
+## Structure of the workshop
+
+Full (and more comprehensive notes) are provided at:
+
+\bc
+
+[https://exeter-data-analytics.github.io/AdVis/](https://exeter-data-analytics.github.io/AdVis/)
+
+\ec
+
+You are encouraged to go through these in more detail outside of the workshop.
+
+Today we will discuss the main concepts, and work through some (although not all) of the examples in **Section 1** of the notes.
+
+I would encourage you to work from the HTML here, but a PDF is available as a link in the HTML notes.
+
+## RStudio server
+
+CLES have kindly offered the use of their RStudio server in case anyone needs it:
+
+\bc
+
+[https://rstudio04.cles.ex.ac.uk](https://rstudio04.cles.ex.ac.uk)
+
+\ec
+
+**Please note that this server is only for use for this workshop, unless you otherwise have permission to use it .**
+
+You will need to log-in using your University log-in details.
+
+## Example: Titanic survival data
+
+Let's have a look at some 'tidy' data:
+\gap
+\bcols
+\bcol{0.48}
+    \includegraphics[width=0.9\textwidth]{images/titanic.jpg}
+\ecol
+\bcol{0.48}
+\small
+    On April 15, 1912, during her maiden voyage, the [Titanic](https://en.wikipedia.org/wiki/RMS_Titanic) sank after colliding with an iceberg, killing 1502 out of 2224 passengers and crew.
+    \gaps
+    This tragedy shocked the international community and led to better safety regulations for ships.
+\ecol
+\ecols
+
+## Example: Titanic survival data
+
+We have a subset of the available data (excluding crew), and want to explore which characteristics of people meant they were more likely to survive?
+
+```{r, message = F, size = "scriptsize", echo = F}
+## load data and look at top few rows
+titanic <- read_csv("titanic.csv")
+titanic <- titanic %>%
+    mutate(name = abbreviate(name)) %>%
+    mutate(pclass = as.character(pclass)) %>%
+    mutate(survived = as.character(survived)) %>%
+    as.data.frame()
+head(titanic)
+```
+
+```{r, echo = F, eval = F}
+saveRDS(titanic, "titanic.rds")
+```
+
+Are these data 'tidy'?
+
+## Example: Titanic survival data
+
+```{r, size = "scriptsize", echo = F}
+head(titanic)
+```
+
+These data are tidy!
+
+* **Rows** contain different **observations**;
+* **columns** contain different **variables**;
+* **cells** contain values.
+
+## Untidy ('messy') data
+
+What about the following data set?
+
+```{r, echo = F, size = "scriptsize", message = F, warning = F}
+temp <- tribble(~Replicate1, ~Replicate2, ~Replicate3,
+                1.2, 2.2, 2.3,
+                3.4, 3.5, 2.9)
+temp <- as.data.frame(temp)
+rownames(temp) <- c("TreatmentA", "TreatmentB")
+temp
+```
+
+\uncover<2->{These data are \textbf{not} `tidy'.}
+
+## Untidy ('messy') data
+
+A 'tidy' version would be:
+
+```{r, echo = F, size = "scriptsize", message = F, warning = F}
+temp %>% rownames_to_column("Treatment") %>%
+    gather(Replicate, Measurement, -Treatment)
+```
+
+In the next workshop we will see how to use `tidyverse` to manipulate, join and tidy messy data sets!
+
+## Introduction to `ggplot2`
+
+For this workshop we will assume that we have a 'tidy' data set that we wish to visualise, and we will use the package `ggplot2`^[loaded automatically as part of `tidyverse`] to produce beautiful plots of various different types from this data set.
+
+`ggplot2` is a hugely powerful package, and is the *de facto* package of choice for many data scientists. We will see how this package makes complex plots easy!
+
+## Example: Titanic survival data
+
+One of the principal motivations for statistical analyses is to quantify relationships (and differences) between variables in the face of uncertainty.
+
+**Data visualisation** is a core component of good statistical modelling.
+
+Let's start by drawing a **bar plot** describing the numbers of individuals that died on the Titanic.
+
+## Example: Titanic survival data
+
+For comparison let's look at standard base R, next to `ggplot2`:
+\bcols
+\bcolt{0.48}
+```{r, size = "scriptsize"}
+barplot(table(titanic$survived))
+```
+\ecol
+\bcolt{0.48}
+```{r, size = "scriptsize", resize.width = "0.8\\textwidth", resize.height = "0.8\\textwidth"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived))
+```
+\ecol
+\ecols
+
+## Example: Titanic survival data
+
+So far, not so different. 
+
+How about if we wanted to visualise something a bit more complex? For example, is the famous **``women and children first''** code-of-conduct supported by the Titanic survival data?
+
+## Example: Titanic survival data
+\small
+Let's explore differences in survival between men and women first.
+\gap[-1.5]
+\bcols
+\bcolt{0.48}
+```{r, size = "scriptsize", resize.width = "0.8\\textwidth", resize.height = "0.8\\textwidth"}
+barplot(table(titanic$gender, 
+          titanic$survived))
+```
+\ecol
+\bcolt{0.48}
+```{r, size = "scriptsize", resize.width = "0.75\\textwidth", resize.height = "0.75\\textwidth"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                 fill = gender))
+```
+\ecol
+\ecols
+
+## Example: Titanic survival data
+\small
+Now let's add **passenger class** into the mix...
+\gap[-1.5]
+\bcols
+\bcolt{0.48}
+```{r, size = "scriptsize", fig.width = 7, fig.height = 3.5, resize.width = "\\textwidth", resize.height = "0.5\\textwidth"}
+par(mfrow = c(1, 3))
+for(i in unique(titanic$pclass)) {
+    temp <- titanic[
+        titanic$pclass == i, ]
+    barplot(table(temp$gender, 
+          temp$survived))
+}
+```
+\ecol
+\bcolt{0.48}
+```{r, size = "scriptsize", resize.width = "0.75\\textwidth", resize.height = "0.75\\textwidth"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                 fill = gender)) +
+    facet_wrap(~pclass)
+```
+\ecol
+\ecols
+
+## Example: Titanic survival data
+
+Notice several things with the **base R** script:
+
+* Requires us to set up multiple plots;
+* requires `for()` loop;
+* requires subsetting (and use of `$` operator);
+* axes on different scales;
+* No legends!
+
+## Example: Titanic survival data
+\gap[-1]
+Full **base R** solution:
+```{r, Rageclass, eval = F, size = "scriptsize"}
+## extract stratified tables of counts
+bars <- lapply(unique(titanic$pclass), function(x, data){
+    data <- data[data$pclass == x, ]
+    table(data$gender, data$survived)
+}, data = titanic)
+names(bars) <- unique(titanic$pclass)
+
+## set up axes
+yrange <- c(0, max(do.call("rbind", lapply(bars, function(x){
+    apply(x, 2, sum)
+}))))
+
+## produce plots
+par(mfrow = c(1, 3))
+for(i in 1:length(bars)){
+    ## plot
+    barplot(bars[[i]], main = names(bars)[i], ylim = yrange, 
+            legend = rownames(bars[[i]]), 
+            args.legend = list(title = "sex"))
+}
+```
+
+## Example: Titanic survival data
+
+Full **base R** solution:
+
+```{r, eval = T, echo = F, ref.label = "Rageclass", fig.width = 7, fig.height = 3.5, resize.width = "0.8\\textwidth", resize.height = "0.4\\textwidth"}
+```
+
+## Example: Titanic survival data
+\gap[-1]
+Compare this to the **`ggplot2`** version:
+```{r, size = "scriptsize", resize.width = "0.45\\textwidth", resize.height = "0.45\\textwidth"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, fill = gender)) +
+    facet_wrap(~ pclass)
+```
+
+## What we're aiming for...
+
+\centering
+\includegraphics[width=0.8\textwidth]{images/hans.jpg}
+
+Courtesy of the inimitable [Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling). 
+\gaps[-0.1]
+Link: [here](https://www.youtube.com/embed/jbkSRLYSojo)
+
+## `ggplot2`
+
+The ethos of `ggplot2` is that plots can be broken down into different **features**, most notably:
+
+* **data**;
+* **aesthetic mapping**;
+* **geometric object**;
+* **scales**;
+* **faceting**;
+* statistical transformations;
+* coordinate system;
+* position adjustments.
+
+## Data
+
+Firstly, `ggplot2` ***always*** operates on `data.frame`^[or `tibble` objects---see next session...] objects. Hence we always set up a plot by telling the `ggplot()` function which data frame we are operating on e.g.
+
+```{r, eval = F}
+ggplot(titanic)
+```
+
+## Geoms
+
+A **geom** defines the type of plot we want. In this case we want a **barplot**, which can be defined by the `geom_bar()` function. 
+
+Geoms can be layered, allowing us to built complex plots in different ways. Common geoms are:
+
+\bcols
+\bcol{0.48}
+
+* `geom_point()`
+* `geom_line()`
+* `geom_histogram()`
+
+\ecol 
+\bcol{0.48}
+
+* `geom_density()`
+* `geom_bar()`
+* `geom_violin()`
+
+\ecol
+\ecols
+
+Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
+
+## Aesthetics
+
+**Aethetics** define how the data are **mapped** onto the visual *aesthetics* of the plot. In general, **aesthetics** include:
+
+* position;
+* colour (border or line color);
+* fill (inside color);
+* shape;
+* linetype;
+* size.
+
+The choice of aesthetic depends on the **`geom`**, and must be specified using the `aes()` function.
+
+## Example: Titanic survival data
+
+In our initial survival plot, we wanted a bar chart, with the $x$-axis relating to survival/death, and the $y$-axis relating to the number of individuals in each group. 
+
+In this case the **geom** is `geom_bar()`, and the **aesthetic** is `x`, where `x` must be set to the correct column of the `data.frame`:
+
+```{r, size = "scriptsize", eval = F}
+ggplot(titanic) +               ## set up plot
+    geom_bar(aes(x = survived)) ## set up geom and aethetics
+```
+
+Here the `geom_bar()` function automatically produces the $y$-axis output as the *counts* in each category of the `x` variable.
+
+## Building plots
+
+`ggplot2` **builds** plots up by **adding** together components (using the `+` operator). 
+
+If splitting the code over multiple lines, make sure the `+` sign is at the **end** of each line.
+
+```{r, size = "scriptsize", eval = F}
+ggplot(titanic) +               ## set up plot
+    geom_bar(aes(x = survived)) ## set up geom and aethetics
+```
+
+## Building plots
+
+To stratify by `gender` is easy. We simply set the corresponding **aesthetic**: in this case we can use the `fill` aesthetic to produce different bars for each level of the `fill` variable:
+
+\bcols
+\bcol{0.48}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                 fill = gender)) 
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, resize.width = "0.8\\textwidth", resize.height = "0.8\\textwidth"}
+ggplot(titanic) + geom_bar(aes(x = survived, fill = gender))
+```
+
+\ecol
+\ecols
+
+## Building plots
+
+Notice that we did not require any subsetting or `$` operators. 
+
+The beauty of 'tidy' data is that `ggplot2` knows how to handle data of this form, and furthermore, knows where to look for the data (because we've told it to look in the `titanic` data frame).
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) +
+    geom_bar(aes(x = survived, fill = gender))
+```
+
+Notice also that it's added a legend automatically! Neat eh?
+
+## Your turn
+
+Now have a go at some of the exercises in Section 1.3 of the workshop. This uses the `iris` data set in R to illustrate some of these concepts, but this time generating a scatterplot.
+
+To do this we will need a new geom (`geom_point()`) and new aesthetics (`y` and `colour`). Otherwise the approach is very similar to the bar plot example.
+
+## Facets
+
+One really neat feature of `ggplot2` is the ability to generate separate plots using **faceting**.
+
+There are two flavours of facet:
+
+* `facet_wrap()`;
+* `facet_grid()`.
+
+## Facets
+
+We saw an example earlier where we wanted to further stratify our bar plot by **passenger class**.
+
+This is coded as a column called `pclass` in the `titanic` data frame.
+
+Because the data is 'tidy', we only have to add a single line to our code:
+
+```{r, eval = F, size = "scriptsize"}
+facet_wrap(~ pclass)
+```
+
+This says to create different plots for each unique element of the `pclass` variable
+
+## Facets
+
+\bcols
+\bcol{0.48}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                 fill = gender)) +
+    facet_wrap(~ pclass)
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F}
+ggplot(titanic) + geom_bar(aes(x = survived, fill = gender)) +
+    facet_wrap(~ pclass)
+```
+
+\ecol
+\ecols
+
+## Facets
+
+We may want to swap variables around, which is now straightforward:
+
+\bcols
+\bcol{0.48}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                 fill = pclass)) +
+    facet_wrap(~ gender)
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F}
+ggplot(titanic) + geom_bar(aes(x = survived, fill = pclass)) +
+    facet_wrap(~ gender)
+```
+
+\ecol
+\ecols
+
+## Putting these ideas together
+
+`facet_grid()` is used less often, but allows you to facet by more than one variable e.g.
+
+\bcols
+\bcol{0.48}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_point(aes(x = fare, 
+                 y = age, 
+                 colour = survived)) +
+    facet_grid(pclass ~ gender)
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F}
+ggplot(titanic) + 
+    geom_point(aes(x = fare, 
+                 y = age, 
+                 colour = survived)) +
+    facet_grid(pclass ~ gender)
+```
+
+\ecol
+\ecols
+
+## Your turn
+
+Have a go at Section 1.3.5 of the workshop.
+
+## Statistical transformations
+
+It is also possible to perform some useful statistical transformations of the data.
+
+Common choices include `loess`/`gam` smoothing a scatterplot, or adding a *linear* line-of-best-fit.
+
+These can be done simply in `ggplot2` using `stat_*()` functions.
+
+## Example: Titanic survival data
+
+Let's see whether there is any relationship between `age` and `fare`.
+
+\bcols
+\bcol{0.48}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_point(aes(x = fare, 
+                 y = age))
+```
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F}
+ggplot(titanic) + 
+    geom_point(aes(x = fare, 
+                 y = age))
+```
+
+\ecol
+\ecols
+
+## Example: Titanic survival data
+\small
+It may be easier to visualise if we add a smoothed line-of-best-fit (with **global** aesthetics):
+
+\bcols
+\bcol{0.5}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic, aes(x = fare, y = age)) + 
+    geom_point() +
+    stat_smooth()
+```
+
+You can change the default parameters of the smoother, such as the bandwidth (see `?stat_smooth`).
+\gaps
+Useful for exploratory purposes, but no substitute for a proper **model**!
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F}
+ggplot(titanic, aes(x = fare, y = age)) + 
+    geom_point() +
+    stat_smooth()
+```
+
+\ecol
+\ecols
+
+## Example: Titanic survival data
+\small
+Not much going on here in my opinion. Note that `stat_*()` operations preserve aesthetics and facets. For example:
+
+\bcols
+\bcol{0.5}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic, aes(x = fare, 
+                    y = age, 
+                    colour = survived)) + 
+    geom_point() +
+    facet_wrap(~ gender) + 
+    stat_smooth()
+```
+
+Notice smoother is heavily influenced by outliers here (producing large uncertainty bounds).
+
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F}
+ggplot(titanic, aes(x = fare, y = age, colour = survived)) + 
+    geom_point() +
+    facet_wrap(~ gender) + 
+    stat_smooth()
+```
+
+\ecol
+\ecols
+
+## Your turn
+
+Add some smoothed lines to you `iris` scatterplot. See Section 1.3.6 of the notes.
+
+## Scales
+\gap[-1]
+**Scales** control the details of how data values are translated to visual properties. 
+
+These allow us to control **translations** from data to aesthetics (e.g. change default colour schemes etc.). Scales are generally of the form `scale_AESTHETIC_*()` e.g.
+
+\bcols
+\bcol{0.5}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                    fill = gender)) +
+    scale_fill_manual(
+        values = c("red", "blue"))
+```
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F, resize.width = "0.7\\textwidth", resize.height = "0.7\\textwidth"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                    fill = gender)) +
+    scale_fill_manual(values = c("red", "blue"))
+```
+
+\ecol
+\ecols
+
+## Positions
+
+Some geoms offer alternative **positions**. For example, to change from a **stacked** bar plot to a **side-by-side** bar plot, we can set the `position` argument of `geom-bar()` to `"dodge"` e.g.
+
+\bcols
+\bcol{0.5}
+
+```{r, eval = F, size = "scriptsize"}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                    fill = gender),
+             position = "dodge")
+```
+\ecol
+\bcol{0.48}
+
+```{r, echo = F, warning = F, message = F}
+ggplot(titanic) + 
+    geom_bar(aes(x = survived, 
+                    fill = gender),
+             position = "dodge")
+```
+
+\ecol
+\ecols
+
+## Example: Gapminder
+
+We will see some more examples of using **scales** and **positions**, plus ways to tidy up axis/legend labels etc., in the next example:
+
+Now we will put all of these ideas together to produce a complex bubblechart of **life expectancy** against **log(GDP)**, of the form shown by Professor Rosling in his earlier talk.
+
+Work through the tasks in Section 1.4 of the workshop, and don't forget to ask demonstrators if you don't understand anything.
+
+## One more thing...
+\small
+\gap[-1]
+One thing I haven't discussed is that it is possible to use different data sets for different geoms (analogous to **global** and **local** aethetics).
+
+For example, if you have a data set `SCATTER_DATA` (with columns: `XVAR` and `YVAR`), and a second data set containing predictions from a linear model say (called `PRED_DATA`, with columns: `XVAR`, `YPRED`, `YMIN` and `YMAX`), then you can write:
+
+```{r, size = "scriptsize", eval = F}
+ggplot() +
+    geom_point(aes(x = XVAR, y = YVAR), data = SCATTER_DATA) +
+    geom_line(aes(x = XVAR, y = YPRED), data = PRED_DATA) +
+    geom_ribbon(aes(x = XVAR, ymin = YMIN, ymax = YMAX), 
+                data = PRED_DATA, alpha = 0.5)
+```
+
+Here the `geom_point()` uses a different data set than the `geom_line()` and `geom_ribbon()` functions.
+
+## Epilogue
+
+To illustrate the importance of good data visualisation, I urge you to watch [Hans Rosling's](https://en.wikipedia.org/wiki/Hans_Rosling) TED talk: [The best stats you've ever seen](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread).
+
+For me, he weaves a compelling narrative, which challenges our preconceptions about the world we live in, and does so without a statistical model or p-value in sight. Powerful stuff!
+
+His book [Factfulness](https://www.gapminder.org/factfulness-book/), co-written with Ola Rosling and Anna Rosling R&ouml;nnlung, is also well worth a read!
+
+## Epilogue
+
+We have just begun to scratch the surface with what `ggplot2` can do.
+
+I hope that this workshop has whetted your appetites to use this package in your research. I now use this for almost all of the plots I use in publications and teaching.
+
+Please feel free to e-mail me with any further questions.
+
+In the next workshop we will see how we can use `tidyverse` to facilitate complex **data wrangling** tasks in R.
+

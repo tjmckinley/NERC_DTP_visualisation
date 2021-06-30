@@ -1,4 +1,0 @@
-rmd_files:
-    html: ['index.Rmd', 'ch_reproducibility.Rmd', 'ch_literateProg.Rmd', 'ch_Rmarkdown.Rmd']
-    latex: ['index.Rmd', 'ch_reproducibility.Rmd', 'ch_literateProg.Rmd', 'ch_Rmarkdown.Rmd', 'ch_appendix.Rmd']
-output_dir: "docs"

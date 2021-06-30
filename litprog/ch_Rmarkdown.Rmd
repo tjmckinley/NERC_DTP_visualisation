@@ -5,13 +5,13 @@ In the last section we saw that it is possible to generate quick reports directl
 An R Markdown script is usually suffixed with ".Rmd", but is simply a text file in the same way that standard R scripts are. RStudio offers a useful default template that can be used to initialise a new document. Go to *File > New File > R Markdown*, and you get an option window that looks like Figure \@ref(fig:rmarkdown). In the first instance choose the **HTML** option and click `OK`.
 
 ```{r, rmarkdown, fig.cap = "R Markdown choices", echo = F, out.width = "50%", out.height = "50%"}
-include_graphics("images/rmarkdownchoices.png")
+include_graphics("litprog/images/rmarkdownchoices.png")
 ```
 
 This creates a new document which looks like Figure \@ref(fig:rmarkdowntmp):
 
 ```{r, rmarkdowntmp, fig.cap = "R Markdown template", echo = F, out.width = "80%", out.height = "80%"}
-include_graphics("images/rmarkdown.png")
+include_graphics("litprog/images/rmarkdown.png")
 ```
 
 ```{task}
@@ -184,7 +184,7 @@ Take the R script you created in the first task of the [Reproducibility](#reprod
 **Note**: in the solution below I've added some further information about the study---for interest's sake. A separate code file can be found on the workshop website.
 ```
 
-```{solution, code = readLines("ff.Rmd")}
+```{solution, code = readLines("litprog/ff.Rmd")}
 ```
 
 ## Purling
@@ -203,7 +203,7 @@ purl("test.Rmd")
 
 creates a new document in the working directory called "test.R", which looks like:
 
-```{r code = readLines("test.R"), eval = F}
+```{r code = readLines("litprog/test.R"), eval = F}
 ```
 
 If you want a different output file name, try something like:
@@ -250,7 +250,7 @@ Write a function that calculates the **cumulative distribution function**, $P(X 
 A solution file is given on the workshop website, or the code can be found below.
 ```
 
-```{solution, code = readLines("poisson.Rmd")}
+```{solution, code = readLines("litprog/poisson.Rmd")}
 ```
 
 ## Presentations

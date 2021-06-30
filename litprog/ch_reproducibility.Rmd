@@ -12,7 +12,7 @@ One way in which script files can be used is simply as a means to record a serie
 
 Here is a simple example of a *reproducible script*: 
 <a id="wormscript"></a>
-```{r code = readLines("uploadFiles/worms.R"), eval = F}
+```{r code = readLines("litprog/uploadFiles/worms.R"), eval = F}
 ```
 
 The **purpose** of this script was to import some data from a *.csv* file, summarise the data and produce some histograms of key variables, before visually exploring the relationship between worm density and area (note that in practice we could do this more succinctly using `tidyverse`). This script has several key features:
@@ -40,5 +40,5 @@ Make sure the code adheres to all the rules described above. Once written, save 
 **Note**: I've done this in base R, but if you use `tidyverse` then all the better!
 ```
 
-```{solution, code = readLines("ff.R"), eval = F}
+```{solution, code = readLines("litprog/ff.R"), eval = F}
 ```

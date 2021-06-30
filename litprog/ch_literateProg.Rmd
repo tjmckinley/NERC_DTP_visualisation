@@ -23,13 +23,13 @@ One option that RStudio allows is for the user to create a simple report directl
 The **Compile Report** option can also be triggered by hitting the report button shown in Figure \@ref(fig:comprep) (note that if you have a different version of RStudio, this button might be in a different place).
 
 ```{r, comprep, fig.cap = "Compile Report button", echo = F, out.width = "80%", out.height = "80%"}
-include_graphics("images/compilereport.png")
+include_graphics("litprog/images/compilereport.png")
 ```
 
 This then brings up a window asking what output format you would like to compile into Figure \@ref(fig:comprep1).
 
 ```{r, comprep1, fig.cap = "Compile Report window", echo = F, out.width = "50%", out.height = "50%"}
-include_graphics("images/compilereport1.png")
+include_graphics("litprog/images/compilereport1.png")
 ```
 
 There are three main options:
@@ -41,7 +41,7 @@ There are three main options:
 Feel free to play aorund with these options, however for the purposes of this practical we shall compile everything into HTML for consistency. Hence choose the HTML option, and RStudio should open the compiled document in the **Viewer** pane, as shown in Figure \@ref(fig:report).
 
 ```{r, report, fig.cap = "HTML report", echo = F, out.width = "50%", out.height = "50%"}
-include_graphics("images/htmlreport.png")
+include_graphics("litprog/images/htmlreport.png")
 ```
 
 ```{task}

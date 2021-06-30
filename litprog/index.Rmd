@@ -1,0 +1,40 @@
+--- 
+title: "Reproducibility and literate programming in R"
+author: "TJ McKinley"
+site: bookdown::bookdown_site
+output:
+    bookdown::gitbook:
+        config:
+            sharing: null
+        css: 'style.css'
+        includes:
+            in_header: _toggle.html
+    bookdown::pdf_book:
+        keep_tex: yes
+        includes:
+            in_header: header.tex
+linkcolor: blue
+documentclass: book
+link-citations: yes
+---
+
+# Introduction {-}
+
+```{r, child = "_setup.Rmd", include = F, purl = F, cache = F}
+```
+
+In this practical we will focus on the important concepts of **reproducibility** and **literate programming**. We will assume that you are familiar with R and RStudio.
+
+## Data files {-}
+
+All data and script files files can be downloaded as a ZIP file from [here](https://exeter-data-analytics.github.io/LitProg/dataFiles.zip).
+
+## Tasks {-}
+
+```{task}
+All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked via the **Show Solution** buttons.
+```
+
+```{solution}
+The answer is, of course, 42.
+```

@@ -1,0 +1,44 @@
+# Reproducibility {#reproducibility}
+
+We have seen how we can use R as both a high-level programming language, and a highly functional statistical package. In this practical we focus on the subject of **reproducibility**. Reproducibility is a key component in providing a strong [evidence base](https://en.wikipedia.org/wiki/Reproducibility) for scientific findings. It is a controversial topic, particularly in areas such as [experimental biology](http://www.nature.com/news/1-500-scientists-lift-the-lid-on-reproducibility-1.19970). 
+
+The same issues are also true of statistical analyses, and although scientific papers often include a "Materials and Methods" section, where the statistical methods are described, these are often not entirely **reproducible**. Often these sections are the equivalent of [pseudo-code](https://en.wikipedia.org/wiki/Pseudocode)---mapping out a process for the analysis. In this sense they provide a high-level overview of the general approach, but without all of the details, which can often matter in ways that we do not envisage. 
+
+We have already seen that R allows us to write **script files**, that details our exact analysis, and that can be used to make our code **reproducible**. I would argue that the transition from a **basic** script file (i.e. a text file that contains some code), to a **reproducible** script file hinges on the **purpose** of the script. Allow me to elaborate...
+
+One way in which script files can be used is simply as a means to record a series of commands that run some functions. Taken to its extreme, an [.Rhistory](http://stat.ethz.ch/R-manual/R-devel/library/utils/html/savehistory.html) file can be generated, which saves every command entered into the console window during a given R session. Whilst this is better than no record at all, it is difficult to discern exactly what is going on. The file contains **no commenting**, **no formatting**, and will often include many entries that are simply **not relevant** to the end result (such as when we are testing code out or trying to fix errors). In this sense, the .Rhistory file enables us to **reproduce** all the steps we have taken in a given R session, but it is not a **reproducible** document in the sense of helping us to make sense of what our goals were and **why** we did the analysis in the way we did.
+
+> I am defining **reproducibility** here, not only to mean that the steps of an analysis can be repeated, but also to mean that the steps of an analysis can be **understood**. Scripts should help us understand both **how** and **why** we did things. A key focus is therefore on **clarity**!
+
+Here is a simple example of a *reproducible script*: 
+<a id="wormscript"></a>
+```{r code = readLines("uploadFiles/worms.R"), eval = F}
+```
+
+The **purpose** of this script was to import some data from a *.csv* file, summarise the data and produce some histograms of key variables, before visually exploring the relationship between worm density and area (note that in practice we could do this more succinctly using `tidyverse`). This script has several key features:
+
+* It is **commented**.
+* It is formatted neatly (spaces / indentation etc. used sensibly).
+* No **extraneous** code (only **final** versions of plots included).
+* In this case the script can be run directly, with no errors or further user input required to produce the final plots / summaries. (We can use the `source()` function in R to run all entries in a script file.)
+
+Although there are not hard and fast rules for writing these scripts, I think these are sensible aspects to consider when writing your own scripts. 
+
+> Please note that often I will have different script files for different aspects of an analysis, or for testing and trialling different pieces of code. More recently, I have started to use [Git](https://git-scm.com/) to manage versions of my code, allowing me to roll-back to earlier versions, or even create trial versions of my code without compromising the final **"clean"** script file. You choose whatever way suits you best, but be warned, if submitting code for assessment by me I **expect** it to follow the above rules where possible!
+
+Recently, the advent of electronic supplementary information for journal articles enables us to potentially overcome reproducibility issues by providing all the code required to reproduce an analysis exactly as part of the paper. 
+
+```{task}
+The data file ('worms.csv') and script file ('worms.R') can be found on the workshop website. Download these and run the full script using: `source("worms.R")`. Run the commands in the script file line-by-line and understand what they are doing.
+```
+
+```{task}
+The file "ff.rds" contains data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies. Download this data set to your working directory, and create a script file that loads in the data, summarises the data set, and produces plots of `thorax` against `group`, `longevity` against `group`, and `longevity` against `thorax`. 
+
+Make sure the code adheres to all the rules described above. Once written, save as an R script file and try to run the entire script using `source()` (or by hitting the **Source** button along the top of the **Script** pane in RStudio).
+
+**Note**: I've done this in base R, but if you use `tidyverse` then all the better!
+```
+
+```{solution, code = readLines("ff.R"), eval = F}
+```

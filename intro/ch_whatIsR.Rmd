@@ -1,0 +1,15 @@
+# What is R? {#whatIsR}
+
+R---available at [https://cran.r-project.org/](https://cran.r-project.org/)---is a comprehensive statistical programming language. It can be thought of as an open-source, freely available implementation of the [S](https://en.wikipedia.org/wiki/S_(programming_language)) language, which was developed at Bell Laboratories. R is an **interpreted language**, and so can be used interactively, without the requirement of compiling the code into an executable file. 
+
+Although R is a functional programming language in its own right, its popularity is in large part due to its fantastic capabilities as a statistical package. However, R is much more than that. R has amazing graphical capabilities; can integrate with other languages, such as C and Python; can use scripts and be run in batch mode; can be used to produce **reproducible** documents, presentations and even interactive webpages. Even better than that, R is completely FREE! Take it home, share it with your mates, give it to your collaborators. Professional editions of packages such as SAS, Stata, S-Plus or SPSS can cost upwards of £1000. 
+
+To top it off, R is also **multi-platform**, and so can be used on Windows, Mac and Linux operating systems. R is supported by a wide user base, and is extended by a large number of additional packages, and even provides the capabilities to create your own.
+
+In these practicals, we will use an IDE (integrated desktop environment) called [RStudio](https://www.rstudio.com/). This provides a neat interface for the R software, is available for free, and runs on all operating systems. Download and installation instructions are available on the RStudio website: [https://www.rstudio.com/](https://www.rstudio.com/). 
+
+All of the instructions in this practical will assume that you are using RStudio.
+
+## Installing R and RStudio
+
+If you want to download R for your own computer, first go to [http://cran.r-project.org](http://cran.r-project.org), and follow the instructions in the box called 'Download and Install R'. Once you have installed R, you can install RStudio from [https://www.rstudio.com/](https://www.rstudio.com/).

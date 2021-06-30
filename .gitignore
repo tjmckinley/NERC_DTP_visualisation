@@ -1,11 +1,14 @@
-#ignore backup files
+# ignore backup files
 *~
 .Rhistory
 
-# ignore build files
-docs
+#ignore build files
+docs/
 
 # ignore docs.zip
 docs.zip
 
 .Rproj.user
+
+# ignore compiled files
+_bookdown*

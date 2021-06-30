@@ -824,7 +824,7 @@ However, all elements must be of the same type. You can have a `numeric` matrix,
 
 #### Subsetting matrices
 
-Getting access to elements of a matrix follows on naturally from getting access to elements of a vector. In the case of a matrix though you must specify both the row and column of the element that you want, using a format `[ROW, COL]`.
+Getting access to elements of a matrix follows on naturally from getting access to elements of a vector. In the case of a matrix though you must specify both the row and column of the element that you want, using the format `[ROW, COL]`.
 
 ```{task}
 Copy the following commands into your script file and then run them in order to see how this works. Annotate each line using comments to describe what it is doing.
@@ -927,7 +927,7 @@ Function | Example | Description
 
 #### Elementwise operations
 
-Elementwise operations also work similarly to vectors, though even more care must be taken to 
+Elementwise operations also work similarly to vectors, though even more care must be taken when the vectors have different lengths.
 
 ```{task}
 Copy the following commands into your script file and then run them in order to see how this works. Annotate each line using comments to describe what it is doing.

@@ -9,7 +9,7 @@ Whilst R provides its own development environment, we will use a fantastic IDE[^
 ## RStudio
 
 ```{r, rstudio, fig.cap = "RStudio window", echo = F, out.width = '60%'}
-include_graphics("images/rstudio.png")
+include_graphics("intro/images/rstudio.png")
 ```
 
 The RStudio window should look something like Figure \@ref(fig:rstudio). It consists of:
@@ -216,7 +216,7 @@ Warning in install.packages :
 I solved this by finding an older version of the package on CRAN (by clicking on *Packages* then *Archived*):
 
 ```{r, echo = F, out.width = '60%'}
-include_graphics("images/cowplot.png")
+include_graphics("intro/images/cowplot.png")
 ```
 
 I noted the version number, and then used a function from `devtools` called `install_version()` as follows:

@@ -1,0 +1,825 @@
+# Version control {#version-control}
+
+Our reproducible research journey has taken us from basic script files to fully annotated electronic notebooks using R Markdown. 
+There is one final piece of the puzzle missing. How do we deal with **changes** done to our source code? 
+
+A common approach is to create a new version of the file before making any changes.
+
+```{r version-disaster, echo=FALSE, fig.cap="Life before version control.", out.width="70%"}
+knitr::include_graphics("git/images/version_disaster.png")
+```
+
+Some even document the changes in the header of the source code:
+
+```
+## Author: Jon Snow
+## Created: 17/04/2020
+## Last modified: 24/08/2020
+## Change log
+## 17/04/2020 - Analysis of some data.
+## 06/05/2020 - Added detailed exploratory plots.
+## 10/06/2020 - Added Poisson model.
+## 24/06/2020 - Performed model checking and selection.
+## ...
+## ...
+```
+
+Although these approaches are certainly better than nothing, things get out of control pretty quickly: 
+
+```{r, echo=FALSE, fig.cap="The \"final\" document. Reproduced from [PhD Comics](http://phdcomics.com/comics/archive.php?comicid=1531).", out.width="70%"}
+knitr::include_graphics("git/images/final_doc.png")
+```
+
+**Version control systems** are software that track changes done to a set of files over time in a systematic fashion, such that previous versions can be easily accessed and compared.
+In a nutshell, these systems start with a **base** version of the file and then record any changes done along the way. Effectively, we have a **fossil record**
+that captures the evolution of the source code.
+
+Version control systems are not a novel idea. They have been around at least since [1973](https://en.wikipedia.org/wiki/Source_Code_Control_System). 
+However, these tools were predominantly used by software engineers. It is only recently that such software has become a mainstay for 
+reproducible research; thanks to easy-to-use and open-source software like [Git](https://git-scm.com/). But also because it became 
+a necessity, as scientists are dealing with ever-increasing large and complex datasets, requiring several computer programs to wrangle, visualise and model the data.
+Compare this to the "good old days" when datasets were simpler and could be analysed by "hand" or using spreadsheets.
+
+Having this **fossil history**, that lets you access any version of your code between the start of the project and the present day, has several advantages:
+
+* **Your code isn't working as it used to.** Go back to the last working version, then carefully add and step through the new additions. 
+For large software projects [unit testing](https://en.wikipedia.org/wiki/Unit_testing) is recommended. 
+
+* **You deleted some code that in hindsight was useful and you want it back.** Instead of commenting out unused code, version control systems encourage
+you to "delete" it, so that the source code is shorter and more readable. However, you can simply access this "deleted" code 
+by viewing (and reverting back to) an older version.
+
+* **You want to experiment without worrying about breaking the rest of your code.** Statistical analysis / modelling is an iterative process, 
+requiring the use of different models and techniques. By committing different versions of your analysis, you can retrieve whichever version
+ends up being your "final" one. Even better, you can use [**branching**](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)
+to keep track of different strands of your analysis. For example, creating a separate 
+branch for frequentist, Bayesian and machine learning treatment of the same data.
+All three branches would share the same data wrangling and visualisation code, which would be part of the **master** branch.
+
+* **Effective and transparent collaboration among a group of people.** Through the use of online repositories, like [GitHub](https://github.com/) and [Bitbucket](https://bitbucket.org/), multiple people can work on the same source code without having to email code back and forth.
+
+* **Access to an auditable project history** You know exactly when / what / why you did something. This is particularly useful for paper writing;
+to keep track of changes done in response to reviewers comments, or if someone challenges the results of the 
+paper several months after it has been published (when most probably you'd have forgotten exactly what you did and why).
+
+I recommend reading [this article](https://peerj.com/preprints/3159v2/) for further insights to why version control is useful for statistical / data science projects.
+
+> **Warning**: Version control systems are not a backup system! Although it is fairly common for users to host their version-controlled repositories online, 
+this is not always the case or even necessary, so make sure you perform *regular* backups of your projects.
+
+## Git
+
+[**Git**](https://git-scm.com/) is a free and open source **distributed version control system** created by [Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) 
+(creator of the Linux kernel) in 2005. Currently, it is the most widely used version control system. 
+
+Using **Git** can feel overwhelming, due to the various functionality available.
+The aim of this chapter is to provide a rather gentle introduction to get you started by presenting the key features.
+
+Specifically, how to create and configure a Git repository and commit changes done to your code. We will
+then look at how to link a local Git repository to an online repository using GitHub. Finally, we will look at how we 
+can use Git straight from within RStudio. But keep in mind that Git is a standalone tool, it's got nothing to do with R!
+
+Once you are comfortable with the basics of Git, I recommend the following literature to become 
+more proficient users. [StackOverflow](https://stackoverflow.com/) is also a brilliant resource to
+answer any Git-related queries. 
+
+* [Software Carpentry: Version Control with Git ](https://swcarpentry.github.io/git-novice/)
+* [Git's Documentation](https://git-scm.com/doc)
+* [Happy Git and GitHub for the useR](https://happygitwithr.com/)
+
+### Installing Git
+
+Git comprises a suite of **command-line utility tools**, designed 
+to work on a Unix-style command-line environment (e.g. [`bash`](https://en.wikipedia.org/wiki/Bash_(Unix_shell))).
+This is the default environment for Mac / Linux users (accessed via the **Terminal** app).
+Windows users need to install **Git Bash**, which essentially emulates `bash` on Windows. 
+
+To install Git (and GitBash for Windows users), follow the relevant instructions on the [downloads](https://git-scm.com/downloads) page (use the default options).
+
+To make sure installation was successful open the following application:
+
+* Windows users: **Git Bash**
+* Mac / Linux users: **Terminal**
+
+And type `$ git --version`
+
+> **Note**: The `$` prefix does **not** need to be typed in. 
+It's there to remind you that these are `bash` commands and not R commands,
+so they need to be typed in the terminal console (via Git Bash if you are a Windows user)
+and *not* in the R console.
+
+```{r, echo=FALSE, fig.cap="Display Git version on Windows using Git Bash.", out.width="80%"}
+knitr::include_graphics("git/images/git_version_win.png")
+```
+
+To follow the rest of this section you do not necessarily need to know `bash`,
+however, it's good to learn some basic commands, especially [navigating](http://swcarpentry.github.io/shell-novice/02-filedir/index.html)
+and [working](http://swcarpentry.github.io/shell-novice/03-create/index.html) with files and directories.
+
+### Configuring Git
+
+Git commands are structured as follows:
+
+```
+$ git verb options
+```
+
+Where:
+
+* `verb` is the particular **action** you want Git to perform.
+* `options` are additional **arguments** passed to the action you are performing.
+
+The first step is to specify your **user name** and **email address**, so that any changes done to the source code can be traced back to an individual user.
+This is particularly useful for projects with multiple people.
+
+```
+$ git config --global user.name "Jon Snow"
+
+$ git config --global user.email "jon.snow@nightwatch.com"
+```
+
+The `--global` flag is setting these credentials *globally*, i.e. for every Git project. 
+So we only need to set these options once per machine
+^[If we wanted to differentiate between personal and work related projects we could use 
+different credentials for each project, but that's beyond the scope of this introductory course.].
+
+You can view the Git settings on your machine using:
+
+```
+$ git config --list
+```
+
+> **Note**: Later on in this course we will be using the online repository [GitHub](https://github.com/). 
+It's best to create an account now and set your Git `user.email` to the same one used when setting up
+your [GitHub](https://github.com/) account. As this is a tool that you will probably use after leaving
+St Andrews, I would use a personal email address (or create a new email address just for this - whatever floats your boat!).
+
+### Creating a local Git repository
+
+Now that we have installed and configured Git, we need to tell Git, 
+*which* folder contains files that we want to track (we certainly
+do not want to track changes to every file on our computer!).
+
+Let us create a folder called `first_repo` on our `Desktop`, and create an empty text file called `hello.txt`. 
+We can do this "manually" or by executing the following `bash` commands:
+
+```
+$ cd ~/Desktop
+$ mkdir first_repo
+$ cd first_repo
+$ touch hello.txt
+```
+
+To tell Git to make `first_repo` a local Git repository, i.e. a place to store different versions of our 
+files, we use the following command:
+
+```
+$ git init
+```
+
+If successful you will see the following notification:
+
+```
+Initialized empty Git repository in /path/to/your/repository/.git/
+```
+
+> **Warning**: Before running the `$ git init` command, make sure you have navigated to the right directory.
+Use the command `$ pwd` to print your current working directory to be sure.
+
+The `git init` command will create a **hidden** directory called `.git`
+(you can view it by enabling showing of hidden files in your file manager
+or by typing `$ ls -a`). This folder stores **all** of the tracked information about changes done to the files within that project. 
+If you delete the `.git` folder you will lose your fossil history - so do **not** touch this folder!
+
+The `.git` folder is what makes an otherwise "normal" directory on your computer become a Git **repository** (repo for short).
+One of Git's key features is that the repo (i.e. the `.git` folder), contains the *entire* history of the project.
+If you move / clone this repo onto a new computer (e.g. a collaborator's computer), the full project history moves with it.
+This is called [distributed](https://en.wikipedia.org/wiki/Distributed_version_control) version control.
+
+### Tracking changes
+
+Let us check the status of our newly created repository:
+
+```
+$ git status
+```
+
+You should see something like this:
+
+```
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	hello.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
+So far we have only told git to "watch out" for files in the `first_repo` folder,
+but we haven't explicitly started tracking them. Hence, the "untracked files" message.
+
+To instruct git to start **tracking** `hello.txt` we use the `add` command:
+
+```
+$ git add hello.txt
+```
+
+If we check the status of our repository (`$ git status`), we now see this:
+
+```
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+	new file:   hello.txt
+```
+
+The next and final step is to tell Git to take a *snapshot* of `hello.txt` 
+and record (permanently) these changes as a **commit**.
+
+```
+$ git commit -m "First draft of hello.txt."
+```
+
+```
+[master (root-commit) 53ca6c9] First draft of hello.txt.
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 hello.txt
+```
+
+Each **commit** is essentially a different version of your file and has a unique
+identifier associated with it (`53ca6c9` in the example above - more on that later). These different
+versions are stored in the `.git` folder and maintained systematically by the Git version control
+system. Note that we did **not** need to create new copies of these files, like depicted in Fig \@ref(fig:version-disaster).
+Git takes care of everything for us - nice! 
+
+The `-m` flag (for "message") is arguably the most important part of our version control exercise.
+The commit **message** should provide a succinct description of what changed and why.
+The clearer our commit messages are, the easier it is to "scroll" back through our changes
+to pinpoint specific versions. I highly recommend reading this article about writing
+[good Git commit messages](https://chris.beams.io/posts/git-commit/).
+
+What we have described in this section is the so called **modify-add-commit cycle**, and represents the most 
+routine use of Git (`add` and `commit` are the bread and butter commands of Git):
+
+1. Modify a file.
+2. Add it to the staging area (file(s) that are going to be part of the next commit).
+3. Commit and document change.
+4. Push changes to an online repository (more on that later on).
+
+```{r, echo=FALSE, fig.cap="Version control using Git in a nutshell.", out.width="80%"}
+knitr::include_graphics("git/images/git_info.png")
+```
+
+**How often should you commit changes?** 
+
+It is better to have *several* small commits (even if it's one or two lines of code) than fewer large ones.
+Each commit should be self-contained and only tackling one specific thing.
+For example, suppose you were asked to change the aesthetics of one of your exploratory 
+plots *and* fitting an additional statistical model. Such changes should be documented
+using two separate commits rather than one. The problems with large commits are:
+
+* The commit message will become increasingly *verbose*. If your message includes words like "and" or "also", 
+then you should probably split those commits.
+
+* Debugging becomes a nightmare, as it is harder to track down the *order* that changes were made.
+
+* For collaborative projects, it increases the chance that your commit will cause conflicts with code written by your collaborators.
+
+```{task}
+1. Perform two separate set of changes to the file `hello.txt` (i.e. add some text). 
+2. Commit the changes (make sure to include *sensible* commit messages). 
+3. View the history of your repository by using the `$ git log` command.
+
+```
+
+### Ignoring files/folders
+
+A typical statistical analysis folder will contain several files that we do not want to version control.
+Remember, that version control systems are designed to track changes done to simple text files that are bound to change 
+over time (i.e. mostly source code). For example, we do not want to version control data (which may or may not be
+stored as text after all), figures or correspondence with our collaborators. 
+
+Moreover, we do not want to version control the *output* from our scripts / analysis workflow. 
+*Generated* output should be treated as "disposable". After all, the point of reproducibile research
+is that we should be able to *generate* any output by running our reproducible script
+(i.e. data + source code = output). So we do not want to version control *any* file / folder 
+which can be generated / reproduced from code. 
+
+In order to tell Git to completely ignore a subset of files / folders, we need to place a 
+simple text file called [`.gitignore`](https://git-scm.com/docs/gitignore) in our repository
+(you can create this file "manually" or via the command `$ touch .gitignore`).
+We populate this file with a list of files / folders that we want Git to ignore. 
+For example:
+
+```
+output/       # ignore folder called "output"
+*.pdf         # ignore all PDF files
+*.csv         # ignore all csv files
+Info.docx     # ignore the Word document "Info.docx" 
+```
+
+There are several options available to specify groups of files / folders via [pattern matching](https://git-scm.com/docs/gitignore).
+Personally, I tend to structure my analysis folder into distinct directories, those that contain source code and need
+to be version controlled and everything else (data, images, etc.).
+
+```{task}
+1. Create an `img` and `data` folder within your `first_repo` directory. 
+2. Place a few figures and datasets in these folders (e.g. you can download datasets from Moodle). 
+3. Run the `$ git status` command and examine its output.
+4. Create a `.gitignore` file and specify that both `img` and `data` folders should be ignored by git.
+5. Re-run the `$ git status` command and re-examine its output. 
+6. Commit the `.gitignore` file. 
+
+```
+
+### Viewing previous versions
+
+One of the key features of using a version control system is that you can view
+any previous version. We can view the history of our repository through the following command:
+
+```
+$ git log
+```
+
+For example:
+
+```
+commit 86297accd0d7241285ac31147fb3941739fd5356 (HEAD -> master)
+Author: jjvalletta <jjvalletta@gmail.com>
+Date:   Thu Aug 27 11:52:56 2020 +0100
+
+    Added img folder to .gitignore list.
+
+commit 68a4dfd622481f3b65752c798c200d1cc97f7638
+Author: jjvalletta <jjvalletta@gmail.com>
+Date:   Thu Aug 27 11:51:39 2020 +0100
+
+    Created .gitignore file.
+
+commit 102c9680b0eb7f4b2747c73bc381989ac80a6012
+Author: jjvalletta <jjvalletta@gmail.com>
+Date:   Thu Aug 27 11:50:55 2020 +0100
+
+    Changed adverb used to describe Git.
+
+commit bb046a94a3fa20b8e3deb6467a473d124388a8a3
+Author: jjvalletta <jjvalletta@gmail.com>
+Date:   Thu Aug 27 11:48:53 2020 +0100
+
+    Added an introductory sentence.
+
+commit 53ca6c945bf2c74c745810cf8056c6dc1276635b
+Author: jjvalletta <jjvalletta@gmail.com>
+Date:   Wed Aug 26 18:38:19 2020 +0100
+
+    First draft of hello.txt.
+```
+
+The long string of letters and numbers next to each commit (e.g. `commit 86297accd0d7241285ac31147fb3941739fd5356`)
+are called "hashes" (specifically an [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash). 
+Think of them as "version 1", "version 2", etc., a unique fingerprint of your file. 
+
+To view previous versions of our repository we use the `checkout` command and the corresponding
+commit hash. For example:
+
+```
+$ git checkout bb046a9
+```
+
+> **Warning**: Make sure you have committed any changes in your current repo before switching to 
+an older version! Git is clever enough that if it detects
+any uncommitted work, it won't let you checking out. You will see the following error:
+
+```
+error: Your local changes to the following files would be overwritten by checkout:
+	hello.txt
+Please commit your changes or stash them before you switch branches.
+Aborting
+```
+
+Typically you only need the first 7 digits of the hash to point to a commit unambiguously (see [here](https://git-scm.com/book/en/v2/Git-Tools-Revision-Selection)
+and [here](https://stackoverflow.com/questions/18134627/how-much-of-a-git-sha-is-generally-considered-necessary-to-uniquely-identify-a)
+for more details).
+
+When you are finished viewing an older version of the repo you can go back to your current ("master") repo as follows:
+
+```
+$ git checkout master
+```
+
+Note that you can also view specific files from a commit (rather than all of them), by including the file name:
+
+```
+$ git checkout bb046a9 hello.txt 
+```
+
+This is particularly useful if you want to *revert* a specific file to a previous commit 
+(you'll just need to follow the usual commit procedure).
+
+### Viewing differences across versions
+
+The `diff` command lets us view the *differences* across different versions of our repo. 
+The default command:
+
+```
+$ git diff
+```
+
+Will show us *all* the differences between the current state of our working directory and the last commit.
+
+We can view *all* the differences across specific commits by using the appropriate hashes. For example:
+
+```
+$ git diff 86297ac 68a4dfd
+```
+
+Instead of viewing all the differences, we can focus on differences across specific files. For example:
+
+```
+git diff 86297ac 68a4dfd hello.txt
+```
+
+```{task}
+1. Display the history log of your repository. 
+2. Choose a few commits and use the `diff` command to explore *all* the changes across different versions. 
+3. Now be specific and examine *only* changes pertaining to a particular file (e.g. `hello.txt` or `.gitignore`).
+
+```
+
+### Branching
+
+[Branching](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) is one of Git's greatest features.
+So far, our history has been *linear*; we modify our source code and commit the changes. This is ok for some (small)
+projects, but in practice, science progresses in a fairly non-linear fashion! That is, we tend to try several
+different methodologies which may or may not work. 
+Instead of having a linear history "littered" with commits of things that didn't quite work (e.g. "Crazy idea 1"),
+then having to revert back to an older commit, we can use **branches**. 
+
+A Git [`branch`](https://git-scm.com/docs/git-branch) is an independent line of development that isolates your "Crazy idea 1" from your master branch. 
+If your idea didn't work, then you simply delete that branch. If it did work you can [`merge`](https://git-scm.com/docs/git-merge)
+it back with your master branch.
+
+Branching is particularly useful in a collaborative environment. For example, suppose that 
+a consortium, has a [Bayesian statistics](https://en.wikipedia.org/wiki/Bayesian_statistics) 
+and a [deep learning](https://en.wikipedia.org/wiki/Deep_learning) expert.
+Both experts can create their own branch and work independently on their respective models.
+However, both are sharing the *same* starting point (i.e. the master branch which
+up to that point will probably include the data wrangling and visualisation part of the project).
+Their final work can then be merged into the master branch after careful discussion
+with the rest of the consortium.
+
+The [`branch`](https://git-scm.com/docs/git-branch) command is used to create a new branch:
+
+```
+$ git branch crazy_idea
+```
+
+Where `crazy_idea` is the name of the branch. To switch to this branch we need to use the `checkout` command:
+
+```
+$ git checkout crazy_idea
+```
+
+Once you switch to a branch, you can modify-add-commit as per usual.
+
+If your `crazy_idea` was unsuccessful, you can delete the branch as follows (make sure you switch back to the master before trying to delete it):
+
+```
+$ git branch -D crazy_idea
+```
+
+If you forgot which branch you are working on or how many branches you have, simply type:
+
+```
+$ git branch
+```
+
+to list all the branches that have been created in your repo.
+
+### Summary of key commands
+
+```
+$ git init        # create an empty Git repository
+$ git status      # view the current state of the repository
+$ git add         # add files to the staging area (prepare for commit)
+$ git commit      # record changes to the repository
+$ git log         # show the commit history
+$ git checkout    # switch to a specific commit or branch
+$ git diff        # view changes across different commits
+$ git branch      # create / delete branch
+```
+
+## GitHub
+
+So far we've only dealt with *local* repositories; normal folders on our computer that
+contain the hidden `.git` directory (which includes all of our project history). 
+This is fine when working on personal projects on one machine. But what if 
+we had access to multiple computers (e.g. a desktop machine and a laptop),
+or if we're collaborating with other people.
+
+Although Git allows us to move repositories across different machines (as all
+the project history information is contained within the `.git` folder), we
+need to manually ensure that these files are properly synced (e.g. if you committed some changes 
+on your laptop, you need to copy the repo back to your desktop machine if you want to see the changes there).
+
+This is of course a time-consuming strategy and prone to frustrating mistakes. 
+Instead, best is to keep a master copy on a central hub on the web, which
+everyone works on and sync to. [GitHub](https://github.com/) is a popular
+website that provides hosting for software projects and version control using Git 
+([Bitbucket](https://bitbucket.org/) and [GitLab](https://about.gitlab.com/) offer similar services).
+Think of [GitHub](https://github.com/) as [Google Drive](https://www.google.co.uk/drive/) or [Dropbox](https://www.dropbox.com/) for software projects.
+
+In a nutshell, [GitHub](https://github.com/) hosts our **master** copy of the repository *online*.
+We can then either [`push`](https://git-scm.com/docs/git-push) changes done locally onto this online
+version or [`pull`](https://git-scm.com/docs/git-pull) (download) the online repository and merge it
+with our local version. Any collaborator who have access to the same repository can do the same.
+
+Before we start you need to create an account on [GitHub](https://github.com/). As this is a tool that you will probably use after leaving
+St Andrews, I would use a personal email address (or create a new email address just for this - whatever floats your boat!). 
+
+### Creating and syncing a GitHub repository {#create-Github-repo}
+
+Once you're logged into your GitHub account, click on the "+" icon in the top right corner to create a new repository:
+
+```{r, echo=FALSE, fig.cap="Creating a new repository on GitHub.", out.width="95%"}
+knitr::include_graphics("git/images/github-new-repo.png")
+```
+
+For the purpose of this demo, we can choose the "Public" repo option (if you're working on a confidential project than
+simply choose the "Private" option). Leave all the "initialisation" options unchecked, as we will be connecting our local
+repository to this one.
+
+> **Note**: Your online and local repositories can have different names, however, it's good practice to use
+the same name to avoid confusion.
+
+```{r, echo=FALSE, fig.cap="Configuring the details of a new repository on GitHub.", out.width="95%"}
+knitr::include_graphics("git/images/github-config-repo.png")
+```
+
+This step essentially creates a folder called `first_repo` on GitHub's servers, followed by
+running the command `$ git init`. As soon as the GitHub repository is created, we are prompted with information on how to add files to 
+this online repository. 
+
+```{r, echo=FALSE, fig.cap="Adding files to our newly created GitHub repository.", out.width="99%"}
+knitr::include_graphics("git/images/github-push-repo.png")
+```
+
+The key piece of information is the URL `https://github.com/jjvalletta/first_repo.git`.
+This specifies the web address of our online repository. 
+
+As we already got a local repository, we need to follow the instructions under **push an existing repository from the command line**.
+Let's go through these commands one by one (make sure you copy your own URL when doing this!).
+
+```
+$ git remote add origin https://github.com/jjvalletta/first_repo.git
+```
+
+The `remote` command helps us managing online (remote) repositories. In this case we are labelling the URL
+that points to our online repo as `origin`. The name `origin` is just a convention, but it's such
+a universal default that you should stick with it, unless you have strong reasons not to.
+To make sure things have been set correctly, run the following command:
+
+```
+$ git remote -v
+```
+
+The next command is:
+
+```
+$ git branch -M master
+```
+
+You do **not** need to run this command if you are already on the master branch.
+As far as I can tell this is more of a convention, to make sure that your main
+branch is called master. That is, if your project only contained one branch and it 
+was called something else other than master, this command will rename it to master
+(however, if you really wanted to name your "master" branch something else, you 
+can in that case for the next command, replace "master" with the name of your only branch).
+
+Finally:
+
+```
+$ git push -u origin master
+```
+
+The `push` command uploads the changes from our local repository to the online GitHub repository.
+
+If successful we can now navigate to the main page of the repository and click on "commits" to see 
+the commit history.
+
+```{r, echo=FALSE, fig.cap="Viewing the commit history on GitHub.", out.width="99%"}
+knitr::include_graphics("git/images/github-commit-history.png")
+```
+
+The GitHub repository now contains the same information stored on our local machine. 
+Note that the string of numbers and letters on the right hand side of each commit 
+is the unique commit hash, described earlier. If you click on the hash key,
+GitHub's diff tool will appear so you can visually assess the changes done in that commit
+(for more details see [here](https://docs.github.com/en/github/committing-changes-to-your-project/comparing-commits#comparing-branches)).
+
+From now on, every time we want to sync our local repo with the online repo, we re-run:
+
+```
+$ git push -u origin master
+```
+
+I recommend syncing the repos (i.e. run the command above), every time you commit a change,
+so that you don't forget, and such that your online repo is always mirroring your local one.
+
+Here, we only synced up our master branch, but what about our `crazy_idea` branch? Simple: 
+
+```
+$ git push -u origin crazy_idea
+```
+
+> **Note**: The `-u` option is synonymous with the `--set-upstream-to` option used to associate the current branch with 
+a remote branch so that the `git pull` (see later on) command can be used without any arguments. 
+
+```{task}
+1. Follow the steps in this section to create a GitHub repo called `first_repo` and sync it
+with your local repo. 
+2. Commit a few separate changes to the master and `crazy_idea` branch.
+3. Push these changes to the GitHub repo. 
+4. View the commit history on GitHub and use its diff tool to visually compare changes across commits.
+
+```
+
+### Syncing remote repo to local repo
+
+Suppose your colleague has pushed some changes to the GitHub repo, or you
+have pushed some changes from your laptop, but you are now working
+from your desktop machine, and you would like to continue working on the most
+up-to-date repo. The [`pull`](https://git-scm.com/docs/git-pull) 
+command lets you download these changes and merges them with your local repo:
+
+```
+$ git pull origin master
+```
+
+You can also `pull` specific branches by replacing "master" with the name of the branch.
+
+> **Note**: The [`pull`](https://git-scm.com/docs/git-pull) command actually calls the 
+[`fetch`](https://git-scm.com/docs/git-fetch) command first (which downloads the updated objects from the remote repo),
+followed by the [`merge`](https://git-scm.com/docs/git-merge) command, which joins / merges the local
+repo with the remote one. Conflicts might arise if Git is unable to automatically resolve differences 
+in code between two commits (more info [here](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/resolving-a-merge-conflict-using-the-command-line)).
+
+### Cloning a remote repo
+
+Suppose a colleague has already created a repo that they want you to collaborate on,
+or you just found an interesting public repo that you want to download and play
+around with its code. The [`clone`](https://git-scm.com/docs/git-clone) command
+can be used to create an exact copy of the online repo on your computer.
+The only thing we need to know is the URL of where the repo is located.
+
+For example, imagine we want to trawl through the code of the popular R package [`tidyr`](https://tidyr.tidyverse.org/).
+We navigate to its GitHub [page](https://github.com/tidyverse/tidyr), then click on the green button called "Code"
+and copy the URL.
+
+```{r, echo=FALSE, fig.cap="Accessing the GitHub URL for the `tidyr` repo.", out.width="99%"}
+knitr::include_graphics("git/images/github-tidyr.png")
+```
+
+Then run the following command (make sure you are in the directory where you actually want to download this repo to):
+
+```
+$ git clone https://github.com/tidyverse/tidyr.git
+```
+
+## Git in RStudio
+
+So far we have been typing our Git actions on the command line, either using the **Terminal** (Mac / Linux users)
+or **Git Bash** (Windows users). RStudio has a built-in connection to the command line (tab next to "Console" - see Fig \@ref(fig:rstudio-terminal)).
+So when we are writing code in RStudio, we do not need to open a separate command line window, we can do everything from within the RStudio IDE. 
+
+```{r rstudio-terminal, echo=FALSE, fig.cap="The terminal window in RStudio.", out.width="60%"}
+knitr::include_graphics("git/images/rstudio-terminal.png")
+```
+
+However, more importantly, as Git is such a ubiquitous tool for software development, RStudio offers built-in support.
+Which means that you can execute routine Git commands from within RStudio without
+having to use the command-line.
+
+**So why on earth are you telling us this now?!**
+
+a. Wanted to hammer home the point that [Git](https://git-scm.com/) is a standalone piece of software, 
+and is completely unrelated to R / RStudio. Git can be used to version control *any* type of text file, not just R. 
+
+b. It is important to gain some familiarity with the command-line, as it is likely that you will have to use
+it at some point in your statistics / data science career.
+
+c. RStudio's built-in Git support, although enough for most use cases, it does not cover *all* of the 
+Git commands. So there will still be times where you have to directly interact with the command line. 
+
+d. RStudio is still merely sending your specified Git actions to the command line, i.e. if you click
+on "Commit", it's writing `$ git commit` on the command line. So familiarity with the Git commands
+is useful.
+
+> **Note**: RStudio is not the only Git GUI client. There are several other general purpose Git [clients](https://git-scm.com/downloads/guis) 
+(i.e. not limited to RStudio projects), such as [GitHub Desktop](https://desktop.github.com/). 
+
+### Creating a local Git repository {#rstudio-local-git}
+
+*File > New Project > New Directory > New Project*, and check the *Create a git repository* option (see Fig \@ref(fig:rstudio-new-git)). 
+
+```{r rstudio-new-git, echo=FALSE, fig.cap="Creating a local Git repository in RStudio.", out.width="65%"}
+knitr::include_graphics("git/images/rstudio-new-git.png")
+```
+
+Now we get access to a menu with routine Git commands (encircled in red in Fig \@ref(fig:rstudio-git-opt)).
+The project was also initialised with a `.gitignore` file, which already contains a list
+of RStudio specific hidden files that we do not want to track (encircled in green in Fig \@ref(fig:rstudio-git-opt)). 
+
+```{r rstudio-git-opt, echo=FALSE, fig.cap="Git options within RStudio.", out.width="95%"}
+knitr::include_graphics("git/images/rstudio-git-opt.png")
+```
+
+The Git options *pane* on the right-hand side of Fig \@ref(fig:rstudio-git-opt), shows the *status*
+of our Git repo (i.e. `$ git status`).
+By checking the tick box next to `.gitignore` we can *stage* that file, ready to commit it (i.e. `$ git add .gitignore`).
+After clicking on the "Commit" button we see the following window:
+
+```{r rstudio-git-commit, echo=FALSE, fig.cap="Committing changes on RStudio.", out.width="95%"}
+knitr::include_graphics("git/images/rstudio-git-commit.png")
+```
+
+Here we can review our changes and view the commit history.
+Remember to enter a sensible commit message before pressing "Commit" (i.e. `$ git commit -m "First commit of .gitignore."`).
+You will see the command line popping-up in the background.
+
+The Git status pane (shown in detail in Fig \@ref(fig:rstudio-git-status)), uses differently coloured icons
+to represent the current status of files in our repo
+(although RStudio refreshes this pane automatically, it's best to manually 
+hit the *refresh* button, found on the far right-hand corner of the pane,
+before doing anything):
+
+* Yellow (?): A **new** untracked file added to the repo (what should we do with it?). 
+* Green (A): **Add** untracked file to the next commit (i.e. start tracking the file).
+* Blue (M): A tracked file was **modified**.
+* Red (D): A tracked file was **deleted**.
+
+```{r rstudio-git-status, echo=FALSE, fig.cap="The Git status pane in RStudio.", out.width="80%"}
+knitr::include_graphics("git/images/rstudio-git-status.png")
+```
+
+> **Note**: The `.Rproj` file is used by RStudio to store information about the project 
+(open it in a text editor to see its contents).
+It is therefore, generally recommended to track this file 
+(see [here](https://community.rstudio.com/t/should-rproj-files-be-added-to-gitignore/1269)).
+
+```{task}
+Perform all of the following tasks using the Git functionality within RStudio.
+ 
+1. Create a local Git repository.
+2. Commit the default `.gitignore` file and the `.Rproj` file. 
+3. Create and compile an R Markdown document to HMTL and / or PDF (either using RStudio's template or copy one from a previous project).
+4. Make the relevant changes to `.gitignore` to ignore *any* HTML or PDF files. 
+5. Perform a few changes to this file (adding / removing plots, purposefully breaking the code, etc.) and commit those changes separately.
+6. View the history log.
+7. Use the "Diff" option to visualise changes across commits. 
+8. Familiarise yourself with the process of reverting back to specific commits (revert - commit - revert). 
+
+```
+
+### Connecting a local Git repo to GitHub
+
+In Fig \@ref(fig:rstudio-git-commit), the "Pull"/ "Push" icons (right-hand corner) are greyed out, i.e. these options are not available.
+This is because we have not linked our local repo to a remote one. To do this we have to follow the steps outlined in Section \@ref(create-Github-repo)
+(i.e. unfortunately, there's no point-and-click way to do it in RStudio). In summary:
+
+1. Log in and create a new repo on [GitHub](https://github.com/).
+2. Follow the **push an existing repository from the command line** instructions
+(you can use RStudio's built-in connection to the Terminal as shown in Fig \@ref(fig:rstudio-terminal)). For example:
+```
+$ git remote add origin https://github.com/jjvalletta/first_repo.git
+$ git push -u origin master
+```
+
+You only need to do this first time round. Once the local repo is linked to the remote one, 
+we can use the "Push" / "Pull" functionality from within RStudio (i.e. by clicking on the respective icon).
+
+```{task}
+1. Create a new repo on GitHub and link it to the local repo created in Section \@ref(rstudio-local-git).
+2. Commit a few changes and use the "Push" option to push them to your remote repo.
+3. Navigate to your online repo to confirm that the changes have been pushed correctly.
+
+```
+
+### Cloning a GitHub repo
+
+A more straightforward approach is to create the GitHub (remote) repo *first*, then
+clone it on your machine via RStudio: 
+
+1. Log in and create a new repo on [GitHub](https://github.com/).
+2. In RStudio: *File > New Project > Version Control > Git*
+3. Copy and paste the remote repo URL from GitHub (e.g. `https://github.com/jjvalletta/demo-repo.git` - see Fig \@ref(fig:rstudio-git-clone)) and voilà!
+
+```{r rstudio-git-clone, echo=FALSE, fig.cap="Cloning a GitHub repo using RStudio.", out.width="80%"}
+knitr::include_graphics("git/images/rstudio-git-clone.png")
+```

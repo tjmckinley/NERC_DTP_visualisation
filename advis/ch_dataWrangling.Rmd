@@ -272,12 +272,12 @@ Download this file and save it into your working directory. Now let's read in th
 [^2]: Note that this is different than the `read.csv()` function in base R. It doesn't convert `character` columns to  `factor` columns, and returns a `tibble` by default.
 
 ```{r, message = F, eval = F}
-gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv")
+gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
 
 ```{r, message = F, echo = F}
-gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv")
+gp_income <- read_csv("advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
 
@@ -360,7 +360,7 @@ Phew! this took some effort, but we've managed to end up with a fairly clean dat
 To do all of the previous data cleaning operation using pipes, we can write:
 
 ```{r, message = F, eval = F}
-gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
+gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -370,7 +370,7 @@ gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
 ```
 
 ```{r, include = F}
-gp_income <- read_csv("uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
+gp_income <- read_csv("advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -411,7 +411,7 @@ Load in the file "indicator hiv estimated prevalence% 15-49.csv". This file cont
 ```{solution}
 
 ``{r, message = F, eval = F}
-gp_hiv <- read_csv("indicator hiv estimated prevalence% 15-49.csv") %>%
+gp_hiv <- read_csv("advis/indicator hiv estimated prevalence% 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
             mutate(year = as.numeric(year)) %>%
@@ -422,7 +422,7 @@ gp_hiv <- read_csv("indicator hiv estimated prevalence% 15-49.csv") %>%
 ``
 
 ``{r, message = F, echo = F}
-gp_hiv <- read_csv("uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
+gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
             mutate(year = as.numeric(year)) %>%
@@ -435,7 +435,7 @@ gp_hiv <- read_csv("uploadFiles/indicator hiv estimated prevalence% 15-49.csv") 
 ```
 
 ```{r, include = F}
-gp_hiv <- readRDS("uploadFiles/gp_hiv.rds")
+gp_hiv <- readRDS("advis/uploadFiles/gp_hiv.rds")
 ```
 
 ```{task}
@@ -458,7 +458,7 @@ gp_hiv %>%
 
 We now have two data sets: `gp_income` and `gp_hiv`. In order to visualise and analyse them, we need to link them together. A key skill to have in data manipulation is the ability to **join** data sets (or tables) together. The `dplyr` package provides various functions to do this, depending on ***how*** you want to join the tables.
 
-> In case you haven't managed to complete the last task, the `gp_hiv` data is available as "gp_hiv.rds". You can read this into R using `gp_hiv <- readRDS("gp_hiv.rds")` and continue with the practical.
+> In case you haven't managed to complete the last task, the `gp_hiv` data is available as "gp_hiv.rds". You can read this into R using `gp_hiv <- readRDS("advis/gp_hiv.rds")` and continue with the practical.
 
 In order to join two tables, you must have one or more variables **in common**. In this case we want to match by `country` and `year`, to produce a data set that contains `country`, `year`, `gdp` and `prevalence`.
 
@@ -538,7 +538,7 @@ Total population data are available in the "indicator gapminder population.csv" 
 
 ``{r, message = F, eval = F}
 ## read in data
-gp_pop <- read_csv("indicator gapminder population.csv") %>%
+gp_pop <- read_csv("advis/indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -556,7 +556,7 @@ gp <- inner_join(gp, gp_pop, by = c("year", "country"))
 
 ``{r, message = F, echo = F}
 ## read in data
-gp_pop <- read_csv("uploadFiles/indicator gapminder population.csv") %>%
+gp_pop <- read_csv("advis/uploadFiles/indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -575,8 +575,8 @@ gp <- inner_join(gp, gp_pop, by = c("year", "country"))
 ```
 
 ```{r, include = F}
-gp_pop <- readRDS("uploadFiles/gp_pop.rds")
-gp <- readRDS("uploadFiles/gp.rds")
+gp_pop <- readRDS("advis/uploadFiles/gp_pop.rds")
+gp <- readRDS("advis/uploadFiles/gp.rds")
 ```
 
 ```{task}
@@ -606,7 +606,7 @@ gp %>%
 [Population pyramids](https://en.wikipedia.org/wiki/Population_pyramid) are commonly used by demographers to illustrate age and sex structure of a country's population. A schematic example of a population pyramid is shown in Figure \@ref(fig:poppyramid).
 
 ```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = F}
-include_graphics("images/Population_pyramid_example.png")
+include_graphics("advis/images/Population_pyramid_example.png")
 ```
 
 Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: "Germanypop.csv", "Mexicopop.csv" and "USpop.csv", each with the following columns:
@@ -628,24 +628,24 @@ Firstly, we read the three data files into R, storing them as `tibble` objects c
 
 ```{r, message = F, eval = F}
 ## read German data in
-germany <- read_csv("Germanypop.csv")
+germany <- read_csv("advis/Germanypop.csv")
 
 ## read Mexican data in
-mexico <- read_csv("Mexicopop.csv")
+mexico <- read_csv("advis/Mexicopop.csv")
 
 ## read US data in
-us <- read_csv("USpop.csv")
+us <- read_csv("advis/USpop.csv")
 ```
 
 ```{r, message = F, echo = F}
 ## read German data in
-germany <- read_csv("uploadFiles/Germanypop.csv")
+germany <- read_csv("advis/uploadFiles/Germanypop.csv")
 
 ## read Mexican data in
-mexico <- read_csv("uploadFiles/Mexicopop.csv")
+mexico <- read_csv("advis/uploadFiles/Mexicopop.csv")
 
 ## read US data in
-us <- read_csv("uploadFiles/USpop.csv")
+us <- read_csv("advis/uploadFiles/USpop.csv")
 ```
 
 We now need to bind these data sets together. One issue is that these three data sets have different age classes. If we want to join the tables together, we need to set consistent groupings in each data set. For this we will set the maximum age class for each country to be `"80+"`. Hence for Mexico we do not need to do anything, but for Germany and the US we will need to group together the latter categories.
@@ -726,7 +726,7 @@ p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex))
     ylab("Population counts (x1000)") +
     xlab("Age (yrs)") +
     labs(fill = "Sex")
-ggsave("DataWrSlides/images/poppyramid.pdf", p)
+ggsave("DataWrSlides/advis/images/poppyramid.pdf", p)
 ```
 
 Beautiful isn't it? (The stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
@@ -764,7 +764,7 @@ Mexico also has a very high proportion of young females: in fact 33% of the curr
 
 A good description of population demographics can be found in this short video:
 
-```{r, screenshot.alt = "images/population.jpg", echo = F}
+```{r, screenshot.alt = "advis/images/population.jpg", echo = F}
 include_url("https://www.youtube.com/embed/QsBT5EQt348")
 ```
 

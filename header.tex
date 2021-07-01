@@ -2,6 +2,8 @@
 \usepackage{tcolorbox, comment, geometry, listings}
 \tcbuselibrary{breakable}
 
+\newgeometry{margin=1in}
+
 \definecolor{taskCol}{HTML}{404040}
 \definecolor{taskCol1}{HTML}{808080}
 
@@ -56,5 +58,19 @@
   breaklines=true
 }
 
+% fonts
+\usepackage[sfdefault,light]{FiraSans}
+%\usepackage{FiraMono}
 
+% colour of code chunks
+\colorlet{shadecolor}{gray!15}
 
+% % change spacing around align
+% \makeatletter
+% \g@addto@macro\normalsize{%
+%   \setlength\abovedisplayskip{-30pt}
+%   \setlength\belowdisplayskip{-20pt}
+%   \setlength\abovedisplayshortskip{-20pt}
+%   \setlength\belowdisplayshortskip{-20pt}
+% }
+% \makeatother

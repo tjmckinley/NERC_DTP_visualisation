@@ -44,18 +44,18 @@ ziggy
 
 Another way of visualising the working directory is to use the `ls()` function, which lists all objects currently in the workspace e.g.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 ls()
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 ls()[ls() == "ziggy"]
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
 Names of variables can be chosen quite freely in R. They can be built from letters, digits and other characters, such as `_`. They can't, however, start with a digit or a `.` followed by a digit. Names are **case sensitive** and so `height` is a different variable from `Height`. Try to choose **informative** variable names where possible (`height` is more informative than `x` when talking about heights for example).
 
-Try to use avoid spaces between words in your variable names. Underscores are much safer[^1]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
+**Don't use spaces in variable names**. Underscores are much safer[^1]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
 ```
 
 [^1]: Some people also use dots, e.g. `child.heights`, but in general I would avoid this, since dots are often used when working with functions of specific classes such as `print.lm()`
@@ -70,12 +70,12 @@ The format is that a function name is followed by a set of parentheses containin
 seq(0, 3, 0.5)
 ```
 
-You can see that this function produces a sequence that starts at 0, ends at 3 and has steps of 0.5. Spaces before the parentheses or between the arguments are not important when writing functions so `seq(0,3,0.5)` will work just as well as `seq    (0,    3,    0.5)`. However, as stated [earlier](#legible), I think spaces in sensible places can make the code much more legible i.e. `seq(0, 3, 0.5)` is better than either of the above options.
+You can see that this function produces a sequence that starts at 0, ends at 3 and has steps of 0.5. Spaces before the parentheses or between the arguments are not important when writing functions so `seq(0,3,0.5)` will work just as well as `seq    (0,    3,    0.5)`. However, as stated [earlier](#legible), I think spaces in sensible places can make the code much more legible i.e. `seq(0, 3, 0.5)` is better than either of the previous options.
 
 All functions in R have **defaults** for the majority of their arguments (some functions have dozens of arguments, and having default values avoids you having to specify them all every time you use the function). For example, the `seq()` function has the following four main arguments (in this order):
 
 Argument | Description
-:-: | :--------------------------------------------------------------:
+:----------------: | :--------------------------------------------------------------
 `from, to` | the starting and (maximal) end values of the sequence. Of length 1 unless just `from` is supplied as an unnamed argument.
 `by` | number: increment of the sequence.
 `length.out` | desired length of the sequence. A non-negative number, which for seq and seq.int will be rounded up if fractional.
@@ -93,9 +93,9 @@ R returns an error because you've asked the `seq()` function to move from 10 to 
 
 The other type of matching is called **named matching** and this would allow you to write `seq(from = 0, to = 3, by = 0.5)` or `seq(to = 3, from = 0, by = 0.5)` as equivalent function commands (i.e. the **order** of the arguments **doesn't matter** if using *named* matching).
 
-Using named matching also allows us to access the other argument: `length.out` if we wanted to use it, though you should recognise that you cannot, in general, use all four arguments in this case to specify a vector. Why not? 
+Using named matching also allows us to access the other argument: `length.out` if we wanted to use it, though you should recognise that you cannot, in general, use all four arguments in this case to specify a vector. (Why not, do you think?)
 
-In fact, this command needs three arguments to work, and it doesn't matter which three of the four arguments you use. To find out what arguments a function can take and what they mean use the `?FUNCTION` syntax (where you replace `FUNCTION` with whichever function you're interested in e.g. `?seq` or `?atan`). This will open the internal R help file for the function. The [Help](#help) section of this workshop contains detailed information on these help files.
+In fact, this command needs three arguments to work, and it doesn't matter which three of the four arguments you use. To find out what arguments a function can take and what they mean use the `?FUNCTION` syntax (where you replace `FUNCTION` with whichever function you're interested in e.g. `?seq` or `?atan`). This will open the internal R help file for the function. The **[Help](#help)** section  of these notes contains detailed information on these help files.
 
 Being able to access these internal help files will be of particular help for all of the statistical functions we will want to use which generally have many arguments.
     
@@ -111,7 +111,7 @@ Use the R function `seq()` to create the following sequences:
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 seq(2, 30, by = 2)
 ## 2.
 seq(-2.5, 15.34, length.out = 14)
@@ -138,7 +138,7 @@ x <- sqrt(10)
 exp(x)
 ```
 
-To understand nested functions, think about evaluating the **inner** functions first, seeing what they output and then how that slots into the next function. We will see an example of this [later](#nestex).
+To understand nested functions, think about evaluating the **inner** functions first, seeing what they output and then how that slots into the next function. We will see more examples of this [later](#nestex).
 
 ## Help files {#help}
 
@@ -151,17 +151,17 @@ For example, if you wanted to know more about how to use the `hist` function (th
 
 This will produce something like Figure \@ref(fig:histhelp) to appear in the in the bottom-right pane. 
 
-```{r, histhelp, echo = F, fig.cap = "Help file for the `hist()` function", out.width = '60%'}
+```{r, histhelp, echo = FALSE, fig.cap = "Help file for the `hist()` function", out.width = '60%'}
 include_graphics("intro/images/histhelp.png")
 ```
 
-This new window contains all of the information you need to understand how to use the `hist()` function. Although these help files can seem daunting (and not particularly helpful) at first, once you get used to them they will provide the route for your continued exploration of R. Help files provide all of the details that the author of the command saw fit to include. They all aim to be comprehensive but some authors assume that you are more
+This new window contains all of the information you need to understand how to use the `hist()` function. Although these help files can seem daunting at first, once you get used to them they will provide the route for your continued exploration of R. Help files provide all of the details that the author of the command saw fit to include. They all aim to be comprehensive but some authors assume that you are more
 familiar with what's going on than others. Most help files will have the following sections:
 
 Table: (\#tab:helpfile) General structure of R helpfiles
 
 Section | Description
-:-----------: | :---------------------------------------------------------------:
+:-----------: | :---------------------------------------------------------------
 Usage: | This will show you the minimum required arguments and also what the default value are for each of the optional arguments. In this case only `x` is a required argument and all of the others are optional.
 Arguments: | This gives an explanation of what each argument does and what sort of data type it should be. In this case the argument `x` needs to be a numerical vector.
 Details: | This section tells you what the function should do along with any subtleties in its usage or clarifications.
@@ -170,11 +170,7 @@ References: | This gives you some selected text books that the author feels expl
 See Also: | This should be a list of other R commands that are related to the current function. They might be of more use to you, or their help files might be better written and clarify what you're trying to do.
 Examples: | This should be a set of R commands that you can copy-and-paste into either a script file or the console pane. These should give you a practical example of how to use the function in several different settings.
 
-If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics. In the Help menu, choose 'search r-project.org' and work through the search pages. Beware though, these are busy people who will often ignore directly emailed requests for help. Ask your resident experts first, before e-mailing the R-search email lists! 
-
-I also tend to succeed mostly by Googling the problem. For example, Googling 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
-
-\pagebreak 
+If you're really stuck, there is an international community of R users who regularly post questions and answers on advanced topics on sites like [StackOverFlow](https://stackoverflow.com/). I tend to succeed mostly by Googling the problem. For example, Googling 'R importing data' finds me this rather excellent tutorial: [http://www.r-tutor.com/r-introduction/data-frame/data-import](http://www.r-tutor.com/r-introduction/data-frame/data-import).
 
 ## Objects in R
 
@@ -188,7 +184,13 @@ R defines various types of object (and allows you to define your own if you so w
 10
 ```
 
-This shows that the output is a **vector** of length 1. The `ziggy` variable we created earlier is also a vector of length 1:
+This shows that the output is a **vector** of length 1. (The `[1]` in the output says that the object is of one **dimension** i.e. a vector.) A vector of length two looks like:
+
+```{r}
+c(1, 2)
+```
+
+(i.e. it is still of `[1]` dimension, but has two elements). The `ziggy` variable we created earlier is also a vector of length 1:
 
 ```{r}
 ziggy
@@ -202,10 +204,10 @@ Note that vectors do not have to be numerical in value e.g.
 
 is also a vector of length 1. R distinguishes between different 'types' of vector, with the four main types being:
 
-* `numeric` where each element is a number (either integer or decimal),
-* `character` where each element is a word or letter, and
-* `factor` where each element is a word or letter, but with some additional "grouping" information, and
-* `logical` where each element is either `TRUE` or `FALSE` (equivalently coded as `T` or `F`).
+* `numeric` where each element is a number (either integer or decimal);
+* `character` where each element is a word or letter;
+* `factor` where each element is a word or letter, but with some additional "grouping" information;
+* `logical` where each element is either `TRUE` or `FALSE`.
 
 In this section we will look at several different commands which produce vectors and then see how we can manipulate these objects in R.
 
@@ -309,7 +311,7 @@ Use the various vector creation commands to create the following sequences:
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## 1.
 1:11
 ## 1. (alternative)
@@ -328,10 +330,10 @@ c("M", "T", "W", "T", "F", "S", "S")
 
 If we only want to get at certain elements of a vector then we need to be able to subset the vector. In R, square brackets `[]` are used to get subsets of a vector.
 
-```{info, title = "Note", collapsible = FALSE}
-**IMPORTANT**: In R, objects are **indexed** such that the **first** element is element `1` (unlike C or Python for example, which indexes relative to `0`). In R the first element of `x` is `x[1]`, whereas in Python it would be `x[0]`.
+```{info, title = "Important", collapsible = FALSE}
+In R, objects are **indexed** such that the **first** element is element `1` (unlike C or Python for example, which indexes relative to `0`). In R the first element of `x` is `x[1]`, whereas in Python it would be `x[0]`.
 
-Note also that in Python the command `x[-1]` would extract the **last** element of the vector `x`, whereas in R the `-` is used to **remove** elements; hence `x[-1]` would ***remove*** the first element of `x`.
+Note also that in Python the command `x[-1]` would extract the **last** element of the vector `x`, whereas in R the `-` is used to **remove** elements; hence `x[-1]` would ***remove*** the **first** element of `x`.
 ```
 
 ```{task}
@@ -357,7 +359,7 @@ y[i] <- z
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## generate a vector x of five elements from 1 to 5
 x <- 1:5
 
@@ -417,7 +419,7 @@ Can you work out a way to sort `y` into decreasing order?
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## 1. this sorts the vector y into increasing order.
 order(y)
 ## 2. this reverses the order of y.
@@ -461,7 +463,7 @@ z * y
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## creates a vector y containing entries
 ## 1, 2,  ..., 10
 y <- 1:10
@@ -518,7 +520,7 @@ c(1:3) * 2
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
-You must be **very careful** with this. I only use this feature when multiplying a vector by a scalar; otherwise I will always generate vectors of the same length, since I think this makes what you are trying to achieve explicit. Hence instead of writing `c(1:6) * c(1:2)`, I would write `c(1:6) * rep(1:2, 3)`. (I would personally rather that R did not allow elementwise operations on vectors that are of different lengths, but it does, and one should be careful...)
+You must be **very careful** with this. I only use this feature when multiplying a vector by a scalar; otherwise I will always generate vectors of the same length, since I think this makes explicit what you are trying to achieve. Hence instead of writing `c(1:6) * c(1:2)`, I would write `c(1:6) * rep(1:2, 3)`. (I personally would rather that R did not allow elementwise operations on vectors that are of different lengths, unless one of the lengths is one. However, it does, and one should be careful...)
 ```
 
 R will also perform **matrix multiplication** (e.g. dot products) on vectors, and this is described in a [later section](#matmult).
@@ -530,7 +532,7 @@ Vectors can be created according to logical criteria using the following compari
 Table: (\#tab:logop) Logical operators
 
 Operator | Definition
-:--------: | :----------------------:
+:--------: | :----------------------
 `!=` | not equal 
 `<` | less than 
 `<=` | less than or equal to 
@@ -559,7 +561,7 @@ z <- y[y != 3]
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## create a vector x containing elements 1:10
 x <- 1:10
 
@@ -599,7 +601,7 @@ Finally there are many commands that are specifically aimed at vectors or sets o
 Table: (\#tab:comfunc) Common R functions
 
 Function | Description
-:----------------:|:---------------------------------------------------------------:
+:----------------:|:---------------------------------------------------------------
 `length(x)` | returns the length of vector `x` (i.e. the number of elements in `x`)
 `names(x)` | get or set names of `x` (i.e. we can give names to the individual elements of `x` as well as just having them numbered)
 `min(x)` | returns the smallest value in `x`
@@ -613,14 +615,16 @@ Function | Description
 `diff(x)` | returns a vector with all of the differences between subsequent values of `x`. This vector is of length 1 less than the length of `x`
 `summary(x)` | returns different types of summary output depending on the type of variable stored in `x`
 
-<a id="nestex"></a>
+```{hypertarget, label = "nestex"}
+```
+
 ```{task}
 Now that we know about **elementwise** operations, try to understand the [nested](#nested) function `sum(sqrt(log(seq(1, 10, by = 0.5))))`. To help with this, try to write this out in a series of steps and figure out what is returned at each stage of the nesting, and how this is passed to the next function.
 ```
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## Here are the steps:
 
 ## 1. First create a sequence of numbers
@@ -669,7 +673,7 @@ Now the `x` object has grouped together all elements of the vector that share th
 levels(x)
 ```
 
-R coerces `characters` to `factors` in [lexicographical order](https://en.wikipedia.org/wiki/Lexicographical_order). If you wish to set specific `levels`, then you can add a `levels` argument to the `factor()` function.
+R coerces `characters` to `factors` in **[lexicographical order](https://en.wikipedia.org/wiki/Lexicographical_order)**. If you wish to set specific `levels`, then you can add a `levels` argument to the `factor()` function.
 
 ```{task}
 Copy the following commands into your script file and then run them in order to see how this works. Annotate each line using comments to describe what it is doing.
@@ -690,7 +694,7 @@ factor(y, levels = c("low", "mid", "high"))
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## create a vector y containing the numbers below
 y <- c(5, 4, 3, 2, 10, 5, 4, 3, 2, 1)
 
@@ -733,7 +737,7 @@ factor(y, levels = c("low", "mid", "high"))
 
 ### Conversions between object types {#convert}
 
-Before we progress to other objects, we should have a brief aside to talk about conversion between types. So far we have introduced `numeric` vectors, which store numerical values (note that R makes no distinction between `integer`, `float` or `double` types, like C does). We have also seen `character` types, which store strings, and `factor` types that store strings with additional grouping information attached. We have also seen `logical` types, which simply store `TRUE` or `FALSE` values.
+Before we progress to other objects, we should have a brief aside to talk about conversion between types. So far we have introduced `numeric` vectors, which store numerical values (note that R makes no distinction between `integer` or `double` types, like C or Python do). We have also seen `character` types, which store strings, and `factor` types that store strings with additional grouping information attached. We have also seen `logical` types, which simply store `TRUE` or `FALSE` values.
 
 It is possible to convert between these different forms, using an `as.TYPE()` function (where `TYPE` is replaced with the correct type of interest). For example, we can easily convert numbers to characters:
 
@@ -811,7 +815,7 @@ matrix(0, 3, 4)
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## creates a (2 x 2) matrix with entries 
 ## 1:4 placed down the columns first
 matrix(1:4, 2, 2)
@@ -832,7 +836,9 @@ Like vectors, matrices can also contain `character` values e.g.
 matrix(letters[1:9], 3, 3)
 ```
 
-However, all elements must be of the same type. You can have a `numeric` matrix, or a `character` matrix, but not a mixture. If you try to specify a mixture then R will convert all entries to the most complex type.
+```{info, title = "Note", collapsible = FALSE}
+All elements of a `matrix` must be of the same type. You can have a `numeric` matrix, or a `character` matrix, but not a mixture. If you try to specify a mixture then R will convert all entries to the most complex type, which can lead to unexpected consequences unless you are careful!
+```
 
 #### Subsetting matrices
 
@@ -855,7 +861,7 @@ mat[c(1, 3), c(2, 3)]
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## create a vector vals and fill with values
 vals <- c(1, 2, 3, 4, 5, 0.5, 2, 6, 0, 1, 1, 0)
 
@@ -902,7 +908,7 @@ rbind(x1, x2, x3)
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## create a vector x1 containing the entries 1:3
 x1 <- 1:3
 
@@ -928,7 +934,7 @@ Some useful commands for matrices are listed in Table \@ref(tab:matfunc).
 Table: (\#tab:matfunc) Useful `matrix` commands in R
 
 Function | Example | Description
-:-------------:|:----------------------------:|:-----------------------------------------------:
+:-------------|:----------------------------|:-----------------------------------------------
 `matrix()` | `matrix(0, 3, 4)` | Creates a $(3 \times 4)$ matrix filled with zeros 
 `dim()` | `dim(mat)` | 	Returns the dimensions of a matrix `mat` in the form (rows $\times$ columns)
 `t()` | `t(mat)` | Transpose a matrix `mat`
@@ -955,7 +961,7 @@ x * c(1:3)
 
 ```{solution}
 
-``{r, eval = F}
+``{r, eval = FALSE}
 ## create a (3 x 3) matrix x containing
 ## the numbers 1:9 down the columns
 x <- matrix(1:9, 3, 3)
@@ -1081,7 +1087,9 @@ using the matrix subsetting notation (`[ROWS, COLS]`). (However, because it is a
 
 The important difference (to R at least) between a `matrix` object and a `data.frame` object that only contains `numeric` vectors, is that R thinks of the matrix as a single object, but it thinks of the `data.frame` as several connected, but distinct objects. (To the user it can be hard to distinguish between objects, and the commands `is.matrix()`, `is.list()` and `is.data.frame()` will return `TRUE` or `FALSE` depending on whether an object is a `matrix`, a `list` or `data.frame` respectively.)
 
-`data.frames` are very important for statistical analysis, as they frequently fit the form of available data. They are so important in fact that a lot of statistical functions actually expect this, and we devote an entire later practical to reading, summarising, plotting and manipulating data.
+```{info, title = "Note", collapsible = FALSE}
+`data.frames` are very important for statistical analysis, as they frequently fit the form of available data. They are so important in fact that a lot of statistical functions actually expect this, and we devote entire later [sections](#advis) to reading, summarising, plotting and manipulating data.
+```
 
 ## Saving outputs {#save}
 
@@ -1094,11 +1102,11 @@ With regards to outputs we can save:
 
 * the current R workspace---via `save.image()`. This creates a **binary** file with a '.RData' suffix. This can be reloaded into R using the `load()` function, and includes all objects in the current workspace.
 * A selection of objects---via the `save()` function. Here we can extract subsets of objects and save them. For example, `save(x, y, file = "practical1.RData")` will save only the objects `x` and `y` into a file called "practical1.RData". Alternatively a character vector of objects can be supplied e.g. `save(list = c("x", "y"), file = "practical1.RData")` will do the same thing as the previous command.
-* A single object can be saved using `saveRDS()`. This saves into a binary file with a suffix '.rds'. This is really useful for saving single objects, often cleaned `data.frame` objects, which can be loaded into R without having to recreate from a '.csv' file for example. For example, `saveRDS(x, "x.rds")` would save the `x` object into a file called "x.rds". This can be loaded into a new session via the `readRDS()` function. Another useful feature is that `readRDS()` can be used to pass the contents of a .rds file directly into an object of your choice e.g. `y <- readRDS("x.rds")` will create a new object called `y`, that contains the contents of the file "x.rds".
+* A single object can be saved using `saveRDS()`. This saves into a binary file with a suffix '.rds'. This is really useful for saving single objects, often cleaned `data.frame` objects, which can be loaded into R without having to recreate from scratch again. For example, `saveRDS(x, "x.rds")` would save the `x` object into a file called "x.rds". This can be loaded into a new session via the `readRDS()` function. Another useful feature is that `readRDS()` can be used to pass the contents of a .rds file directly into an object of your choice e.g. `y <- readRDS("x.rds")` will create a new object called `y`, that contains the contents of the file "x.rds".
 
 ## Reading in data
 
-Most data are stored in e.g. Excel files. Although some packages allow Excel files to be read directly into R, it is (in my opinion) much better practice to save the data as a **text file**, since this strips out unnecessary formatting and results in smaller file that can be universally used by any end user. Excel also has lots of other problems; see e.g. [here](https://nsaunders.wordpress.com/2016/08/25/data-corruption-using-excel-12-years-and-counting/).
+Most data are stored in e.g. Excel files. Although some packages allow Excel files to be read directly into R, it is (in my opinion) much better practice to save the data as a **text file**, since this strips out unnecessary formatting and results in smaller file that can be universally used by any end user. Excel also has lots of other problems; see e.g. [here](https://nsaunders.wordpress.com/2016/08/25/data-corruption-using-excel-12-years-and-counting/) for various examples.
 
 ```{info, title = "Aside", collapsible = FALSE}
 You can save Excel spreadsheets as comma-separated text files using e.g. *File > Save As > ...*, then from the 'Save as type' options choose 'CSV (comma separated)'. There is no need to add a suffix, because Excel will automatically add '.csv' to your file name.
@@ -1112,7 +1120,7 @@ A .csv file is simply a text file where each element is separated by a comma (th
 
 In fact, it is good practice to store your data in a much simpler way than many people are used to. Generally, try to avoid spaces between words at all in your data, even in column headers. Underscores are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements), and often I will try to convert as much to lower case as possible (since R is case sensitive, so it speeds up your typing).
 
-Download a sample data file: [worms.csv](https://exeter-data-analytics.github.io/IntroToR/worms.csv). We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
+Download a sample data file: [worms.csv](https://exeter-data-analytics.github.io/IntroToR/worms.csv). (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
 
 ```{r, loadworms, eval = FALSE}
 worms <- read.csv("worms.csv")
@@ -1136,9 +1144,11 @@ Looking at the data we can see a number of things:
 * Since the original data had spaces in the column names, these spaces have been replaced by dots.
 * Columns that can be converted into numbers in sensible ways are stored as such (e.g. the `Area` column). You can tell this because the `summary()` function returns numerical summaries.
 * Columns that can be converted into logical objects are stored as such (e.g. the `Damp` column).
-* Columns that can't be easily converted are stored as `factor`s (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns counts of observations in each group.
+* Columns that can't be easily converted are stored as `character` columns (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns no useful summaries for these columns except to say they are `character` columns[^2].
 
-These defaults can be useful sometimes for finding errors. For example, if a column of numbers contains a typo that prevents an entry from being converted to a number, then the whole column will be read in as a `factor()`. Thus if you spot this you can often track down the typo and correct it. Please see the section on [converting between types](#convert) for further details on how to manually convert between types.
+[^2]: note that in versions of R before R 4.0.0 these columns would have been automatically converted to `factor` columns. Whilst this is often a useful thing to do, it is much better now that R does not do this automatically and instead forces you to do this explicitly in your code so that it is documented.
+
+These defaults can be useful sometimes for finding errors. For example, if a column of numbers contains a typo that prevents an entry from being converted to a number, then the whole column will be read in as a `character()`. Thus if you spot this you can often track down the typo and correct it. Please see the section on [converting between types](#convert) for further details on how to manually convert between types.
 
 ```{info, title = "Important", collapsible = FALSE}
 It is a good idea to always check and read-in data to ensure each column is in the correct format before progressing any further with your analysis. A common error is that often categorical variables are coded as numbers. For example, a data set might contain numbers `0` or `1` to denote e.g. died/survived. In this case R will read the column in as a `numeric`, when it should be a `factor`. In this case you would want to manually convert your column to a `factor` before proceeding.
@@ -1146,7 +1156,7 @@ It is a good idea to always check and read-in data to ensure each column is in t
 
 Objects saved as an ['.rds' file](#save) can be read in and assigned to objects using the `readRDS()` function e.g.
 
-```{r, eval = F, saveworms}
+```{r, eval = FALSE, saveworms}
 ## save worms data frame as an .rds file
 saveRDS(worms, "worms.rds")
 
@@ -1154,6 +1164,6 @@ saveRDS(worms, "worms.rds")
 worms1 <- readRDS("worms.rds")
 ```
 
-Here the new `worms1` object is identical to the original `worms` object. I often read in .csv files, clean them up into the correct formats, and then save as an .rds file for further analysis. Since the .rds file stores R objects directly, then reading in the .rds file means I don't have to do all the cleaning up again.
+Here the new `worms1` object is identical to the original `worms` object. I often read in .csv files, clean them up into the correct formats, and then save as an .rds file for further analysis. Since the .rds file stores R objects directly, then reading in the .rds file means I don't have to do all the cleaning up again. For large data sets, the resulting `.rds` file can often be a much smaller file size than the original text file.
 
-Alternative approaches can be found in other packages, and indeed a good package is `readr`, which is part of the `tidyverse` suite of packages, which we will introduce in the [Advanced Visualisation and Data Wrangling tutorials](https://exeter-data-analytics.github.io/AdVis/index.html)---see [here](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for a useful cheat sheet. Some other options can be found [here](http://www.r-tutor.com/r-introduction/data-frame/data-import).
+Alternative approaches can be found in other packages, and indeed a good package is `readr`, which is part of the `tidyverse` suite of packages, which we will introduce in the [Advanced Visualisation](#advis) and [Data Wrangling](#wrangling) tutorials---see [here](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for a useful cheat sheet. Some other options can be found [here](http://www.r-tutor.com/r-introduction/data-frame/data-import).

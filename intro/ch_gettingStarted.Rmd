@@ -63,21 +63,21 @@ You can see here that R has returned a value of `r 10 + 5 * 3`, illustrating one
 Table: (\#tab:mathop) Basic mathematical operators
 
  Symbol    | Meaning 
-:--------: | :--------:
+:--------: | :--------
 `+`    | addition 
 `-` | subtraction 
 `*` | multiplication 
 `/` | division 
 `^` | to the power 
-`%%` | the remainder of a division (modulo)
-`%/%` | the integer part 
+`%%` | the remainder of an integer division (modulo)
+`%/%` | integer division
 
 Meanwhile, Table \@ref(tab:mathfunc) has some other ones you might need. (**Note**: these are functions: just replace e.g. `x` with a number.)
 
 Table: (\#tab:mathfunc) Other useful mathematical functions
 
 Function 	|	           Meaning 
-:---------: | :----------------------------:
+:---------: | :----------------------------
 `log(x)` 	|	$\log_e(x)$ (or $\ln(x)$)
 `exp(x)` 	|	$e^x$ 
 `log(x, n)` 	|	$\log_n(x)$

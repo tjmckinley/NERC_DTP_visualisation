@@ -6,11 +6,11 @@ Let's start with a motivating example.
 
 [Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
 
-```{r, screenshot.alt = "advis/images/hans.jpg", echo = F, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
+```{r, screenshot.alt = "advis/images/hans.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
 include_url("https://www.youtube.com/embed/jbkSRLYSojo")
 ```
 
-```{r, eval = opts_knit$get("rmarkdown.pandoc.to") == "latex", echo = F, results = "asis"}
+```{r, eval = opts_knit$get("rmarkdown.pandoc.to") == "latex", echo = FALSE, results = "asis"}
 ## cat("[![Text](advis/images/hans1.jpg)](https://www.youtube.com/embed/jbkSRLYSojo)")
 cat("\\begin{center}\\href{https://www.youtube.com/embed/jbkSRLYSojo}{\\includegraphics[width = 0.8\\textwidth]{advis/images/hans.jpg}}\\end{center}")
 ```
@@ -21,7 +21,7 @@ For a slightly longer presentation, his TED talk on global development has been 
 
 The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
 
-```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = F, out.width = "70%", out.height = "70%"}
+```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = FALSE, out.width = "70%", out.height = "70%"}
 include_graphics("advis/images/gapminder.png")
 ```
 
@@ -131,7 +131,7 @@ We have seen that the R base graphics system is highly flexible, and it can be u
 
 First we load the `tidyverse` (of which `ggplot2` is included).
 
-```{r, message = F, cache = F}
+```{r, message = FALSE, cache = FALSE}
 library(tidyverse)
 ```
 
@@ -294,7 +294,7 @@ ggplot(iris) +
 ```{task}
 What happens if you try to run the following code?
     
-``{r, eval= F}
+``{r, eval= FALSE}
 ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width), colour = Species)
 ``
@@ -305,7 +305,7 @@ Why does this happen?
 ```{solution}
 In this case you get an error:
     
-``{r, error = T}
+``{r, error = TRUE}
 ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width), colour = Species)
 ``
@@ -368,14 +368,14 @@ ggplot(iris) +
 
 Notice that in the code below the `geom_point()` and `stat_smooth()` functions use the same aesthetics. In this case it is possible to add "global" aesthetics to a plot through the `ggplot2()` function, which can then be accessed by sub-functions. Hence the following two pieces of code are equivalent here.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width)) +
     stat_smooth(aes(x = Sepal.Length, y = Sepal.Width), method = "lm") +
     facet_wrap(~ Species)
 ```
 
-```{r, eval = F}
+```{r, eval = FALSE}
 ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
     geom_point() +
     stat_smooth(method = "lm") +
@@ -392,13 +392,13 @@ Scales control the details of how data values are translated to visual propertie
 
 Let's take these ideas and return to our Gapminder data. Datasets from the Gapminder project can be downloaded from [https://www.gapminder.org/data](https://www.gapminder.org/data). However, the particular data set required to replicate Figure \@ref(fig:gapminder) is available in a package in R called (naturally) [`gapminder`](https://cran.r-project.org/web/packages/gapminder/index.html). If not already installed, then this can be installed in the usual way e.g.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 install.packages("gapminder")
 ```
 
 Once you have it installed we need to load the packages. 
 
-```{r, cache = F, message = F}
+```{r, cache = FALSE, message = FALSE}
 library(gapminder)
 ```
 
@@ -488,13 +488,13 @@ p <- ggplot(gapminder[gapminder$year == 1952, ],
 >    geom_point()
 > ```
 > creates an object called `p` that contains the plot information. This will not be plotted until the object is **printed** to the screen e.g.
-> ```{r, message = F}
+> ```{r, message = FALSE}
 > p
 > ```
 > **Note**: If using `ggplot` inside functions you may have to explicitly use the `print()` function (e.g. `print(p)`).
 > 
 > This can be useful if we want to add things to an existing plot at a later stage without having to rewrite the entire plot. For example, to set the scales on plot `p` we can do:
-> ```{r, message = F}
+> ```{r, message = FALSE}
 > p <- p + scale_x_log10()
 > p
 > ```
@@ -539,7 +539,7 @@ Let's have a look at a couple of other examples.
 
 Another chart seen in Professor Rosling's TED talk was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_density()` geom as in the earlier example, which requires only an `x` aesthetic---see `?geom_density`---since it calculates the density on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
 
-```{r, message = F}
+```{r, message = FALSE}
 ggplot(gapminder[gapminder$year == 1952, ],
        aes(x = gdpPercap)) +
     geom_density() +
@@ -636,7 +636,7 @@ Produce a density plot of `log10(gdpPercap)` faceted by `continent`, for the yea
 
 ```{solution}
 
-``{r, message = F}
+``{r, message = FALSE}
 ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
        aes(x = gdpPercap)) +
     geom_density()  +
@@ -652,7 +652,7 @@ Now generate a series of stacked density plots, with colours corresponding to di
 
 ```{solution}
 
-``{r, message = F}
+``{r, message = FALSE}
 ggplot(gapminderNoOc,
        aes(x = gdpPercap, fill = continent)) +
     geom_density(position = "stack") +
@@ -681,7 +681,7 @@ Source: [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0
 ```{task}
 The file "ff.rds" contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
     
-``{r, eval = F}
+``{r, eval = FALSE}
 ff <- readRDS("advis/ff.rds")
 ``
 
@@ -692,7 +692,7 @@ and use `ggplot2` to reproduce something similar to the plot below:
 
 ```{solution}
 
-``{r, echo = F}
+``{r, echo = FALSE}
 ff <- readRDS("advis/uploadFiles/ff.rds")
 ``
 
@@ -701,7 +701,7 @@ ff <- readRDS("advis/uploadFiles/ff.rds")
 ggplot(ff, aes(y = longevity, x = thorax, 
                linetype = type, shape = type)) +
     geom_point() +
-    stat_smooth(method = "lm", se = F) +
+    stat_smooth(method = "lm", se = FALSE) +
     facet_wrap(~ partners) +
     labs(linetype = "Partner Type", shape = "Partner Type") +
     ylab("Longevity (days)") +

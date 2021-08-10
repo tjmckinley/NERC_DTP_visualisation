@@ -8,7 +8,7 @@ It is estimated that data scientists spend around [50-80% of their time cleaning
 
 Before we go any further, if you haven't already, please load `tidyverse`:
 
-```{r, message = F}
+```{r, message = FALSE}
 library(tidyverse)
 ```
 
@@ -48,21 +48,21 @@ Let's start by looking at some basic operations, such as subsetting, sorting and
 
 One operation we often want to do is to extract a subset of rows according to some criterion. For example, we may want to extract all rows of the `iris` dataset that correspond to the `versicolor` species. In base R we can do this as:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 iris[iris$Species == "versicolor", ]
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(iris[iris$Species == "versicolor", ])
 ```
 
 In `tidyverse`, we can use a function called `filter()`:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 filter(iris, Species == "versicolor")
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(filter(iris, Species == "versicolor"))
 ```
 
@@ -72,20 +72,20 @@ Notice some minor differences. The first argument to the `filter()` function is 
 
 Another common operation is to sort rows according to some criterion. Let's say we want to sort rows by `Species` and then `Sepal.Length`. In base R we could do this as:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 iris[order(iris$Species, iris$Sepal.Length), ]
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(iris[order(iris$Species, iris$Sepal.Length), ])
 ```
 In `tidyverse` we can use the `arrange()` function.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 arrange(iris, Species, Sepal.Length)
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(arrange(iris, Species, Sepal.Length))
 ```
 
@@ -95,7 +95,7 @@ Notice once again that the first argument to `arrange()` is the data set, and th
 
 Now let's say that we wish to select just the `Species`, `Sepal.Length` and `Sepal.Width` columns from the data set. There are various ways that we could do this in base R. Here are a few options:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 ## option 1
 iris[, match(c("Species", "Sepal.Length", "Sepal.Width"), colnames(iris))]
 
@@ -109,17 +109,17 @@ iris[, c(5, 1, 2)]
 
 In `tidyverse` we can use the `select()` function:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 select(iris, Species, Sepal.Length, Sepal.Width)
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(select(iris, Species, Sepal.Length, Sepal.Width))
 ```
 
 Notice once again that the first argument to `select()` is the data set, and then subsequent arguments are the columns that we wish to select; no `$` operators required. There is even a set of functions to help extract columns based on pattern matching e.g.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 select(iris, Species, starts_with("Sepal"))
 ```
 
@@ -127,13 +127,13 @@ See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets
 
 Note that we can also remove columns using a `-` operator e.g.
 
-```{r, eval = F}
+```{r, eval = FALSE}
 select(iris, -starts_with("Petal"))
 ```
 
 or 
 
-```{r, eval = F}
+```{r, eval = FALSE}
 select(iris, -Petal.Length, -Petal.Width)
 ```
 
@@ -143,17 +143,17 @@ would remove the petal columns.
 
 Finally, let's add a new column called `Sepal.Length2` that contains the square of the sepal length. In base R:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 iris$Sepal.Length2 <- iris$Sepal.Length^2
 ```
 
 In `tidyverse`:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 mutate(iris, Sepal.Length2 = Sepal.Length^2)
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 head(mutate(iris, Sepal.Length2 = Sepal.Length^2))
 ```
 
@@ -185,11 +185,11 @@ One final and key advantage to the `tidyverse` paradigm, is that we can use **pi
 
 Recently, the [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) package, and subsequently `tidyverse` have introduced the pipe operator `%>%` that enables us to chain functions together. Let's look at an example:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 iris %>% filter(Species == "versicolor")
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 iris %>% filter(Species == "versicolor") %>% head()
 ```
 
@@ -197,7 +197,7 @@ iris %>% filter(Species == "versicolor") %>% head()
 
 Pipes can be chained together multiple times. For example:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 iris %>%
     filter(Species == "versicolor") %>%
     select(Species, starts_with("Sepal")) %>%
@@ -205,7 +205,7 @@ iris %>%
     arrange(Sepal.Length)
 ```
 
-```{r, echo = F}
+```{r, echo = FALSE}
 iris %>%
     filter(Species == "versicolor") %>%
     select(Species, starts_with("Sepal")) %>%
@@ -271,12 +271,12 @@ Download this file and save it into your working directory. Now let's read in th
 
 [^2]: Note that this is different than the `read.csv()` function in base R. It doesn't convert `character` columns to  `factor` columns, and returns a `tibble` by default.
 
-```{r, message = F, eval = F}
+```{r, message = FALSE, eval = FALSE}
 gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
 
-```{r, message = F, echo = F}
+```{r, message = FALSE, echo = FALSE}
 gp_income <- read_csv("advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
@@ -359,7 +359,7 @@ Phew! this took some effort, but we've managed to end up with a fairly clean dat
 
 To do all of the previous data cleaning operation using pipes, we can write:
 
-```{r, message = F, eval = F}
+```{r, message = FALSE, eval = FALSE}
 gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
@@ -369,7 +369,7 @@ gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 filter(year > 1990)
 ```
 
-```{r, include = F}
+```{r, include = FALSE}
 gp_income <- read_csv("advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
@@ -410,7 +410,7 @@ Load in the file "indicator hiv estimated prevalence% 15-49.csv". This file cont
 
 ```{solution}
 
-``{r, message = F, eval = F}
+``{r, message = FALSE, eval = FALSE}
 gp_hiv <- read_csv("advis/indicator hiv estimated prevalence% 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
@@ -421,7 +421,7 @@ gp_hiv <- read_csv("advis/indicator hiv estimated prevalence% 15-49.csv") %>%
             mutate(prevalence = as.numeric(prevalence))
 ``
 
-``{r, message = F, echo = F}
+``{r, message = FALSE, echo = FALSE}
 gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
@@ -434,7 +434,7 @@ gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence% 15-49.
 
 ```
 
-```{r, include = F}
+```{r, include = FALSE}
 gp_hiv <- readRDS("advis/uploadFiles/gp_hiv.rds")
 ```
 
@@ -536,7 +536,7 @@ Total population data are available in the "indicator gapminder population.csv" 
 
 ```{solution}
 
-``{r, message = F, eval = F}
+``{r, message = FALSE, eval = FALSE}
 ## read in data
 gp_pop <- read_csv("advis/indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
@@ -554,7 +554,7 @@ anti_join(gp, gp_pop, by = c("year", "country"))
 gp <- inner_join(gp, gp_pop, by = c("year", "country"))
 ``
 
-``{r, message = F, echo = F}
+``{r, message = FALSE, echo = FALSE}
 ## read in data
 gp_pop <- read_csv("advis/uploadFiles/indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
@@ -574,7 +574,7 @@ gp <- inner_join(gp, gp_pop, by = c("year", "country"))
 
 ```
 
-```{r, include = F}
+```{r, include = FALSE}
 gp_pop <- readRDS("advis/uploadFiles/gp_pop.rds")
 gp <- readRDS("advis/uploadFiles/gp.rds")
 ```
@@ -605,7 +605,7 @@ gp %>%
 
 [Population pyramids](https://en.wikipedia.org/wiki/Population_pyramid) are commonly used by demographers to illustrate age and sex structure of a country's population. A schematic example of a population pyramid is shown in Figure \@ref(fig:poppyramid).
 
-```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = F}
+```{r, poppyramid, fig.cap = "Schematic diagram of a population pyramid (source: Wikipedia)", echo = FALSE}
 include_graphics("advis/images/Population_pyramid_example.png")
 ```
 
@@ -626,7 +626,7 @@ In this exercise we will load these data into R, wrangle them into a useful form
 
 Firstly, we read the three data files into R, storing them as `tibble` objects called `germany`, `mexico` and `us`. 
 
-```{r, message = F, eval = F}
+```{r, message = FALSE, eval = FALSE}
 ## read German data in
 germany <- read_csv("advis/Germanypop.csv")
 
@@ -637,7 +637,7 @@ mexico <- read_csv("advis/Mexicopop.csv")
 us <- read_csv("advis/USpop.csv")
 ```
 
-```{r, message = F, echo = F}
+```{r, message = FALSE, echo = FALSE}
 ## read German data in
 germany <- read_csv("advis/uploadFiles/Germanypop.csv")
 
@@ -714,7 +714,7 @@ ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) +
     labs(fill = "Sex")
 ```
 
-```{r, echo = F, eval = F}
+```{r, echo = FALSE, eval = FALSE}
 p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
     geom_bar(stat = "identity") +
     scale_y_continuous(
@@ -764,7 +764,7 @@ Mexico also has a very high proportion of young females: in fact 33% of the curr
 
 A good description of population demographics can be found in this short video:
 
-```{r, screenshot.alt = "advis/images/population.jpg", echo = F}
+```{r, screenshot.alt = "advis/images/population.jpg", echo = FALSE}
 include_url("https://www.youtube.com/embed/QsBT5EQt348")
 ```
 

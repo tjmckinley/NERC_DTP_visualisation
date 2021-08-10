@@ -1,12 +1,14 @@
+# (PART) Introduction to R {-} 
+
 # Getting Started in R {#gettingstarted}
 
 R---available at [https://cran.r-project.org/](https://cran.r-project.org/)---is a comprehensive statistical programming language. It can be thought of as an open-source, freely available implementation of the [S](https://en.wikipedia.org/wiki/S_(programming_language)) language. R is an **interpreted language**, and so can be used interactively, without having to compile the code into an executable file. 
 
 Although R is a functional programming language in its own right, its popularity is in large part due to its fantastic capabilities as a statistical package. However, R is much more than that. R has amazing graphical capabilities; can integrate with other languages, such as C and Python; can use scripts and be run in batch mode; and can even be used to produce **reproducible** documents, presentations and interactive webpages. Even better than that, R is completely **free** and **open-source**! Professional editions of packages such as SAS, Stata, S-Plus or SPSS can cost upwards of £1000. 
 
-To top it off, R is also **multi-platform**, and so can be used on Windows, Mac and Linux operating systems. R is supported by a wide user base, and is extended by a large number of additional packages, and even provides the capabilities to create your own. Whilst R provides its own development environment, we will use a fantastic IDE[^i] provided by RStudio. This is free to download, provides some neat features, and crucially, operates the same way on all operating systems!
+To top it off, R is also **multi-platform**, and so can be used on Windows, Mac and Linux operating systems. R is supported by a wide user base, and is extended by a large number of additional packages, and even provides the capabilities to create your own. Whilst R provides its own development environment, we will use a fantastic IDE[^ide] provided by RStudio. This is free to download, provides some neat features, and crucially, operates the same way on all operating systems!
 
-[^i]: Integrated Desktop Environment
+[^ide]: Integrated Desktop Environment
 
 All of the instructions in this practical will assume that you are using RStudio.
 

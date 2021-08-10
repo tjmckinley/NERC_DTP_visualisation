@@ -55,10 +55,10 @@ ls()[ls() == "ziggy"]
 ```{info, title = "Note", collapsible = FALSE}
 Names of variables can be chosen quite freely in R. They can be built from letters, digits and other characters, such as `_`. They can't, however, start with a digit or a `.` followed by a digit. Names are **case sensitive** and so `height` is a different variable from `Height`. Try to choose **informative** variable names where possible (`height` is more informative than `x` when talking about heights for example).
 
-**Don't use spaces in variable names**. Underscores are much safer[^1]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
+**Don't use spaces in variable names**. Underscores are much safer[^uscore]. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements---although RStudio does have *autocomplete* functionality). Often I will try to convert as much to lower case as possible. If you do need to include multiple words try to use an underscore `_` (e.g. `child_heights`), or some people prefer to use something like [CamelCase](https://en.wikipedia.org/wiki/Camel_case) (e.g. `childHeights` or `ChildHeights`). Use whatever you prefer but try to be **consistent**.
 ```
 
-[^1]: Some people also use dots, e.g. `child.heights`, but in general I would avoid this, since dots are often used when working with functions of specific classes such as `print.lm()`
+[^uscore]: some people also use dots, e.g. `child.heights`, but in general I would avoid this, since dots are often used when working with functions of specific classes such as `print.lm()`
 
 ## Functions in R
 
@@ -1144,9 +1144,9 @@ Looking at the data we can see a number of things:
 * Since the original data had spaces in the column names, these spaces have been replaced by dots.
 * Columns that can be converted into numbers in sensible ways are stored as such (e.g. the `Area` column). You can tell this because the `summary()` function returns numerical summaries.
 * Columns that can be converted into logical objects are stored as such (e.g. the `Damp` column).
-* Columns that can't be easily converted are stored as `character` columns (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns no useful summaries for these columns except to say they are `character` columns[^2].
+* Columns that can't be easily converted are stored as `character` columns (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns no useful summaries for these columns except to say they are `character` columns[^charcols].
 
-[^2]: note that in versions of R before R 4.0.0 these columns would have been automatically converted to `factor` columns. Whilst this is often a useful thing to do, it is much better now that R does not do this automatically and instead forces you to do this explicitly in your code so that it is documented.
+[^charcols]: note that in versions of R before R 4.0.0 these columns would have been automatically converted to `factor` columns. Whilst this is often a useful thing to do, it is much better now that R does not do this automatically and instead forces you to do this explicitly in your code so that it is documented.
 
 These defaults can be useful sometimes for finding errors. For example, if a column of numbers contains a typo that prevents an entry from being converted to a number, then the whole column will be read in as a `character()`. Thus if you spot this you can often track down the typo and correct it. Please see the section on [converting between types](#convert) for further details on how to manually convert between types.
 

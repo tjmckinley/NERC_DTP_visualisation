@@ -1,5 +1,13 @@
 # Visualisation using `ggplot2` {#advis}
 
+R has very powerful and flexible plotting capabilities, that enable you to produce almost any type of plot (standard or customised) that you like. The downside is that the syntax can be verbose, so for complex plots it can be time consuming to code up. 
+
+A general package that has been developed for visualisation of complex data sets is called `ggplot2`. This provides a wide variety of standard plot types and flexible customisation options, with a unifying syntax. In this part of the module, we will introduce `ggplot2` and illustrate its use on a range of real-world examples.
+
+```{info, title = "Note", collapsible = FALSE}
+We will not focus on using R's base graphics capabilities here, but will provide some comparison code for some of the plots (if you are interested) in order to show you how you can generate similar plots with the base graphics capabilities.
+```
+
 Let's start with a motivating example.
 
 ## Gapminder
@@ -17,7 +25,7 @@ cat("\\begin{center}\\href{https://www.youtube.com/embed/jbkSRLYSojo}{\\includeg
 
 For a slightly longer presentation, his TED talk on global development has been watched over 11 million times. If you have 20 minutes, it can be found [here](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread), and is well worth a watch!
 
-> More-or-less as I had finished the first version of these notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the immense contribution that he made to the world of public health and education. He presented a world-view based on facts and data. To this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
+> More-or-less as I had finished an earlier version of these notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the immense contribution that he made to the world of public health and education. He presented a world-view based on facts and data. To this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
 
 The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
 
@@ -25,9 +33,15 @@ The [Gapminder](https://www.gapminder.org/) website provides really informative 
 include_graphics("advis/images/gapminder.png")
 ```
 
-Before we do this, let's quickly remind ourselves of basic plotting functionality in R.
+## Introduction to `ggplot2`
 
-## Base R graphics 
+We have seen that the R base graphics system is highly flexible, and it can be used to produce high-quality, bespoke visualisations. However, doing so can be a lot of work! Let's show an alternative way to produce similar plots using the `ggplot2` package. We will introduce the code first, and then talk through it.
+
+First we load the `tidyverse` (of which `ggplot2` is included).
+
+```{r, message = FALSE, cache = FALSE}
+library(tidyverse)
+```
 
 Let's begin by exploring the `iris` data set, which gives the measurements in centimeters of the variables sepal length and width, and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are *Iris setosa*, *versicolor*, and *virginica*. This data set is available as part of the base R package. Let's have a look at the data:
 
@@ -35,79 +49,52 @@ Let's begin by exploring the `iris` data set, which gives the measurements in ce
 head(iris)
 ```
 
-Let's start by visualising the variable `Sepal.Length`using a kernel density plot:.
+You'll notice that the data is in **tidy** format. Specifically, a **tidy** data set is one in which:
+
+* rows contain different **observations**;
+* columns contain different **variables**;
+* cells contain values.
+
+We will discuss **tidy** data in more detail [in a later section](#wrangling). For the time being, as a quick example, let's produce a plot of `Sepal.Width` against `Sepal.Length`, but with points coloured by `Species`:
 
 ```{r}
-## kernel density of sepal length
-plot(density(iris$Sepal.Length))
+ggplot(iris) +
+    geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))
 ```
 
-> Remember that we can extract a named column from a `data.frame` using the `$` operator. The `density()` function is a simple function in R that takes a `vector` argument and returns a kernel density object, which we can then plot using the generic `plot()` function. 
+Notice that we had to do little physical manipulation of the plot. We didn't have to choose how to position legends, or manually subset the data to plot the different points, or choose the colours; the package took care of all of these things.
 
-Now let's try to plot different kernel density plots for the three different species. We could do this as separate plots, and use our standard subsetting notation to extract the correct elements of the data frame in each case:
+```{info, title = "Analogous base R code", collapsible = TRUE}
+Here is a version of the same plot using base R graphics functions, with some explanation of the different steps.
 
-```{r, fig.show = "hold"}
-## plot Sepal.Length for setosa
-plot(density(iris$Sepal.Length[iris$Species == "setosa"]))
+Firstly, plot the `iris$Sepal.Width` vector against the `iris$Sepal.Length` vector, adding some informative axis labels.
+\newline
+``{r, eval = FALSE}
+## produce scatterplot
+plot(iris$Sepal.Length, iris$Sepal.Width, 
+     xlab = "Sepal Length (cm)", ylab = "Sepal Width (cm)")
+``
+Now we will use the `points()` function to overlay points on an existing plot, manually colouring by the different species.
 
-## plot Sepal.Length for versicolor
-plot(density(iris$Sepal.Length[iris$Species == "versicolor"]))
+``{r, eval = FALSE}
+points(iris$Sepal.Length[iris$Species == "versicolor"],
+       iris$Sepal.Width[iris$Species == "versicolor"], col = "red")
+points(iris$Sepal.Length[iris$Species == "virginica"],
+       iris$Sepal.Width[iris$Species == "virginica"], col = "blue")
+``
 
-## plot Sepal.Length for virginica
-plot(density(iris$Sepal.Length[iris$Species == "virginica"]))
-```
-
-What about if we want to add all three density lines to the same plot?
-
-```{r}
-## place kernel density estimates on the same plot
-plot(density(iris$Sepal.Length[iris$Species == "setosa"]), main = "")
-lines(density(iris$Sepal.Length[iris$Species == "versicolor"]))
-lines(density(iris$Sepal.Length[iris$Species == "virginica"]))
-```
-
-> Notice the use of the `lines()` function to allow a line to be added to an existing plot.
-
-Notice that the limits of the $x$- and $y$-axes in this case are set by the range of the initial `setosa` sepal lengths, and hence the density plots for the other two species extend beyond the plot window. Let's try again, but this time setting the bounds for the plots manually. To do this we calculate the $x$ and $y$ ranges for each density plot separately, and then take the maximum values across the different species. We then use the `xlim` and `ylim` arguments to the `plot()` function in order to set the ranges:
-
-```{r}
-## produce densities
-setosa_dens <- density(iris$Sepal.Length[iris$Species == "setosa"])
-versicolor_dens <- density(iris$Sepal.Length[iris$Species == "versicolor"])
-virginica_dens <- density(iris$Sepal.Length[iris$Species == "virginica"])
-
-## extract x-ranges and y-ranges
-xlims <- range(c(setosa_dens$x, versicolor_dens$x, virginica_dens$x))
-ylims <- range(c(setosa_dens$y, versicolor_dens$y, virginica_dens$y))
-
-## produce plot
-plot(density(iris$Sepal.Length[iris$Species == "setosa"]), 
-     xlim = xlims, ylim = ylims, main = "")
-lines(density(iris$Sepal.Length[iris$Species == "versicolor"]))
-lines(density(iris$Sepal.Length[iris$Species == "virginica"]))
-```
-
-This is better, but still not very informative. Let's add some colour and a legend, and tidy up the axis labels.
-
-```{r}
-## produce plot
-plot(density(iris$Sepal.Length[iris$Species == "setosa"]), 
-    xlim = xlims, ylim = ylims, main = "", xlab = "Sepal Length (cm)")
-lines(density(iris$Sepal.Length[iris$Species == "versicolor"]), col = "red")
-lines(density(iris$Sepal.Length[iris$Species == "virginica"]), col = "blue")
-
-## add legend to top-right corner
-legend(par("usr")[2] * 0.8, par("usr")[4] * 0.95, 
+Finally we add a legend. We could set the position of the legend manually, but the objects `par("usr")` provides the coordinates of the plot region in the form `c(x1, x2, y1, y2)`, where `x1` is the lower bound for the $x$-axis, and `x2` is the upper bound for the $x$-axis, and similarly for `y1` and `y2`. It is up to us to set the correct mapping of colours and point shapes to the text labels, and to figure out the optimum positioning. See the helps files: `?plot`, `?points` and `?legend` for more details.
+\newline
+``{r, eval = FALSE}
+## add legend
+legend(par("usr")[2] * 0.8, par("usr")[4] * 0.98, 
        legend = c("setosa", "versicolor", "virginica"), 
-       lty = c(1, 1, 1), 
+       pch = c(1, 1, 1), 
        col = c("black", "red", "blue"))
-```
+``
 
-Notice that this is quite a simple plot, but required a series of steps to render in base R. We needed to calculate manual limits for the axes, plot the three species separately, and then add a custom legend to the plot.
-
-Let's look at another quick example. This time, let's plot sepal length against sepal width for the three species.
-
-```{r}
+The final plot looks like:
+``{r, echo = FALSE}
 ## produce scatterplot
 plot(iris$Sepal.Length, iris$Sepal.Width, 
      xlab = "Sepal Length (cm)", ylab = "Sepal Width (cm)")
@@ -121,28 +108,12 @@ legend(par("usr")[2] * 0.8, par("usr")[4] * 0.98,
        legend = c("setosa", "versicolor", "virginica"), 
        pch = c(1, 1, 1), 
        col = c("black", "red", "blue"))
+``
 ```
 
-> Notice the use of the `points()` function to add points to an existing plot. We could set the position of the legend manually, but the objects `par("usr")` provides the coordinates of the plot region in the form `c(x1, x2, y1, y2)`, where `x1` is the lower bound for the $x$-axis, and `x2` is the upper bound for the $x$-axis, and similarly for `y1` and `y2`.
-
-## Introduction to `ggplot2`
-
-We have seen that the R base graphics system is highly flexible, and it can be used to produce high-quality, bespoke visualisations. However, doing so can be a lot of work! Let's show an alternative way to produce similar plots using the `ggplot2` package. We will introduce the code first, and then talk through it.
-
-First we load the `tidyverse` (of which `ggplot2` is included).
-
-```{r, message = FALSE, cache = FALSE}
-library(tidyverse)
+```{info, title = "Note", collapsible = FALSE}
+As usual, information can be found in the relevant help files, but a really useful resource for `ggplot2` is the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Another fantastic resource, is the [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/) by Winston Chang, which has a free online version, or a physical book that you can buy.
 ```
-
-Now run
-
-```{r}
-ggplot(iris) +
-    geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))
-```
-
-Notice that we had to do little physical manipulation of the plot. We didn’t have to choose how to position legends, or manually subset the data to plot the different points, or choose the colours; the package took care of all of these things.
 
 So, how does it work? `ggplot2` is based on a book called the [Grammar of Graphics](https://www.amazon.co.uk/Grammar-Graphics-Statistics-Computing/dp/0387245448) by [Leland Wilkinson](https://en.wikipedia.org/wiki/Leland_Wilkinson)---hence the name `gg`-`plot`! The ethos of `ggplot2` is that plots can be broken down into different **features**, most notably:
 
@@ -163,30 +134,17 @@ ggplot(iris)
 
 This sets up the plot. The first argument to the `ggplot` function is the **data**, which here is the `iris` data set.
 
-> **Important**: whereas base R graphics can plot various object types, `ggplot()` **requires** `data.frame` (or `tibble`[^1]) objects. It is designed for plotting statistical data sets. Never fear, most R objects can be manipulated into `data.frames` for plotting if required. (See next session on **data wrangling**.)
+```{info, title = "Important", collapsible = FALSE}
+Whereas base R graphics can plot various object types, `ggplot()` **requires** `data.frame` (or `tibble`[^tibble]) objects. It is designed for plotting statistical data sets. Never fear, most R objects can be manipulated into `data.frames` for plotting if required. (See next session on [**data wrangling**](#wrangling) for more on this.)
+```
 
-[^1]: We will see `tibble` objects later on---just think of them as special `data.frames`.
+[^tibble]: We will see `tibble` objects later on---just think of them as special `data.frames`.
 
-### Aesthetics
-
-The `aes(x = Sepal.Length, y = Sepal.Width, colour = Species)` part sets the **aesthetics**, which here are added as an argument to the `geom_point()` function (see nect section). These define how the data are **mapped** onto the visual aesthetics of the plot. Here we are setting the `x` coordinates to be `Sepal.Length`, the `y` coordinates to be `Sepal.Width`, and the `colour` of the characters to be related to `Species`. In general, **aesthetics** include:
-
-* position;
-* colour (border or line color);
-* fill (inside color);
-* shape;
-* linetype;
-* size.
-
-> As usual, information can be found in the relevant help files, but a really useful resource for `ggplot2` is the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Another fantastic resource, is the [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/) by Winston Chang, which has a free online version, or a physical book that you can buy.
-
-> **Notice** that we did not have to use the `$` operator to extract columns. This makes `ggplot2` code a lot clearer. R knows to look for the `Sepal.Length` and `Sepal.Width` columns in the `iris` data, because we have told `ggplot()` which data set to operate on.
-
-<!-- Notice that only an **empty plot** has been drawn so far, there are no points present. This is because we haven't told `ggplot2` what type of plot we want. We do this by specifying a **geom**.  -->
+Notice that only an **empty plot** has been drawn so far, there are no points present. This is because we haven't told `ggplot2` what type of plot we want. We do this by specifying a **geom**.
 
 ### Geoms
 
-A **geom** defines the type of plot we want. In this case we want a **scatterplot**, which can be defined by the `geom_point()` function. Geoms can be layered, allowing us to built complex plots in different ways. Common geoms are:
+A **geom** defines the type of plot we want. In this case we want a **scatterplot**, which can be defined by the `geom_point()` function. Geoms can be layered, allowing us to built up complex plots sequentially. Common geoms are:
 
 * `geom_point()`
 * `geom_line()`
@@ -197,22 +155,41 @@ A **geom** defines the type of plot we want. In this case we want a **scatterplo
 
 Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
 
-**Note**: `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))` (in this case including the aesthetics in the `geom_*` call). The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
+### Aesthetics
 
-Let's see how this works:
+The `aes(x = Sepal.Length, y = Sepal.Width, colour = Species)` part sets the **aesthetics**, which here are added as an argument to the `geom_point()` function. These define how the *data* are **mapped** onto the *visual aesthetics* of the plot. Here we are setting the `x` coordinates to be `Sepal.Length`, the `y` coordinates to be `Sepal.Width`, and the `colour` of the characters to be related to `Species`. In general, **aesthetics** include:
+
+* position;
+* colour (border or line colour);
+* fill (inside colour);
+* shape;
+* linetype;
+* size.
+
+```{info, title = "Note", collapsible = FALSE}
+Notice that we did not have to use the `$` operator to extract columns. This makes `ggplot2` code a lot clearer. R knows to look for the `Sepal.Length` and `Sepal.Width` columns in the `iris` data, because we have told `ggplot()` which data set to operate on.
+```
+
+### Building up plots
+
+Note that `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))` (in this case including the aesthetics in the `geom_*` call). The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
+
+Putting all this together we have:
 
 ```{r}
 ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))
 ```
 
-Nice! With one tiny function we have added colours *and* legends. All nicely formatted to work together in one plot!
+Nice! With one tiny function we have added colours *and* legends. All neatly formatted to work together in one plot!
 
-> **Important**: Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (we will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`. 
+```{info, title = "Important", collapsible = FALSE}
+Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (we will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`.
+```
 
 ### Labels and titles
 
-Labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `ggtitle()` functions:
+Labels and titles can be added fairly easily, using the `xlab()`, `ylab()` and `ggtitle()` functions, e.g.
 
 ```{r}
 ggplot(iris) +
@@ -222,7 +199,7 @@ ggplot(iris) +
 ```
 
 ```{task}
-Let's return to the density plot example. Produce a plot containing three density plots for `Sepal.Length`, stratified by `Species`. **Hint**: use the `geom_density()` geom, which requires an `x` aesthetic only.
+Asume that we want to visualise the distribution of `Sepal.Length` values for each species, together on one plot. One way that we can do this is to use a kernel density plot (or alternatively a histogram) of the data. Produce a plot containing three density plots for `Sepal.Length`, stratified by `Species`. **Hint**: use the `geom_density()` geom, which requires an `x` aesthetic only, and set the `colour` aesthetic as before.
 ```
 
 ```{solution}
@@ -232,6 +209,78 @@ ggplot(iris) +
     geom_density(aes(x = Sepal.Length, colour = Species))
 ``
 
+```
+
+```{info, title = "Analogous base R code", collapsible = TRUE}
+Let's start by visualising the variable `Sepal.Length` using a kernel density plot:
+\newline
+``{r, eval = FALSE}
+## kernel density of sepal length
+plot(density(iris$Sepal.Length))
+``
+
+Remember that we can extract a named column from a `data.frame` using the `$` operator. The `density()` function is a simple function in R that takes a `vector` argument and returns a kernel density object, which we can then plot using the generic `plot()` function. 
+
+Now let's try to plot different kernel density plots for the three different species. We could do this as separate plots, and use our standard subsetting notation to extract the correct elements of the data frame in each case:
+\newline
+``{r, eval = FALSE}
+## plot Sepal.Length for setosa
+plot(density(iris$Sepal.Length[iris$Species == "setosa"]))
+
+## plot Sepal.Length for versicolor
+plot(density(iris$Sepal.Length[iris$Species == "versicolor"]))
+
+## plot Sepal.Length for virginica
+plot(density(iris$Sepal.Length[iris$Species == "virginica"]))
+``
+
+What about if we want to add all three density lines to the same plot?
+\newline
+``{r, eval = FALSE}
+## place kernel density estimates on the same plot
+plot(density(iris$Sepal.Length[iris$Species == "setosa"]), main = "")
+lines(density(iris$Sepal.Length[iris$Species == "versicolor"]))
+lines(density(iris$Sepal.Length[iris$Species == "virginica"]))
+``
+
+Notice the use of the `lines()` function to allow a line to be added to an existing plot (in an analogous manner to the `points()` function used in the earlier scatterplot example).
+
+Notice that the limits of the $x$- and $y$-axes in this case are set by the range of the initial `setosa` sepal lengths, and hence the density plots for the other two species extend beyond the plot window. Let's try again, but this time setting the bounds for the plots manually. To do this we calculate the $x$ and $y$ ranges for each density plot separately, and then take the maximum values across the different species. We then use the `xlim` and `ylim` arguments to the `plot()` function in order to set the ranges:
+\newline
+``{r, results = "hide"}
+## produce densities
+setosa_dens <- density(iris$Sepal.Length[iris$Species == "setosa"])
+versicolor_dens <- density(iris$Sepal.Length[iris$Species == "versicolor"])
+virginica_dens <- density(iris$Sepal.Length[iris$Species == "virginica"])
+
+## extract x-ranges and y-ranges
+xlims <- range(c(setosa_dens$x, versicolor_dens$x, virginica_dens$x))
+ylims <- range(c(setosa_dens$y, versicolor_dens$y, virginica_dens$y))
+
+## produce plot
+plot(density(iris$Sepal.Length[iris$Species == "setosa"]), 
+     xlim = xlims, ylim = ylims, main = "")
+lines(density(iris$Sepal.Length[iris$Species == "versicolor"]))
+lines(density(iris$Sepal.Length[iris$Species == "virginica"]))
+``
+
+This is better, but still not very informative. Let's add some colour and a legend, and tidy up the axis labels.
+\newline
+``{r}
+## produce plot
+plot(density(iris$Sepal.Length[iris$Species == "setosa"]), 
+    xlim = xlims, ylim = ylims, main = "", xlab = "Sepal Length (cm)")
+lines(density(iris$Sepal.Length[iris$Species == "versicolor"]), col = "red")
+lines(density(iris$Sepal.Length[iris$Species == "virginica"]), col = "blue")
+
+## add legend to top-right corner
+legend(par("usr")[2] * 0.8, par("usr")[4] * 0.95, 
+       legend = c("setosa", "versicolor", "virginica"), 
+       lty = c(1, 1, 1), 
+       col = c("black", "red", "blue"))
+``
+
+Notice that this is quite a simple plot, but required a series of steps to render in base R. We needed to calculate manual limits for the axes, plot the three species separately, and then add a custom legend to the plot, none of which is necessary with `ggplot2`.
 ```
 
 ```{task}
@@ -362,7 +411,9 @@ ggplot(iris) +
     facet_wrap(~ Species)
 ```
 
-> **Aside**: this is a neat example of [Simpson's Paradox](https://en.wikipedia.org/wiki/Simpson%27s_paradox), which an apparent trend in the data disappears or reverses when the trend is explored in subsets of the data. (In this case the linear model suggested a negative correlation between sepal length and width when the species information was ignored, but a positive correlation within each species.)
+```{info, title = "Aside", collapsible = FALSE}
+This is a neat example of [Simpson's Paradox](https://en.wikipedia.org/wiki/Simpson%27s_paradox), which an apparent trend in the data disappears or reverses when the trend is explored in subsets of the data. (In this case the linear model suggested a negative correlation between sepal length and width when the species information was ignored, but a positive correlation within each species.)
+```
 
 ### **Aside**: "global" vs. "local" options
 
@@ -390,19 +441,15 @@ Scales control the details of how data values are translated to visual propertie
 
 ## A more complex example: Gapminder
 
-Let's take these ideas and return to our Gapminder data. Datasets from the Gapminder project can be downloaded from [https://www.gapminder.org/data](https://www.gapminder.org/data). However, the particular data set required to replicate Figure \@ref(fig:gapminder) is available in a package in R called (naturally) [`gapminder`](https://cran.r-project.org/web/packages/gapminder/index.html). If not already installed, then this can be installed in the usual way e.g.
+Let's take these ideas and return to our Gapminder data. Datasets from the Gapminder project can be downloaded from [https://www.gapminder.org/data](https://www.gapminder.org/data). However, the particular data set required to replicate Figure \@ref(fig:gapminder) is available in a package in R called (naturally) [`gapminder`](https://cran.r-project.org/web/packages/gapminder/index.html). If not already installed, then this can be installed in the usual way.
 
-```{r, eval = FALSE}
-install.packages("gapminder")
-```
-
-Once you have it installed we need to load the packages. 
+Firstly, load the package:
 
 ```{r, cache = FALSE, message = FALSE}
 library(gapminder)
 ```
 
-To have a quick look at the data, which are available as an object called `gapminder`.
+Have a quick look at the data, which are available as an object called `gapminder`:
 
 ```{r}
 gapminder
@@ -410,13 +457,15 @@ gapminder
 
 Here we can see that the data set consists of `r nrow(gapminder)` rows and `r ncol(gapminder)` columns, and contains information on country, continent, life expectancy, population size, GDP (per capita) and year.
 
-> The R aficionados amongst you might notice the slightly strange `print` behaviour of the `gapminder` object. If we try to `print` a `data.frame` object to the screen, then it usually prints the whole object. Here it's printed an attenuated version of the object. This is because the `gapminder` data set is saved as a `tibble` object, rather than a standard `data.frame`. 
+```{info, title = "Note", collapsible = FALSE}
+Any R aficionados amongst you might notice the slightly strange `print` behaviour of the `gapminder` object. If we try to `print` a `data.frame` object to the screen, then it usually prints the whole object. Here it's printed an attenuated version of the object. This is because the `gapminder` data set is saved as a `tibble` object, rather than a standard `data.frame`.
 
-> **Aside**: A `tibble` is an enhanced `data.frame` object which are generally easier to examine. For example, they force R to display only the data that fits onscreen. It also adds some information about the class of each column. In fact, the `tibble` package---loaded as part of the `tidyverse`---introduces the `as_tibble()` function to convert ordinary `data.frame` objects to `tibble` objects, in case you want to use this functionality in future. Please see the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for more information.
->  
->  Note also that `tibble` objects seem to make a distinction between integers (`<int>`) and doubles (`<dbl>`), instead of just using `numeric`. R makes no such distinction in practice, and so you can think of either of these as simply `numeric` types.
-> 
-> We'll use `tibbles` more generally in the later data wrangling session.
+`tibble` objects are simply enhanced data frames, which are generally easier to examine. For example, they force R to display only the data that fits onscreen. They also add some information about the class of each column. In fact, the `tibble` package---loaded as part of the `tidyverse`---introduces the `as_tibble()` function to convert ordinary `data.frame` objects to `tibble` objects, in case you want to use this functionality in future. Please see the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for more information.
+
+Note also that `tibble` objects seem to make a distinction between integers (`<int>`) and doubles (`<dbl>`), instead of just using `numeric`. R makes no such distinction in practice, and so you can think of either of these as simply `numeric` types.
+
+We'll use `tibbles` more generally in the later [data wrangling](#wrangling) session.
+```
 
 Let's just clarify the data:
 

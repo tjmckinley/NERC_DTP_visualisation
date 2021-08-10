@@ -1,4 +1,4 @@
-# Data Wrangling
+# Data Wrangling {#wrangling}
 
 It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 
 

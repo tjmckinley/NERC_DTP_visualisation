@@ -1,0 +1,806 @@
+# Practical: COVID-19 data exploration
+
+Now that you are familiar with R and some key `tidyverse` packages, let's use some of these skills to explore and visualise some real-world data on COVID-19 risk in the UK.
+
+## COVID-19 mortality risk by age and sex
+
+In an influential early paper on COVID-19 mortality risk, [Professor David Spiegelhalter](http://www.statslab.cam.ac.uk/~david/) compared COVID-19 mortality rates to the "normal" risk of dying from other causes, in order to find a suitable analogue to aid understanding about the risk of mortality following COVID-19 infection. 
+
+> *"As covid-19 turns from a societal threat into a matter of risk management, it is vital that the associated risks are understood and clearly communicated. But these risks vary hugely between people, and so finding appropriate analogues is a challenge. Although covid-19 is a complex multisystem disease that can cause prolonged illness, here I focus solely on the risks of dying from covid-19 and explore the use of "normal" risk---the risk of death from all causes each year---as an aid to transparent communication."*---David Spiegelhalter
+
+The full paper---Spiegelhalter D. Use of "normal" risk to improve understanding of dangers of covid-19, *BMJ*, 2020; 370 :m3259---can be found [here](https://www.bmj.com/content/370/bmj.m3259).
+
+Interestingly, this paper used little statistical modelling. Rather, it used publicly available data and insightful data visualisation to make its main points. Here we will focus on reproducing Figure 1 from this paper, which is replicated in Figure @ref(fig:spiegelhalter).
+
+(ref:spiegelhalter) From [Spiegelhalter (2020)](https://www.bmj.com/content/370/bmj.m3259). Original figure legend: *Observed population fatality rates for 49 607 deaths mentioning covid-19, registered in England and Wales between 7 March and 26 June 2020. The covid-19 death rates create a remarkably straight line on a logarithmic scale (top), indicating an exponential increase of risk with age. The "normal" risk (dashed lines) is the actuarial annual mortality, scaled by a factor 16/52 to reflect the risk over 16 weeks.*
+
+```{r, spiegelhalter, fig.cap = "(ref:spiegelhalter)", echo = FALSE, out.width = '70%'}
+include_graphics("covid/images/F1.large.jpg")
+```
+
+### National life tables for England and Wales
+
+[Life tables](https://en.wikipedia.org/wiki/Life_table) show the probability of death within the next year, for individuals who survive to different ages. They are derived (typically) from mortality data and in the UK these data are collated by the [Office for National Statistics](https://www.ons.gov.uk/).
+
+The most recent life tables for England and Wales (at the time of writing), can be found here:
+
+[https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesenglandreferencetables](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesenglandreferencetables)
+
+For ease, the version of the data used in the analysis below is linked here:  [nationallifetables3yearew.xlsx](uploadFiles/nationallifetables3yearew.xlsx).
+
+You will notice that this is an Excel file, not a .csv file. To make compatible with the analysis in Spiegelhalter (2020), we will extract the life tables for the time period 2016--2018, which can be found in the corresponding worksheet as shown in Figure \@ref(fig:lifetables). 
+
+```{r, lifetables, fig.cap = "Life Tables", echo = FALSE, out.width = '70%'}
+include_graphics("covid/images/covidExcel.png")
+```
+
+From the `Notation` tab we can extract the necessary details about the data set:
+
+* $m_x$: is the central rate of mortality, defined as the number of deaths at age $x$ last birthday in the three year period to which the National Life Table relates divided by the average population at that age over the same period.						
+* $q_x$: is the mortality rate between age $x$ and $(x + 1)$, that is the probability that a person aged $x$ exact will die before reaching age $(x + 1)$.
+* $l_x$: is the number of survivors to exact age $x$ of 100,000 live births of the same sex who are assumed to be subject throughout their lives to the mortality rates experienced in the three year period to which the National Life Table relates.
+* $d_x$: is the number dying between exact age $x$ and $(x + 1)$ described similarly to $l_x$, that is $d_x = l_x - l_{x + 1}$.
+* $e_x$: is the average period expectation of life at exact age $x$, that is the average number of years that those aged $x$ exact will live thereafter based on the mortality rates experienced in the three year period to which the National Life Table relates.
+
+```{task, title = "Question"}
+Is this data set 'tidy'?
+```
+
+```{solution}
+No, this data set is not tidy. You can see that these data have been stored in a table that is designed for visualisation (it is a great format for putting into a scientific report for example). However, it is not a convenient format for analysis: 
+
+* the column headers don't start until row 6; 
+* there are two rows of column headers;
+* there are multiple columns corresponding to the same variable but for different subsets (e.g. columns B and H correspond to $m_x$ for males and females respectively);
+* there are empty columns (column G).
+
+Hence we have a bit of work to do to make this "tidy".
+```
+
+Once we have downloaded the file to the working directory, we have two main options for extracting the data into R:
+
+1. We open the file in Excel, navigate to the correct tab (`2016-2018`), then save the worksheet as e.g. a .csv file via *File -> Save As...*. We then load into R using `read_csv()` as we have done previously.
+2. We can use the `read_excel()` function from the `readxl` package to read directly from the .xlsx file. (Note that `readxl` is part of the `tidyverse`, though it is not loaded automatically, hence the additional `library` call below.) 
+
+The first option you can do yourselves. You might also want to tidy up the dataset a bit before loading it into R. This is fine, though it does means that the steps you've taken to do the clean-up are not documented (though this could be done separately). To expand your skill set a bit more, let's illustrate the second option, but also *without changing the original file* in any way, making the full data cleaning process reproducible. Let's start by loading the libraries and reading in the correct worksheet from the .xlsx file:
+
+```{r, message = FALSE}
+## load libraries
+library(tidyverse)
+library(readxl)
+```
+
+```{r, eval = FALSE}
+## read in the correct worksheet from the .xlsx
+lifetables <- read_excel("nationallifetables3yearew.xlsx", sheet = "2016-2018")
+lifetables
+```
+
+```{r, echo = FALSE}
+## read in the correct worksheet from the .xlsx
+lifetables <- read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", sheet = "2016-2018")
+lifetables
+```
+
+Notice here that there is a bunch of gumpf at the top of the file, which isn't required. There are various ways to deal with this, but since the tables are quite small here, I am going to use the `range` option to `read_excel()` to extract the data for males and females separately, and then bind the resulting `tibble` objects together. I'm going to do this in a single piped workflow, but you could also read males and females into separate objects and then bind them together afterwards if you prefer.
+
+```{r, eval = FALSE}
+## read in the correct worksheet from the .xlsx
+lifetables <- read_excel("nationallifetables3yearew.xlsx", 
+        sheet = "2016-2018", range = "A7:F108") %>%
+    mutate(sex = "male") %>%
+    rbind(
+        read_excel("nationallifetables3yearew.xlsx", 
+            sheet = "2016-2018", range = "A7:A108") %>%
+        cbind(
+            read_excel("nationallifetables3yearew.xlsx", 
+                sheet = "2016-2018", range = "H7:L108")) %>%
+        mutate(sex = "female")
+    ) %>%
+    rename(age = x)
+lifetables
+```
+
+```{r, message = FALSE, echo = FALSE}
+## read in the correct worksheet from the .xlsx
+lifetables <- read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+        sheet = "2016-2018", range = "A7:F108") %>%
+    mutate(sex = "male") %>%
+    rbind(
+        read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+            sheet = "2016-2018", range = "A7:A108") %>%
+        cbind(
+            read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+                sheet = "2016-2018", range = "H7:L108")) %>%
+        mutate(sex = "female")
+    ) %>%
+    rename(age = x)
+lifetables
+```
+
+This is much better. Notice that all the columns have the expected headings and are of the expected format. If the code doesn't make sense, then try running each set of lines separately (remember, for nested functions, the internal functions are run first). (I've had to break some of the functions across lines in order to fit on the page, but you shouldn't have to.)
+
+```{task, title = "Question"}
+Is this data set 'tidy'?
+```
+
+```{solution}
+Yes, this data set is now tidy. Each row corresponds to an individual observation, each column to a variable and each cell to a specific value. It was not tidy in the original Excel file. Note that we could have tackled this differently, perhaps by reading in the whole table and using `gather`/`spread` operations to massage into tidy format, but this approach seemed reasonable to me here. Feel free to have a play with other methods.
+```
+
+```{info, title = "Note", collapsible = FALSE}
+For more information on the `readxl` package, see: [https://readxl.tidyverse.org/](https://readxl.tidyverse.org/).
+```
+
+The quantities that are plotted in Spiegelhalter (2020) Figure 1 are rescaled age- and sex-specific annual population fatality rates. Formally this is the probability that an individual dies before age `x + 1`, given that they have survived to age `x`.
+
+```{task}
+Identify the column in the data corresponding to the age- and sex-specific annual population fatality rates. Produce a plot of these population fatality rates against age, stratified by sex.
+```
+
+```{solution}
+The correct column is `qx`, hence a suitable plot would be:
+    
+``{r}
+ggplot(lifetables) +
+    geom_point(aes(x = age, y = qx, colour = sex)) +
+    xlab("Age (years)") + ylab("Annual population fatality rate")
+``
+
+```
+
+```{task}
+Figure @ref(fig:spiegelhalter) rescales these rates to be in deaths per 100,000 people. The paper also scales this new measure by 16/52 to represent the hazard rate over 16 weeks instead of annually. (This latter part is to make consistent with the 16-week period of the COVID-19 death data that was used in the analysis.) Produce a new plot of the population fatality risks against age, stratified by sex, but this time scaled to deaths per 100,000 people over a 16 week period.
+```
+
+```{solution}
+There are various ways to do this, but I will use pipes to create a new column of deaths per 100,000 people over a 16 week period and then pass this to `ggplot()`, which leaves the original `lifetables` data set unchanged.
+
+``{r}
+lifetables %>%
+    mutate(deaths = qx * 100000 * 16 / 52) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = deaths, colour = sex)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("Population fatality rates over a 16-week period")
+``
+
+```
+
+In the paper two plots are produced, one on the original scale and one on the log-scale.
+
+```{task}
+Reproduce the plot above, but for the log-hazard rate. Try to keep the axis labels in the same format as Figure @ref(fig:spiegelhalter). [**Hint**: set an appropriate `scales_y_continuous` argument, rather than log-transforming the hazard rate directly. Take a look at the help file `?scales_y_continuous` if you're stuck, paying attention to the `trans` and `breaks` arguments.]
+```
+
+```{solution}
+
+``{r}
+lifetables %>%
+    mutate(deaths = qx * 100000 * 16 / 52) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = deaths, colour = sex)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("Log-population fatality risks over a 16-week period") +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000))
+``
+
+```
+
+### COVID-19 deaths in England and Wales
+
+Now we extract the COVID-19 death data that was used in Spiegelhalter (2020). These data are available at:
+
+[https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales)
+
+For ease, the version of the data used in the analysis below is linked here:  [publishedweek302021.xlsx](uploadFiles/publishedweek302021.xlsx).
+
+You will notice that again this is an Excel file, not a .csv file. To make compatible with the analysis in Spiegelhalter (2020), we need death counts for England and Wales, by age and sex. From the `Contents` worksheet we can see that these data can be found in the `Covid-19 - Weekly occurrences` worksheet as shown in Figure \@ref(fig:coviddeaths). 
+
+```{r, coviddeaths, fig.cap = "COVID deaths", echo = FALSE, out.width = '70%'}
+include_graphics("covid/images/covidDeaths.png")
+```
+
+```{task, title = "Question"}
+Is this data set 'tidy'?
+```
+
+```{solution}
+No, this data set is not tidy. As before, this is a convenient format for visualisation, but more work is required to extract what we need for analysis. The key parts we need are:
+    
+* column headers on row 6;
+* data for males in cells B33:CG53;
+* data for females in cells B55:CG75.
+
+Hence we have a bit of work to do to make this "tidy".
+```
+
+To tackle this we will extract males and females as before, and bind together, but we also need to extract the column names separately. Hence we will do this in a series of stages.  Although we only need the time period 7 March 2020--26th June 2020, we will extract all the dates here and subset later. Let's start by reading the data in for males and females and binding together as before.
+
+```{r, eval = FALSE}
+## read in the correct worksheet from the .xlsx
+deaths <- read_excel("publishedweek302021.xlsx", 
+        sheet = "Covid-19 - Weekly occurrences", range = "B33:CG53") %>%
+    mutate(sex = "male") %>%
+    rbind(
+        read_excel("publishedweek302021.xlsx", 
+            sheet = "Covid-19 - Weekly occurrences", range = "B55:CG75") %>%
+        mutate(sex = "female")
+    )
+deaths
+```
+
+```{r, message = FALSE, echo = FALSE}
+## read in the correct worksheet from the .xlsx
+deaths <- read_excel("covid/uploadFiles/publishedweek302021.xlsx", 
+        sheet = "Covid-19 - Weekly occurrences", range = "B33:CG53") %>%
+    mutate(sex = "male") %>%
+    rbind(
+        read_excel("covid/uploadFiles/publishedweek302021.xlsx", 
+            sheet = "Covid-19 - Weekly occurrences", range = "B55:CG75") %>%
+        mutate(sex = "female")
+    )
+deaths
+```
+
+Notice that the first column relates to the age categories, and has been read in as a `character` column (although the column name is incorrect due to the way the data were stored---we will correct this shortly). The other columns are the death counts, and have been read in as `numeric` values, as expected. The column names are all nonsensical, due to the formatting of the original file, so let's sort those out now. Let's read in the row of dates (cells C6:CG6) from the Excel file, which should return an empty `tibble` object with column names corresponding to the cells read in[^cells]. We then pipe this to the `colnames()` function, which should return a vector of column names:
+
+[^cells]: since `col_names = TRUE` by default in the `read_excel()` function
+
+```{r, eval = FALSE}
+## create vector of column names
+dates <- read_excel("publishedweek302021.xlsx", 
+        sheet = "Covid-19 - Weekly occurrences", range = "C6:CG6") %>%
+    colnames()
+dates
+```
+
+```{r, message = FALSE, echo = FALSE}
+## create vector of column names
+dates <- read_excel("covid/uploadFiles/publishedweek302021.xlsx", 
+        sheet = "Covid-19 - Weekly occurrences", range = "C6:CG6") %>%
+    colnames()
+dates
+```
+Woah, what has happened here? These are numbers not dates! Well, this is because Excel stores dates and times as numbers under the hood; else you could not perform operations such as calculating the number of days between two dates. Hence, what is displayed on the screen is not always equivalent to how the object is stored internally. If you examine the cell format for these cells, you will see that they are stored as dates and not text. Hence when R reads these in and converts into `character` types (since column names must be `character` types), it converts the underlying `numeric` representation into a `character`. Fortunately, Excel always stores dates as the number of days after 30th December 1899, and as such we can use a useful function called `as.Date()` in R to convert back into a date object (with the `origin` argument set appropriately---note the specific format).
+
+```{r}
+## convert into date object
+dates <- as.numeric(dates) %>%
+    as.Date(origin = "1899-12-30")
+dates
+class(dates)
+```
+
+This looks better. Although when we print the `dates` object to the screen it looks like a `character`, if we check the `class` we can see that it is stored as a `Date` object. Similarly to Excel, `Date` objects are special classes in R that display to the screen as if they are `character` types, but can be manipulated numerically (but in a clever way, so taking a difference between two dates will return e.g. the number of days accounting for leap-years etc.).
+
+```{info, title = "Note", collapsible = FALSE}
+There are lots of useful things you can do with date objects. Although we are not using it here, the `lubridate` package, which is part of the `tidyverse` has lots of really useful features. If you're interested, check out the webpage (and asociated cheat sheet) [here](https://lubridate.tidyverse.org/).
+```
+
+Of course, now that we have gone to all this effort, we must now convert back to a `character` type in order to use these as column names for the `deaths` data set. Note also that the first column of `deaths` corresponds to `age` and the final one to `sex`, and hence we will  create a vector of column names, and then set `colnames(deaths)` equal to this vector:
+
+```{r}
+## set the column names
+colnames(deaths) <- c("age", as.character(dates), "sex")
+deaths
+```
+
+```{task}
+Why is this data frame still not 'tidy'? Convert to 'tidy' format and convert the date column back into a `Date` object. [**Hint**: use `gather()` to tidy up. To convert a `character` column to a `Date` object, use `as.Date()`[^date].]
+```
+
+```{solution}
+
+``{r}
+## make tidy
+deaths <- gather(deaths, date, deaths, -age, -sex) %>%
+    mutate(date = as.Date(date))
+``
+
+```
+
+[^date]: here the dates are in the format `"%Y-%m-%d"`, where `%Y` corresponds to four-digit year, `%m` to month and `%d` to day. This is the default and so no further arguments to `as.Date` are required (see the help file `?as.Date`). If the format were different, say if they were in US date format (e.g. "03/31/2020"), then you would need to set the format explicitly using the `format` argument, making sure the format argument matched the input character e.g. `as.Date("03/31/2020", format = "%m/%d/%Y)`. 
+
+Your final data set should look something like this:
+
+```{r}
+deaths
+```
+
+### Population sizes
+
+Now we extract the population size data that was used in Spiegelhalter (2020). These data are available at:
+
+[https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland)
+
+For ease, the version of the data used in the analysis below is linked here:  [ukmidyearestimates20182019ladcodes.xls](uploadFiles/ukmidyearestimates20182019ladcodes.xls).
+
+To make compatible with the analysis in Spiegelhalter (2020), we will use the mid-year population counts for 2018. From the `Contents` worksheet we can see that we need to extract data from the `MYE2 - Males` and `MYE2 - Females` worksheets as shown in Figure \@ref(fig:population). 
+
+```{r, population, fig.cap = "Population etsimates", echo = FALSE, out.width = '70%'}
+include_graphics("covid/images/populationSizes.png")
+```
+
+```{task, title = "Question"}
+Is this data set 'tidy'?
+```
+
+```{solution}
+Nope. Again we can see that the `age` variable is split across multiple columns and the `sex` information is split across multiple worksheets.
+```
+
+```{task}
+The data for males and females are contained in cells `A5:CQ435` in worksheets `MYE2 - Males` and `MYE2 - Females` respectively. Create two `tibble` objects called `pop_males` and `pop_females` respectively that contain the relevant data.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## read in the correct worksheet from the .xlsx
+pop_males <- read_excel("ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Males", range = "A5:CQ435")
+pop_females <- read_excel("ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Females", range = "A5:CQ435")
+``
+
+```
+
+```{task}
+Add an appropriate `sex` column to each data set above, and bind them together into one data set called `pop`. Note that due to the footnote in cell `C5` of the `MYE2 - Males` worksheet (see Figure \@ref(fig:population)), you will also have to rename this column in the `males` data frame before you bind to `females`, else it will return an error because the names don't match.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## add sex column
+pop_males <- mutate(pop_males, sex = "male") %>%
+    rename(Geography = Geography1)
+pop_females <- mutate(pop_females, sex = "female")
+
+## bind together
+pop <- rbind(pop_males, pop_females)
+``
+
+```
+
+```{task}
+Convert `pop` into tidy format. Remove the `All ages` column and then gather the remaining appropriate columns into new `age` and `population` columns. Make sure both new columns are `numeric`.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## convert to tidy format
+pop <- select(pop, -`All ages`) %>%
+    gather(age, population, -Code, -Name, -Geography, -sex) %>%
+    mutate(age = as.numeric(age))
+``
+
+```
+
+```{r, message = FALSE, echo = FALSE}
+## read in the correct worksheet from the .xlsx
+pop_males <- read_excel("covid/uploadFiles/ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Males", range = "A5:CQ435")
+pop_females <- read_excel("covid/uploadFiles/ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Females", range = "A5:CQ435")
+
+## add sex column
+pop_males <- mutate(pop_males, sex = "male") %>%
+    rename(Geography = Geography1)
+pop_females <- mutate(pop_females, sex = "female")
+
+## bind together
+pop <- rbind(pop_males, pop_females)
+
+## convert to tidy format
+pop <- select(pop, -`All ages`) %>%
+    gather(age, population, -Code, -Name, -Geography, -sex) %>%
+    mutate(age = as.numeric(age))
+```
+
+Excellent work. Your tidied data set should now look something like:
+
+```{r}
+pop
+```
+
+### Creating population fatality risks for COVID-19 infection
+
+Now that we have done most of the hard work, we can merge the information from the `deaths` and `pop` data sets to create **population fatality rates** for COVID-19. Remember, these can be estimated as the *number of deaths from COVID-19* divided by the *population size* in each age/sex cohort. We have read in much more information than we need to match the calculation in Spiegelhalter (2020), so we will proceed through a series of steps to extract the correct data from the different data sets, and then bind them together to create the required population fatality risks.
+
+```{task}
+Extract all data from the `deaths` data set for the time period between 7 March and 26 June 2020 (inclusive). Aggregate the deaths counts together across the whole time period for each `age`/`sex` combination. Save this as a new object called `deaths_sub`.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## extract relevant data
+deaths_sub <- filter(deaths, date >= "2020-03-07" & date <= "2020-06-26") %>%
+    group_by(age, sex) %>%
+    summarise(deaths = sum(deaths), .groups = "drop")
+``
+
+```
+
+```{r, echo = FALSE}
+## extract relevant data
+deaths_sub <- filter(deaths, date >= "2020-03-07" & date <= "2020-06-26") %>%
+    group_by(age, sex) %>%
+    summarise(deaths = sum(deaths), .groups = "drop")
+```
+
+This new object should look something like:
+
+```{r}
+deaths_sub
+```
+
+```{task}
+Extract the population sizes for England and Wales for each `age`/`sex` combination from the `pop` data frame and save as a new `pop_sub` object. Drop all columns except `age`, `sex` and `population`.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## extract relevant data
+pop_sub <- filter(pop, Name == "ENGLAND AND WALES") %>%
+    select(-Name, -Geography, -Code)
+``
+
+```
+
+```{r, echo = FALSE}
+## extract relevant data
+pop_sub <- filter(pop, Name == "ENGLAND AND WALES") %>%
+    select(-Name, -Geography, -Code)
+```
+
+This new object should look something like:
+
+```{r}
+pop_sub
+```
+
+```{task}
+Notice that in `pop_sub` the `age` column is `numeric`, whereas in `deaths_sub` it is grouped. Examining the groups we can see that:
+
+``{r}
+unique(deaths_sub$age)
+``
+
+Group the `age` column in `pop_sub` to match the groups above and then aggregate together the population sizes appropriately by age group. [**Hint**: it might be easier to create a new `age_grp` column to contain the grouping information, and then use `mutate()` with `ifelse()` statements to convert numeric ages to groups. You can replace the `age` column with `age_grp` at the end.]
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## extract relevant data
+pop_sub <- mutate(pop_sub, age_grp = ifelse(age < 1, "<1", NA)) %>%
+    mutate(age_grp = ifelse(age >= 1 & age <= 4, "1-4", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 5 & age <= 9, "5-9", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 10 & age <= 14, "10-14", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 15 & age <= 19, "15-19", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 20 & age <= 24, "20-24", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 25 & age <= 29, "25-29", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 30 & age <= 34, "30-34", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 35 & age <= 39, "35-39", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 40 & age <= 44, "40-44", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 45 & age <= 49, "45-49", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 50 & age <= 54, "50-54", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 55 & age <= 59, "55-59", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 60 & age <= 64, "60-64", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 65 & age <= 69, "65-69", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 70 & age <= 74, "70-74", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 75 & age <= 79, "75-79", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 80 & age <= 84, "80-84", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 85 & age <= 89, "85-89", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 90, "90+", age_grp)) %>%
+    group_by(age_grp, sex) %>%
+    summarise(population = sum(population), .groups = "drop") %>%
+    rename(age = age_grp)
+``
+
+```
+
+```{r, echo = FALSE}
+## extract relevant data
+pop_sub <- mutate(pop_sub, age_grp = ifelse(age < 1, "<1", NA)) %>%
+    mutate(age_grp = ifelse(age >= 1 & age <= 4, "1-4", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 5 & age <= 9, "5-9", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 10 & age <= 14, "10-14", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 15 & age <= 19, "15-19", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 20 & age <= 24, "20-24", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 25 & age <= 29, "25-29", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 30 & age <= 34, "30-34", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 35 & age <= 39, "35-39", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 40 & age <= 44, "40-44", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 45 & age <= 49, "45-49", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 50 & age <= 54, "50-54", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 55 & age <= 59, "55-59", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 60 & age <= 64, "60-64", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 65 & age <= 69, "65-69", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 70 & age <= 74, "70-74", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 75 & age <= 79, "75-79", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 80 & age <= 84, "80-84", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 85 & age <= 89, "85-89", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 90, "90+", age_grp)) %>%
+    group_by(age_grp, sex) %>%
+    summarise(population = sum(population), .groups = "drop") %>%
+    rename(age = age_grp)
+```
+
+This new object should look something like:
+
+```{r}
+pop_sub
+```
+
+Now the `deaths_sub` and `pop_sub` data sets are in the same format, and can thus be joined. Note that here we want to **join** these tables according to `age` and `sex`, rather than just bind one on top of the other like we did earlier. We can then calculate the population fatality risk and rescale to be in deaths per 100,000 population as before. Hence:
+
+```{r}
+## join tables together and calculate population fatality rates
+PFR <- inner_join(deaths_sub, pop_sub, by = c("age", "sex")) %>%
+    mutate(PFR = deaths / population) %>%
+    mutate(PFR = PFR * 100000)
+PFR
+```
+
+Since `age` is now a `character` type, R will plot or summarise in [**lexicographical**](https://en.wikipedia.org/wiki/Lexicographic_order) ordering. This means that e.g. the `10-14` group comes ***before*** the `5-9` group (since `1` comes before `5`). One way to overcome this is to convert `age` to a `factor`, and explicitly set the `levels` of the factor to match the ordering that you want. Since we will join to another dataset later on, we will do this temporarily when we need it, rather than converting the `age` column now. Hence we will create a helper vector of levels as below, which we can call when needed.
+
+```{r}
+## set age level orders
+age_levels <- c("<1", "1-4", "5-9", "10-14", "15-19",
+       "20-24", "25-29", "30-34", "35-39", "40-44", "45-49",
+       "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", 
+       "80-84", "85-89", "90+")
+```
+
+```{task}
+Produce a plot of the log-population fatality rates from COVID-19 against age, stratified by sex. Use a temporary `mutate()` call to convert the `age` column into a `factor` and then pipe into `ggplot()`. [See the solution for some neat little tricks to make the $x$-axis labels more readable, the $y$-axis labels match Figure @ref(fig:spiegelhalter) and tidy up the legend heading.]
+```
+
+```{solution}
+    
+``{r}
+mutate(PFR, age = factor(age, levels = age_levels)) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = PFR, colour = sex)) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("log-Population Fatality Rates") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(colour = "Sex")
+``
+
+```
+
+```{task}
+Extract `age`, `sex` and `qx` from the `lifetables` data set. Convert the `age` column into the correct groups (you should be able to pretty much copy-and-paste the code from the earlier example, with a couple of minor changes), and then **join** this to `PFR` by `age` and `sex`. Save the resulting data set by overwriting the original `PFR`. Make sure you scale the `qx` column to be the hazard rate in deaths per 100,000 people over a 16 week period.
+```
+
+```{solution}
+    
+``{r}
+## extract relevant data
+PFR <- select(lifetables, age, sex, qx) %>%
+    mutate(age_grp = ifelse(age < 1, "<1", NA)) %>%
+    mutate(age_grp = ifelse(age >= 1 & age <= 4, "1-4", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 5 & age <= 9, "5-9", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 10 & age <= 14, "10-14", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 15 & age <= 19, "15-19", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 20 & age <= 24, "20-24", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 25 & age <= 29, "25-29", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 30 & age <= 34, "30-34", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 35 & age <= 39, "35-39", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 40 & age <= 44, "40-44", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 45 & age <= 49, "45-49", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 50 & age <= 54, "50-54", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 55 & age <= 59, "55-59", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 60 & age <= 64, "60-64", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 65 & age <= 69, "65-69", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 70 & age <= 74, "70-74", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 75 & age <= 79, "75-79", age_grp))%>%
+    mutate(age_grp = ifelse(age >= 80 & age <= 84, "80-84", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 85 & age <= 89, "85-89", age_grp)) %>%
+    mutate(age_grp = ifelse(age >= 90, "90+", age_grp)) %>%
+    group_by(age_grp, sex) %>%
+    summarise(qx = sum(qx), .groups = "drop") %>%
+    rename(age = age_grp) %>%
+    inner_join(PFR, by = c("age", "sex")) %>%
+    mutate(qx = qx * 100000 * 16/52)
+``
+
+```
+
+Your `PFR` data set should now look like:
+
+```{r}
+PFR
+```
+
+```{task}
+Produce a plot of the log-population fatality rates from COVID-19 against age, stratified by sex and "normal" risk vs. "COVID-19" risk like e.g. Figure @ref(fig:spiegelhalter).
+```
+
+```{solution}
+    
+``{r}
+PFR %>%
+    select(age, sex, qx, PFR) %>%
+    rename(Covid = PFR, Normal = qx) %>%
+    gather(estimate, PFR, -age, -sex) %>%
+    mutate(age = factor(age, levels = age_levels)) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = PFR, colour = sex, shape = estimate)) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("log-Population Fatality Rates") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(colour = "Sex", shape = "Estimate")
+``
+
+```
+
+Hopefully you should have something like:
+
+```{r, echo = FALSE}
+mutate(PFR, age = factor(age, levels = age_levels)) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = PFR, colour = sex)) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("log-Population Fatality Rates") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(colour = "Sex")
+```
+
+### Combining plots with `patchwork`
+
+There are a whole bunch of other packages built around the `tidyverse`. One really useful one is `patchwork`. This allows for different `ggplot2` images to be combined together into a single graphic. This is incredibly useful, especially for publication. Combining with the `ggsave()` function makes it easy to develop publication-ready plots in specific formats for e.g. submission to scientific journals. This can be installed from CRAN in the usual way, and a series of detailed vignettes can be found at [https://patchwork.data-imaginist.com/](https://patchwork.data-imaginist.com/).
+
+Here we will use `patchwork` to create a single graphic with both the log- and linear-scale plots of the population fatality rates.
+
+```{info, title = "Note", collapsible = FALSE}
+Whilst `facet_wrap()` and `facet_grid()` can be used within `ggplot()` calls to produce multi-figure plots, these functions rely on the $x$- and $y$ aesthetics being the same across the set of plots. Hence they are great for producing the same plot type across subsets of the data, but they won't work if you want to combine different types of plot together. 
+
+This is where `patchwork` shines. One thing that we haven't considered much is that you can actually save `ggplot` plots as objects in R. Which means that you can create lots of plots and save them as objects, and then use `patchwork` to create a single uber-`ggplot` object that combines these different plots together. You can even combine legends etc. across multiple plots, and add annotations and lots more. 
+```
+
+Since the log- and linear-scaled population fatality rates are on different scales, it makes sense to create two plots and bind them together using `patchwork`. The code below creates a `p1` object containing the log-scale plot. (We truncate the $y$-axis at around 2,000 for consistency with Spiegelhalter (2020) using `coord_cartesian()`.)
+
+```{r}
+## create log-scale plot
+p1 <- PFR %>%
+    select(age, sex, qx, PFR) %>%
+    rename(Covid = PFR, Normal = qx) %>%
+    gather(estimate, PFR, -age, -sex) %>%
+    mutate(age = factor(age, levels = age_levels)) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = PFR, colour = sex, shape = estimate)) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("log-Population Fatality Rates") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(colour = "Sex", shape = "Estimate") +
+        coord_cartesian(ylim = c(0.01, 2000))
+```
+
+Now that the `p1` object has been created, if you print to the screen then the plot will appear:
+
+```{r}
+p1
+```
+
+```{task}
+Produce a plot of the population fatality rates from COVID-19 (on the linear scale) against age, stratified by sex and "normal" risk vs. "COVID-19" risk like e.g. Figure @ref(fig:spiegelhalter). Save as an object called `p2`.
+```
+
+```{solution}
+    
+``{r}
+p2 <- PFR %>%
+    select(age, sex, qx, PFR) %>%
+    rename(Covid = PFR, Normal = qx) %>%
+    gather(estimate, PFR, -age, -sex) %>%
+    mutate(age = factor(age, levels = age_levels)) %>%
+    ggplot() +
+        geom_point(aes(x = age, y = PFR, colour = sex, shape = estimate)) +
+        scale_y_continuous(breaks = c(400, 800, 1200, 1600, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("Population Fatality Rates") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        labs(colour = "Sex", shape = "Estimate") +
+        coord_cartesian(ylim = c(0, 2000))
+``
+
+```
+
+Now load the `patchwork` package, and then simply add the two plots together to combine:
+
+```{r, fig.width = 8, fig.height = 4}
+## load patchwork
+library(patchwork)
+
+## combine plots
+p <- p1 + p2
+p
+```
+
+Pretty cool eh? If we want one plot on top of the other, we can use the `/` operator:
+
+```{r, fig.width = 5, fig.height = 8}
+## combine plots
+p <- p1 / p2
+p
+```
+
+One more feature I really like is the ability to collect identical legends together:
+
+
+```{r, fig.width = 5, fig.height = 8}
+## combine plots
+p <- p1 / p2 + plot_layout(guides = "collect")
+p
+```
+
+If you want to save as a .pdf file for example, then you can use `ggsave()`, e.g.
+
+```{r, eval = FALSE}
+ggsave("PFR.pdf", p, width = 5, height = 8)
+```
+
+This guesses the file type from the suffix in the filename, and allows you to set other aspects such as the width and height, or resolution if you are using a raster-based plot such as .jpg or .png[^pdf].
+
+[^pdf]: the .pdf file here is *vector-based*, and so does not lose quality as you zoom in
+
+There are so many things you can do with these types of plot, so please have a play. As a final example, consider trying to make the plot even closer to Figure @ref(fig:spiegelhalter) by using lines instead of points for normal risk, and changing the colours to match exactly. Note that the line plots are easier to get working if `age` is `numeric`, rather than a `factor`, so in the code below we extract the midpoint of each category as a point estimate (treating `90+` as being `90--100` here). Run each set of lines to understand what's happening at each stage (there are a few functions such as `separate()` and `across()` that you may be less familiar with, so please see the help files to help understand these functions). To use different aesthetics for different subsets of the data, we can set the `data` argument to each `geom_*` as required.
+
+```{r}
+## create log-scale plot
+temp <- PFR %>%
+    select(age, sex, qx, PFR) %>%
+    rename(Covid = PFR, Normal = qx) %>%
+    gather(estimate, PFR, -age, -sex) %>%
+    mutate(age = ifelse(age == "<1", "0-1", age)) %>%
+    mutate(age = ifelse(age == "90+", "90-100", age)) %>%
+    separate(age, c("LB", "UB"), sep = "-") %>%
+    mutate(across(c(LB, UB), as.numeric)) %>%
+    mutate(age = (LB + UB) / 2) 
+
+## plot on log-scale
+p1 <- ggplot(temp, aes(x = age, y = PFR)) +
+        geom_line(aes(colour = sex, linetype = sex), 
+            data = filter(temp, estimate == "Normal")) +
+        geom_line(aes(group = sex), data = filter(temp, estimate == "Covid")) +
+        geom_point(aes(colour = sex), data = filter(temp, estimate == "Covid")) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000), 
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        scale_colour_manual(values = c("red", "blue")) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("Log scale") +
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        coord_cartesian(ylim = c(0.01, 2000)) +
+        labs(colour = "COVID-19", linetype = "Normal") +
+        guides(
+            linetype = guide_legend(override.aes = list(colour = c("red", "blue"))),
+            colour = guide_legend(override.aes = list(linetype = NA))
+        )
+
+## plot on linear scale
+p2 <- p1 + 
+    scale_y_continuous(breaks = c(400, 800, 1200, 1600, 2000), 
+        labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE))
+
+## combine plots
+p <- p1 / p2 + plot_layout(guides = "collect")
+p
+```

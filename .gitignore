@@ -6,3 +6,6 @@
 # ignore compiled files
 docs/
 _bookdown*
+
+# ignore unzipped shapefiles
+covid/uploadFiles/Regions_(December_2019)_Boundaries_EN_BFC/

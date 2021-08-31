@@ -2,9 +2,9 @@
 
 It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 
 
-> Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^3].
+> Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
 
-[^3]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
+[^tidyversepackages]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
 
 Before we go any further, if you haven't already, please load `tidyverse`:
 
@@ -28,17 +28,21 @@ The idea of 'tidy' data gives rise to the nomenclature of the `tidyverse`. In th
 
 ## Simple manipulations
 
-Let's look at a simple example. The `iris` data set we saw in the last session.
+Let's look at a simple example: the `iris` data set we saw in the last section.
 
 ```{r}
+## load the data
+data(iris)
+
+## examine the top of the data set
 head(iris)
 ```
 
-```{task}
+```{task, title = "Question"}
 Is this data set 'tidy'?
 ```
 
-```{solution}
+```{solution, title = "Answer"}
 Yes, this data set is tidy. Each row corresponds to an individual observation, each column to a variable and each cell to a specific value.
 ```
 
@@ -66,7 +70,7 @@ filter(iris, Species == "versicolor")
 head(filter(iris, Species == "versicolor"))
 ```
 
-Notice some minor differences. The first argument to the `filter()` function is the data, and the second corresponds to the criteria for filtering. Notice that we did not need to use the `$` operator in the `filter()` function. As with `ggplot2` the `filter()` function knows to look for the column `Species` in the data set `iris`.
+Notice some minor differences. The first argument to the `filter()` function is the data, and the second corresponds to the criteria for filtering. Notice that we did not need to use the `$` operator in the `filter()` function. As with `ggplot2` the `filter()` function knows to look for the column `Species` in the data set `iris`. **This makes the code much less verbose and easier to understand.**
 
 ### Sort rows
 
@@ -168,20 +172,25 @@ So, why would I choose to use functions such as `filter()` and `mutate()` above,
 3. They do not require lots of extraneous operators: such as `$` operators to extract columns, or quotations around column names.
 4. Functions adhering to these criteria can be developed and expanded to perform all sorts of other operations, such as summarising data over groups.
 
-> **Note**: Some R users like to use a function called `attach`. For example, `attach(iris)` would load the names of the variables in the `iris` data frame into the search path in R. This means that you don't have to use the `$` command to extract a column. The advantage of this is that the code can often be made clearer e.g. 
-> ```
-> attach(iris)
-> Sepal.Length2 <- Sepal.Length^2
-> ```
-> The variable names can be removed from the search path by using `detach(iris)`. 
-> 
-> However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
+```{info, title = "Note", collapsible = FALSE}
+Some R users like to use a function called `attach`. For example, `attach(iris)` would load the names of the variables in the `iris` data frame into the search path in R. This means that you don't have to use the `$` command to extract a column. The advantage of this is that the code can often be made clearer e.g.
+\newline
+``
+attach(iris)
+Sepal.Length2 <- Sepal.Length^2
+``
+The variable names can be removed from the search path by using `detach(iris)`. 
+
+However, it is very easy to make errors when using this method, particularly if one wishes to change elements of the underlying data frame. As such I would recommend **never** using `attach()`. For example, the code above **does not** produce a new column in `iris` called `Sepal.Length2`...
+```
 
 One final and key advantage to the `tidyverse` paradigm, is that we can use **pipes** to make our code more succinct.
 
 ### Pipes (`%>%`) {#pipes}
 
-> **Aside**: piping comes from Unix scripting, and simply means a chain of commands, such that the results from each command feed into the next one. 
+```{info, title = "Aside", collapsible = FALSE}
+Piping comes from Unix scripting, and simply means a chain of commands, such that the results from each command feed into the next one.
+```
 
 Recently, the [`magrittr`](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) package, and subsequently `tidyverse` have introduced the pipe operator `%>%` that enables us to chain functions together. Let's look at an example:
 
@@ -193,7 +202,9 @@ iris %>% filter(Species == "versicolor")
 iris %>% filter(Species == "versicolor") %>% head()
 ```
 
-> **Notice**: when we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
+```{info, title = "Note", collapsible = FALSE}
+When we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
+```
 
 Pipes can be chained together multiple times. For example:
 
@@ -216,7 +227,9 @@ iris %>%
 
 I think this is neat! The code is written in a way that is much easier to understand, with each part of the data wrangling process chained together in an intuitive way (once you know the `tidyverse` functions of course). 
 
-> Notice that the pipe operator must be at the end of the line if we wish to split the code over multiple lines.
+```{info, title = "Note", collapsible = FALSE}
+The pipe operator must be at the end of the line if we wish to split the code over multiple lines.
+```
 
 In essence we can **read** what we have done in much the same way as if we were reading prose. Firstly we take the `iris` data, `filter` to extract just those rows corresponding to `versicolor` species, `select` species and sepal measurements, `mutate` the data frame to contain a new column that is the square of the sepal lengths and finally `arrange` in order of increasing sepal length.
 
@@ -226,9 +239,11 @@ Try doing the same level of data cleaning in Excel as easily...
 
 Once we've got our head around pipes, we can begin to use some of the other useful functions in `tidyverse` to do some really useful things.
 
-> **Final point about pipes**: the package `magrittr` (on which the pipe is implemented) is more general than for just `tidyverse` functions. In fact, one can use the pipe to output any object from the left-hand side to the **first** argument of a function on the right-hand side of the pipe. This is really useful for using functions such as `summary()` or `head()`, that take data frame arguments. Hence I often use pipes like : `iris %>% filter(Species == "versicolor") %>% summary()`.
-> 
-> If you load the `magrittr` package, then there is much more you can do with these ideas. See [here](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) for a useful vignette.
+```{info, title = "Final point about pipes", collapsible = FALSE}
+The package `magrittr` (on which the pipe is implemented) is more general than for just `tidyverse` functions. In fact, one can use the pipe to output any object from the left-hand side to the **first** argument of a function on the right-hand side of the pipe. This is really useful for using functions such as `summary()` or `head()`, that take data frame arguments. Hence I often use pipes like : `iris %>% filter(Species == "versicolor") %>% summary()`.
+
+If you load the `magrittr` package, then there is much more you can do with these ideas. See [here](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) for a useful vignette.
+```
 
 ## Grouping and summarising
 
@@ -242,7 +257,7 @@ iris %>%
     summarise(mn = mean(Sepal.Length))
 ```
 
-The `summarise()` function (note, this is different to the `summary()` function), applies a function to a `data.frame` or subsets of a `data.frame`. Think of it a bit like the `tapply` function, but with more consistent notation and more power.
+The `summarise()` function (note, this is different to the `summary()` function), applies a function to a `data.frame` or subsets of a `data.frame`. 
 
 ```{task}
 Produce a table of estimates for the mean *and* variance of both sepal lengths and widths, within each species.
@@ -265,14 +280,14 @@ Another key feature of `tidyverse` is the power it gives you to reshape data set
 
 ### Example: Gapminder
 
-Let's pull up some data. You should have access to a .csv file called "indicator gapminder gdp_per_capita_ppp.csv". This is a digital download of the [Gapminder](https://www.gapminder.org/) GDP per capita data that can be found in the `gapminder` package. All the data sets used in the [Gapminder](https://www.gapminder.org/) project can be downloaded from [https://www.gapminder.org/data/](https://www.gapminder.org/data/).
+Let's pull up some data. You should have access to a .csv file called ["indicator gapminder gdp_per_capita_ppp.csv"](uploadFiles/indicator gapminder gdp_per_capita_ppp.csv). This is a digital download of the [Gapminder](https://www.gapminder.org/) GDP per capita data that can be found in the `gapminder` package. All the data sets used in the [Gapminder](https://www.gapminder.org/) project can be downloaded from [https://www.gapminder.org/data/](https://www.gapminder.org/data/).
 
-Download this file and save it into your working directory. Now let's read in the data using the `read_csv()` function in `tidyverse`[^2]
+Download this file and save it into your working directory. Now let's read in the data using the `read_csv()` function in `tidyverse`[^readcsv]:
 
-[^2]: Note that this is different than the `read.csv()` function in base R. It doesn't convert `character` columns to  `factor` columns, and returns a `tibble` by default.
+[^readcsv]: note that this is slightly different than the `read.csv()` function in base R and returns a `tibble` by default. (In versions of R prior to 4.0.0 then `read.csv` would also have converted `character` columns into `factor` columns. Neither function does this now.)
 
 ```{r, message = FALSE, eval = FALSE}
-gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv")
+gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv")
 gp_income
 ```
 
@@ -297,11 +312,15 @@ gp_income <- gp_income %>%
 gp_income
 ```
 
-> **Note** we can also use backticks to enclose names that include spaces (which `read_csv()` allows).
+```{info, title = "Note", collapsible = FALSE}
+We can also use backticks to enclose names that include spaces (which `read_csv()` allows).
+```
 
 Notice that the `rename()` function takes the same form as other `tidyverse` functions such as `filter()` or `arrange()`. We then overwrite the original data frame to keep our workspace neat.
 
-> **Note**: this is OK here because we have a copy of our **raw** data saved in an external file. This, combined with the use of **scripts**, means we have a backup of the original data in case anything goes wrong. Don't overwrite your original data set!
+```{info, title = "Note", collapsible = FALSE}
+This is OK here because we have a copy of our **raw** data saved in an external file. This, combined with the use of **scripts**, means we have a backup of the original data in case anything goes wrong. Don't overwrite your original data set!
+```
 
 The next thing we need to do is to collapse the **year** columns down. Ideally we want a column corresponding to **country**, a column corresponding to **year** and a final column corresponding to **GDP**. We are going to do this by using the `gather()` function. Note that the arguments to `gather()` are:
 
@@ -355,12 +374,12 @@ head(gp_income)
 summary(gp_income)
 ```
 
-Phew! this took some effort, but we've managed to end up with a fairly clean data set that we can plot, summarise etc.
+Phew! This took some effort, but we've managed to end up with a fairly clean data set that we can plot, summarise etc.
 
 To do all of the previous data cleaning operation using pipes, we can write:
 
 ```{r, message = FALSE, eval = FALSE}
-gp_income <- read_csv("advis/indicator gapminder gdp_per_capita_ppp.csv") %>%
+gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
                 gather(year, gdp, -country) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -405,13 +424,13 @@ Notice that although `year` is a numerical variable, R can still group by unique
 We must be a bit careful here, since we may have less samples for some countries/years than for others. This affects the uncertainty in our estimates, though it is not too difficult to extract standard errors for each grouping and thus produce confidence intervals to quantify which estimates are more uncertain than others (this is where proper **statistical modelling** is paramount).
 
 ```{task}
-Load in the file "indicator hiv estimated prevalence% 15-49.csv". This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
+Load in the file ["indicator hiv estimated prevalence 15-49.csv"](uploadFiles/indicator hiv estimated prevalence 15-49.csv). This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
 ```
 
 ```{solution}
 
 ``{r, message = FALSE, eval = FALSE}
-gp_hiv <- read_csv("advis/indicator hiv estimated prevalence% 15-49.csv") %>%
+gp_hiv <- read_csv("indicator hiv estimated prevalence 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
             mutate(year = as.numeric(year)) %>%
@@ -422,7 +441,7 @@ gp_hiv <- read_csv("advis/indicator hiv estimated prevalence% 15-49.csv") %>%
 ``
 
 ``{r, message = FALSE, echo = FALSE}
-gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence% 15-49.csv") %>%
+gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
             gather(year, prevalence, -country) %>%
             mutate(year = as.numeric(year)) %>%
@@ -458,7 +477,9 @@ gp_hiv %>%
 
 We now have two data sets: `gp_income` and `gp_hiv`. In order to visualise and analyse them, we need to link them together. A key skill to have in data manipulation is the ability to **join** data sets (or tables) together. The `dplyr` package provides various functions to do this, depending on ***how*** you want to join the tables.
 
-> In case you haven't managed to complete the last task, the `gp_hiv` data is available as "gp_hiv.rds". You can read this into R using `gp_hiv <- readRDS("advis/gp_hiv.rds")` and continue with the practical.
+```{info, title = "Note", collapsible = FALSE}
+In case you haven't managed to complete the last task, the `gp_hiv` data is available as ["gp_hiv.rds"](uploadFiles/gp_hiv.rds). You can read this into R using `gp_hiv <- readRDS("gp_hiv.rds")` and continue with the practical.
+```
 
 In order to join two tables, you must have one or more variables **in common**. In this case we want to match by `country` and `year`, to produce a data set that contains `country`, `year`, `gdp` and `prevalence`.
 
@@ -469,13 +490,18 @@ gp_income %>% count(country, year) %>% summary()
 gp_hiv %>% count(country, year) %>% summary()
 ```
 
-> `count()` counts the numbers of entries in each combination of the provided variables: in this case `year` and `country`. The `summary()` function is to provide a straightforward way to see that all the `country` $\times$ `year` combinations have one entry only.
+```{info, title = "Note", collapsible = FALSE}
+`count()` counts the numbers of entries in each combination of the provided variables: in this case `year` and `country`. The `summary()` function is to provide a straightforward way to see that all the `country` $\times$ `year` combinations have one entry only.
+```
 
 This should make it straightforward to join. Hence,
 
 ```{r}
 gp <- inner_join(gp_income, gp_hiv, by = c("year", "country"))
 gp
+```
+
+```{hypertarget, label = "anti_join"}
 ```
 
 The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, and visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
@@ -506,7 +532,9 @@ full_join(gp_income, gp_hiv, by = c("year", "country"))
 
 What do you notice about the **left-** and **full-** outer joins here? Why is this so?
 
-> There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
+```{info, title = "Note", collapsible = FALSE}
+There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
+```
 
 Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them. We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here. 
 
@@ -538,7 +566,7 @@ Total population data are available in the "indicator gapminder population.csv" 
 
 ``{r, message = FALSE, eval = FALSE}
 ## read in data
-gp_pop <- read_csv("advis/indicator gapminder population.csv") %>%
+gp_pop <- read_csv("indicator gapminder population.csv") %>%
                 gather(year, pop, -`Total population`) %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
@@ -609,7 +637,7 @@ gp %>%
 include_graphics("advis/images/Population_pyramid_example.png")
 ```
 
-Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: "Germanypop.csv", "Mexicopop.csv" and "USpop.csv", each with the following columns:
+Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: ["Germanypop.csv"](uploadFiles/Germanypop.csv), ["Mexicopop.csv"](uploadFiles/Mexicopop.csv) and ["USpop.csv"](uploadFiles/USpop.csv), each with the following columns:
 
 * **male**: Population counts for males ($\times$ 1000);
 * **female**: Population counts for females ($\times$ 1000).
@@ -628,13 +656,13 @@ Firstly, we read the three data files into R, storing them as `tibble` objects c
 
 ```{r, message = FALSE, eval = FALSE}
 ## read German data in
-germany <- read_csv("advis/Germanypop.csv")
+germany <- read_csv("Germanypop.csv")
 
 ## read Mexican data in
-mexico <- read_csv("advis/Mexicopop.csv")
+mexico <- read_csv("Mexicopop.csv")
 
 ## read US data in
-us <- read_csv("advis/USpop.csv")
+us <- read_csv("USpop.csv")
 ```
 
 ```{r, message = FALSE, echo = FALSE}
@@ -693,7 +721,7 @@ pop
 ```
 
 ```{task}
-Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators.
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask!
 ```
 
 ### Visualisation
@@ -764,8 +792,14 @@ Mexico also has a very high proportion of young females: in fact 33% of the curr
 
 A good description of population demographics can be found in this short video:
 
-```{r, screenshot.alt = "advis/images/population.jpg", echo = FALSE}
+```{r, screenshot.alt = "advis/images/population.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
 include_url("https://www.youtube.com/embed/QsBT5EQt348")
 ```
 
 Another great site on these sorts of topics is the [OurWorldInData](https://ourworldindata.org/) project.
+
+## Epilogue
+
+These workshops have only really scratched the surface as to what can be achieved using `tidyverse`. We haven't touched on the apply functions included in the [`purrr`](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf) package; we haven't looked at the utility of **list-columns**; or began to explore the myriad other `ggplot2` geoms, such as `geom_violin()`, `geom_bar()` or `geom_hex()`. We haven't looked at packages such as [`gganimate`](https://gganimate.com/articles/gganimate.html), or [`plotly`](https://plot.ly/r/) for turning your R plots into interactive HTML graphics, or the wonderful [`shiny`](https://shiny.rstudio.com/gallery/) package for creating fully interactive websites.
+
+Nonetheless, I hope that this workshop has helped to spark your interest in some of the more powerful features of R. Please browse the myriad `ggplot2` galleries for inspiration, and don't hesitate to ask if you have any further questions. 

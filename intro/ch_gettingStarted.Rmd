@@ -2,6 +2,12 @@
 
 # Getting Started in R {#gettingstarted}
 
+```{info, collapsible = FALSE}
+A PDF handout for this part of the module can be found on the ELE page or via the link [here](intro/uploadFiles/IntroToRHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](intro/uploadFiles/IntroToRSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](intro/uploadFiles/IntroToRSLIDES.html).
+
+All data files needed can be downloaded from ELE, or via the link [here](intro/uploadFiles/datasetsIntro.zip).
+```
+
 R---available at [https://cran.r-project.org/](https://cran.r-project.org/)---is a comprehensive statistical programming language. It can be thought of as an open-source, freely available implementation of the [S](https://en.wikipedia.org/wiki/S_(programming_language)) language. R is an **interpreted language**, and so can be used interactively, without having to compile the code into an executable file. 
 
 Although R is a functional programming language in its own right, its popularity is in large part due to its fantastic capabilities as a statistical package. However, R is much more than that. R has amazing graphical capabilities; can integrate with other languages, such as C and Python; can use scripts and be run in batch mode; and can even be used to produce **reproducible** documents, presentations and interactive webpages. Even better than that, R is completely **free** and **open-source**! Professional editions of packages such as SAS, Stata, S-Plus or SPSS can cost upwards of £1000. 

@@ -1120,14 +1120,14 @@ A .csv file is simply a text file where each element is separated by a comma (th
 
 In fact, it is good practice to store your data in a much simpler way than many people are used to. Generally, try to avoid spaces between words at all in your data, even in column headers. Underscores are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements), and often I will try to convert as much to lower case as possible (since R is case sensitive, so it speeds up your typing).
 
-Download a sample data file: [worms.csv](https://exeter-data-analytics.github.io/IntroToR/worms.csv). (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
+Download a sample data file: [worms.csv](intro/uploadFiles/worms.csv). (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
 
 ```{r, loadworms, eval = FALSE}
 worms <- read.csv("worms.csv")
 ```
 
 ```{r, echo = FALSE}
-worms <- read.csv("intro/worms.csv")
+worms <- read.csv("intro/uploadFiles/worms.csv")
 ```
 
 ```{info, title = "Note", collapsible = FALSE}

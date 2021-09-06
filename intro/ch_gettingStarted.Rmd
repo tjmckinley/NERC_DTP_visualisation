@@ -20,7 +20,9 @@ All of the instructions in this practical will assume that you are using RStudio
 
 ## Installing R and RStudio
 
-If you want to download R for your own computer, first go to [http://cran.r-project.org](http://cran.r-project.org), and follow the instructions in the box called 'Download and Install R'. Once you have installed R, you can install RStudio from [https://www.rstudio.com/](https://www.rstudio.com/). University machines should have these pieces of software already installed, so just load RStudio and you're good-to-go!
+If you want to download R for your own computer, first go to [http://cran.r-project.org](http://cran.r-project.org), and follow the instructions in the box called 'Download and Install R'. **You only need to install the `base` package**. During installation, selecting the default options should be sufficient.
+
+Once you have installed R, you can install the **free desktop** version of RStudio from [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/). Again, selecting the default options during installation should be sufficient.University machines should have these pieces of software already installed, so just load RStudio and you're good-to-go!
 
 ## What is R?
 
@@ -284,11 +286,18 @@ Note the syntax `DEVELOPER/PACKAGENAME`---this can be found from the address of 
 On the university machines, all required packages have already been installed, but if you wish to use your own machines, then the packages you need to install for this module are listed below. Some are installed automatically by R, but have been listed here for completeness. (Please let me know if you come across any that aren't listed here.)
 
 * `tidyverse`
+* `gapminder`
+* `patchwork`
+* `sf`
+
+Many of these packages depend on other packages, but R should install all dependencies automatically. `tidyverse` in particular will take a long time to install! 
+
+The following packages will also be needed, though in theory they should either be installed by default, or installed as one of the required dependencies for the packages above. They are listed here for completeness.
+
 * `knitr`
 * `rmarkdown`
 * `tinytex`
-* `gapminder`
 * `datasets`
-* `sf`
+* `readxl`
 
-Many of these packages depend on other packages, but R should install all dependencies automatically. `tidyverse` in particular will take a long time to install!
+

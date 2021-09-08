@@ -776,6 +776,9 @@ y <- c("10", "2", "bob")
 as.numeric(y)
 ```
 
+```{hypertarget, label = "factconv"}
+```
+
 **Factors** are tricky little blighters! Superficially they can look like `numeric` types when printed to the screen, but in fact they are named **groups**, and as such if we convert a `factor` to a `numeric`, then R converts according to the **level** of the factor:
 
 ```{r}

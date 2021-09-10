@@ -1123,31 +1123,43 @@ A .csv file is simply a text file where each element is separated by a comma (th
 
 In fact, it is good practice to store your data in a much simpler way than many people are used to. Generally, try to avoid spaces between words at all in your data, even in column headers. Underscores are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements), and often I will try to convert as much to lower case as possible (since R is case sensitive, so it speeds up your typing).
 
-Download a sample data file: [worms.csv](intro/uploadFiles/worms.csv). (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `worms`:
+### Example: sexual reproduction in fruitflies
 
-```{r, loadworms, eval = FALSE}
-worms <- read.csv("worms.csv")
+These are data from [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0), when at the time the paper was published the cost of increased reproduction in terms of reduced longevity had been shown for female fruitflies, but not for males. The authors set up an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.
+
+The flies used were an outbred stock. Sexual activity was manipulated by supplying individual males with one or eight receptive virgin females per day. The longevity of these males was compared with that of two control types. The first control consisted of two sets of individual males kept with one or eight newly inseminated females. Newly inseminated females will not usually remate for at least two days, and thus served as a control for any effect of competition with the male for food or space. The second control was a set of individual males kept with no females. There were 25 males in each of the five groups, which were treated identically in number of anaesthetizations (using $\mathrm{CO}_2$) and provision of fresh food medium.
+
+The data should have the following columns:
+
+* **partners**: number of companions (0, 1 or 8).
+* **partner type**: type of companion (inseminated female; virgin female; control (when 'partners = 0')).
+* **longevity**: lifespan, in days.
+* **thorax**: length of thorax, in mm.
+
+The file [`ff.csv`](intro/uploadFiles/ff.csv) contains the data from this experiment. Download this data set to your working directory. (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `ff`:
+
+```{r, eval = FALSE}
+ff <- read.csv("ff.csv")
 ```
 
 ```{r, echo = FALSE}
-worms <- read.csv("intro/uploadFiles/worms.csv")
+ff <- read.csv("intro/uploadFiles/ff.csv")
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
 If R can't find the file, check it's in the working directory, or pass the full path to `read.csv()`.
 ```
 
-```{r, sumworms}
-head(worms)
-summary(worms)
+```{r}
+head(ff)
+summary(ff)
 ```
 
 Looking at the data we can see a number of things:
 
 * Since the original data had spaces in the column names, these spaces have been replaced by dots.
-* Columns that can be converted into numbers in sensible ways are stored as such (e.g. the `Area` column). You can tell this because the `summary()` function returns numerical summaries.
-* Columns that can be converted into logical objects are stored as such (e.g. the `Damp` column).
-* Columns that can't be easily converted are stored as `character` columns (e.g. the `Vegetation` column). You can tell this because the `summary()` function returns no useful summaries for these columns except to say they are `character` columns[^charcols].
+* Columns that can be converted into numbers in sensible ways are stored as such (e.g. the `thorax` column). You can tell this because the `summary()` function returns numerical summaries.
+* Columns that can't be easily converted are stored as `character` columns (e.g. the `type` column). You can tell this because the `summary()` function returns no useful summaries for these columns except to say they are `character` columns[^charcols].
 
 [^charcols]: note that in versions of R before R 4.0.0 these columns would have been automatically converted to `factor` columns. Whilst this is often a useful thing to do, it is much better now that R does not do this automatically and instead forces you to do this explicitly in your code so that it is documented.
 
@@ -1157,16 +1169,43 @@ These defaults can be useful sometimes for finding errors. For example, if a col
 It is a good idea to always check and read-in data to ensure each column is in the correct format before progressing any further with your analysis. A common error is that often categorical variables are coded as numbers. For example, a data set might contain numbers `0` or `1` to denote e.g. died/survived. In this case R will read the column in as a `numeric`, when it should be a `factor`. In this case you would want to manually convert your column to a `factor` before proceeding.
 ```
 
-Objects saved as an ['.rds' file](#save) can be read in and assigned to objects using the `readRDS()` function e.g.
-
-```{r, eval = FALSE, saveworms}
-## save worms data frame as an .rds file
-saveRDS(worms, "worms.rds")
-
-## read in as a new object
-worms1 <- readRDS("worms.rds")
+```{task}
+Convert the `partners` column of the `ff` data frame into a `factor`. Do the same for `partner.type`. Produce a summary on the revised `ff` object. [**Hint**: you can do this by overwriting the relevant columns in `ff`.] What do you notice about the summary?
 ```
 
-Here the new `worms1` object is identical to the original `worms` object. I often read in .csv files, clean them up into the correct formats, and then save as an .rds file for further analysis. Since the .rds file stores R objects directly, then reading in the .rds file means I don't have to do all the cleaning up again. For large data sets, the resulting `.rds` file can often be a much smaller file size than the original text file.
+```{solution}
+
+``{r}
+## convert columns to factors
+ff$partners <- factor(ff$partners)
+ff$partner.type <- factor(ff$partner.type)
+
+## produce summary
+summary(ff)
+``
+
+Notice that the summary now produces counts for each level of the relevant categorical variables.
+```
+
+Objects saved as an [`.rds` file](#save) can be read in and assigned to objects using the `readRDS()` function e.g.
+
+```{r, eval = FALSE}
+## save worms data frame as an .rds file
+saveRDS(ff, "ff.rds")
+
+## read in as a new object
+ff1 <- readRDS("ff.rds")
+```
+
+Here the new `ff1` object is identical to the original `ff` object. I often read in `.csv` files, clean them up into the correct formats, and then save as an `.rds` file for further analysis. Since the `.rds` file stores R objects directly, then reading in the `.rds` file means I don't have to do all the cleaning up again. For large data sets, the resulting `.rds` file can often be a much smaller file size than the original text file.
 
 Alternative approaches can be found in other packages, and indeed a good package is `readr`, which is part of the `tidyverse` suite of packages, which we will introduce in the [Advanced Visualisation](#advis) and [Data Wrangling](#wrangling) tutorials---see [here](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) for a useful cheat sheet. Some other options can be found [here](http://www.r-tutor.com/r-introduction/data-frame/data-import).
+
+Once we have data read in as a `data.frame` object, we can do all sorts of useful things with them, so-much-so that most of the rest of the module will be built around using these objects. As a little example, consider the ease with which we can produce a mean thorax length for control flies with just a short piece of code:
+
+```{r}
+## calculate mean thorax length for control flies
+mean(ff$thorax[ff$partner.type == "Control"])
+```
+
+We will see many more complex examples in coming practicals.

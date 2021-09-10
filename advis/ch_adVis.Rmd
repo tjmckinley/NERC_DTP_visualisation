@@ -2,7 +2,7 @@
 
 R has very powerful and flexible plotting capabilities, that enable you to produce almost any type of plot (standard or customised) that you like. The downside is that the syntax can be verbose, so for complex plots it can be time consuming to code up. 
 
-A general package that has been developed for visualisation of complex data sets is called `ggplot2`. This provides a wide variety of standard plot types and flexible customisation options, with a unifying syntax. In this part of the module, we will introduce `ggplot2` and illustrate its use on a range of real-world examples.
+A general package that has been developed for visualisation of complex data sets is called [`ggplot2`](https://ggplot2.tidyverse.org/). This provides a wide variety of standard plot types and flexible customisation options, with a unifying syntax. In this part of the module, we will introduce `ggplot2` and illustrate its use on a range of real-world examples.
 
 ```{info, title = "Note", collapsible = FALSE}
 We will not focus on using R's base graphics capabilities here, but will provide some comparison code for some of the plots (if you are interested) in order to show you how you can generate similar plots with the base graphics capabilities.
@@ -713,25 +713,31 @@ ggplot(gapminderNoOc,
 
 ## Additional task
 
-A cost of increased reproduction in terms of reduced longevity has been shown for female fruitflies, but not for males. We have data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.
+Let's return to the fruitflies data from previous practicals. Recall:
 
-The flies used were an outbred stock. Sexual activity was manipulated by supplying individual males with one or eight receptive virgin females per day. The longevity of these males was compared with that of two control types. The first control consisted of two sets of individual males kept with one or eight newly inseminated females. Newly inseminated females will not usually remate for at least two days, and thus served as a control for any effect of competition with the male for food or space. The second control was a set of individual males kept with no females. There were 25 males in each of the five groups, which were treated identically in number of anaesthetizations (using $\mathrm{CO}_2$) and provision of fresh food medium.
+> *A cost of increased reproduction in terms of reduced longevity has been shown for female fruitflies, but not for males. We have data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.*
+> 
+> *The flies used were an outbred stock. Sexual activity was manipulated by supplying individual males with one or eight receptive virgin females per day. The longevity of these males was compared with that of two control types. The first control consisted of two sets of individual males kept with one or eight newly inseminated females. Newly inseminated females will not usually remate for at least two days, and thus served as a control for any effect of competition with the male for food or space. The second control was a set of individual males kept with no females. There were 25 males in each of the five groups, which were treated identically in number of anaesthetizations (using $\mathrm{CO}_2$) and provision of fresh food medium.*
+> 
+> The data should have the following columns:
+> 
+> * **id**: a ID for each fly in each group (1--25).
+> * **partners**: number of companions (0, 1 or 8).
+> * **type**: type of companion (inseminated female; virgin female; not applicable (when 'partners = 0')).
+> * **longevity**: lifespan, in days.
+> * **thorax**: length of thorax, in mm.
+> 
+> Source: [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0)
 
-The data should have the following columns:
-
-* **id**: a ID for each fly in each group (1--25).
-* **partners**: number of companions (0, 1 or 8).
-* **type**: type of companion (inseminated female; virgin female; not applicable (when 'partners = 0')).
-* **longevity**: lifespan, in days.
-* **thorax**: length of thorax, in mm.
-
-Source: [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0)
+```{r, echo = FALSE}
+ff <- readRDS("advis/uploadFiles/ff.rds")
+```
 
 ```{task}
-The file "ff.rds" contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
+The file [`ff.rds`](advis/uploadFiles/ff.rds) contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
     
 ``{r, eval = FALSE}
-ff <- readRDS("advis/ff.rds")
+ff <- readRDS("ff.rds")
 ``
 
 and use `ggplot2` to reproduce something similar to the plot below:
@@ -739,22 +745,84 @@ and use `ggplot2` to reproduce something similar to the plot below:
 ![Plot of fruitfly data stratified by experimental group](advis/images/fruitflies.png).
 ```
 
-```{solution}
+```{solution, multCode = TRUE, titles = c("ggplot2", "Base R")}
 
-``{r, echo = FALSE}
-ff <- readRDS("advis/uploadFiles/ff.rds")
-``
+For comparison the `ggplot2` and base R versions of the code are below. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
 
 ``{r, fig.height = 4, fig.width = 8}
 ## produce summary plot
 ggplot(ff, aes(y = longevity, x = thorax, 
-               linetype = type, shape = type)) +
+               linetype = partner.type, shape = partner.type)) +
     geom_point() +
     stat_smooth(method = "lm", se = FALSE) +
     facet_wrap(~ partners) +
     labs(linetype = "Partner Type", shape = "Partner Type") +
     ylab("Longevity (days)") +
     xlab("Thorax length (mm)")
+``
+
+####
+
+For comparison the `ggplot2` and base R versions of the code are below. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
+
+``{r, fig.width = 7, fig.height = 7}
+## set up 2 x 2 grid of plots
+## (mfrow takes a vector with number of
+## rows and number of columns)
+par(mfrow = c(2, 2))
+
+## plot controls (set range to be the range of the data
+## so that it's the same on all plots)
+plot(ff$thorax[ff$partner.type == "Control"], 
+    ff$longevity[ff$partner.type == "Control"], pch = 20,
+    xlab = "Thorax length (mm)", 
+    ylab = "Longevity (days)", 
+    main = "Controls",
+    xlim = range(ff$thorax),
+    ylim = range(ff$longevity))
+
+## fit linear model and add fitted line
+## using abline() - you could also do this
+## using lines() and a bunch of coordinates
+temp_lm <- lm(longevity ~ thorax, data = ff[ff$partner.type == "Control", ])
+abline(coef(temp_lm)[1], coef(temp_lm)[2])
+
+titles <- c("One partner", "Eight partners")
+partners <- c("1", "8")
+for(i in 1:length(titles)) {
+    ## extract subset of data for brevity in
+    ## subsequent code
+    temp <- ff[ff$partners == partners[i], ]
+    
+    ## create vector of initial point characters
+    temp_pch <- rep(20, nrow(temp))
+    
+    ## turn off point characters for all entries not
+    ## in the virgin
+    temp_pch[temp$partner.type != "Virgin"] <- 1
+    
+    ## produce plot (notice that only the controls are plotted
+    ## but the axes are correct)
+    plot(temp$thorax, temp$longevity, 
+        xlab = "Thorax length (mm)", 
+        ylab = "Longevity (days)", 
+        main = titles[i],
+        xlim = range(ff$thorax),
+        ylim = range(ff$longevity), 
+        pch = temp_pch)
+    
+    ## fit linear model and add fitted line
+    ## using abline()
+    temp_lm <- lm(longevity ~ thorax, data = temp[temp$partner.type == "Virgin", ])
+    abline(coef(temp_lm)[1], coef(temp_lm)[2])
+    temp_lm <- lm(longevity ~ thorax, data = temp[temp$partner.type == "Inseminated", ])
+    abline(coef(temp_lm)[1], coef(temp_lm)[2], lty = 2)
+    
+    ## add legend
+    legend(0.65, 95, pch = c(20, 1), lty = 1:2, legend = c("Virgin", "Inseminated"))
+}
+## reset par
+par(mfrow = c(1, 1))
 ``
     
 ```

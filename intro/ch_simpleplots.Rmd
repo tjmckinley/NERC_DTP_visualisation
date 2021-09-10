@@ -1,0 +1,235 @@
+# Simple plotting
+
+R has fantastic graphical capabilities. You can produce almost **any** type of plot you like in R, and customise it in almost any way; although to do so may require quite a lot of coding!
+    
+To this end many great visualisation packages have been developed to produce a wide variety of different plots applicable to a wide range of data type. We will explore the use of one specific package---[`ggplot2`](https://ggplot2.tidyverse.org/)---in the later [Advanced Visualisation](#advis) practical. In the meantime, just to illustrate some ideas, we can produce some very simple plots quite easily using R's base graphics capabilities. 
+
+The plot in the original paper is shown in Figure \@ref(fig:fruitflies).
+
+```{r, fruitflies, fig.cap = "Plot of fruitfly data stratified by experimental group", out.width = '60%', echo = FALSE}
+include_graphics("intro/images/fruitflies.png")
+```
+
+The simplest way to produce a scatterplot is to use R's generic `plot()` function. Here we will plot lifespan (`longevity`) against thorax length (`thorax`) from the fruitfly experiment data set we saw previously. For ease, the tidied `ff.rds` file can be downloaded from [here](intro/uploadFiles/ff.rds).
+
+```{r, eval = FALSE}
+## read in the data
+ff <- readRDS("ff.rds")
+summary(ff)
+```
+
+```{r, echo = FALSE}
+## read in the data
+ff <- readRDS("intro/uploadFiles/ff.rds")
+summary(ff)
+```
+
+```{r}
+## extract controls only
+ffc <- ff[ff$partner.type == "Control", ]
+
+## produce a scatter plot for just controls
+plot(ffc$thorax, ffc$longevity)
+```
+
+Here we can see that R has produced a scatterplot by default, with `thorax` on the $x$-axis and `longevity` on the $y$-axis. It does this because it knows you are trying to plot a `numeric` vector against another `numeric` vector, and so this is a sensible default. **Note that we have extracted the controls only into a new data set `ffc` for ease-of-use.**
+
+You will notice that the plot is not very neat. There are some arguments that we can add to help improve the axis labels and suchlike, e.g.
+
+```{r}
+## produce a scatter plot
+plot(ffc$thorax, ffc$longevity, 
+     xlab = "Thorax length (mm)", ylab = "Longevity (days)",
+     main = "Control experiment")
+```
+
+
+```{task}
+Try setting the `pch` argument to `plot()` and see what it does. Take a look at the help file for scatterplots e.g. `?plot` (choose the option from the `graphics` library).
+```
+
+```{solution}
+Here `pch` changes the point type. For example:
+    
+``{r}
+plot(ffc$thorax, ffc$longevity, 
+    xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
+    main = "Control experiment", pch = 20)
+``
+
+```
+
+There are some functions that allow us to **add to**, or **overlay**, existing plots. As an example, let's say we want to plot the data for **males housed with one female**, and then colour each point in the plot according to `partner.type` type (equivalent to the top-right figure in Figure \@ref(fig:fruitflies)). One way to do this is to produce a plot with all points on it (this helps to set the axis ranges correctly), and then overlay different points according to different subsets of the data. We can use the `points()` function to do this.
+        
+```{r, plotff, eval = FALSE}
+## extract subset of data
+ffone <- ff[ff$partners == "1", ]
+
+## plot
+plot(ffone$thorax, ffone$longevity, 
+     xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
+     main = "Males kept with one partner", pch = 20)
+
+## overlay points according to inseminated females
+points(ffone$thorax[ffone$partner.type == "Inseminated"], 
+       ffone$longevity[ffone$partner.type == "Inseminated"], 
+       pch = 20, col = "red")
+```
+
+```{r, ref.label = "plotff", echo = FALSE}
+```
+
+Notice there is no legend, we have to add that manually using the `legend()` function:
+    
+    ```{r, plotff1, eval = FALSE}
+## add legend
+legend(0.65, 95, pch = rep(20, 3), 
+       col = c("black", "red"), 
+       legend = c("Virgin", "Inseminated"))
+```
+
+```{r, ref.label = c("plotff", "plotff1"), echo = FALSE}
+```
+
+```{task, title = "Question"}
+Say we wished to use different point characters---rather than different colours---to represent the different `partner` types. Why would it be difficult to use `points()` na&iuml;vely here to do this?
+    ```
+
+```{solution, title = "Answer"}
+Because `points()` will **overlay** the original set of points, which might have a different point type, and thus won't look as you want it to look. For example:
+
+``{r}
+## plot
+plot(ffone$thorax, ffone$longevity, 
+    xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
+    main = "Males kept with one partner", pch = 20)
+
+## overlay points according to inseminated females
+points(ffone$thorax[ffone$partner.type == "Inseminated"], 
+    ffone$longevity[ffone$partner.type == "Inseminated"], 
+    pch = 1)
+``
+
+```
+
+There are various ways you can circumvent this behaviour, and one way is simply to pass a `vector` of point characters to the original `plot()` call, rather than use `points()`.
+        
+```{info, collapsible = FALSE}
+You can set a vector of point characters or colours, where the vector is the same length as the number of points you want to plot, and each entry defines the relevant colour or character for a given point.
+
+Previously we have set a single number, e.g. `pch = 20`, which R automatically expands to a vector "beneath-the-hood". However, we can have more fine-grained control over the way the points are plotted by using vectors where appropriate.
+```
+        
+For example:
+    
+```{r}
+## create vector of initial point characters
+temp_pch <- rep(20, nrow(ffone))
+
+## turn off point characters for all entries not
+## in the virgin
+temp_pch[ffone$partner.type != "Virgin"] <- 1
+
+## produce plot (notice that only the controls are plotted
+## but the axes are correct)
+plot(ffone$thorax, ffone$longevity, 
+     xlab = "Thorax length (mm)", 
+     ylab = "Longevity (days)", 
+     main = "Males kept with one partner", 
+     pch = temp_pch)
+
+## add legend
+legend(0.65, 95, pch = c(20, 1), legend = c("Virgin", "Inseminated"))
+```
+
+Note that R will try to be clever if you pass different types of object into the `plot()` function. For example:
+    
+```{r}
+## produce a plot of longevity against partner type
+plot(ff$partner.type, ff$longevity, xlab = "Partner type", ylab = "Longevity (days)")
+```
+
+You can see here that since the `x` argument is a `factor` and the `y` argument is ` numeric`, then by default R produces a box-and-whisker plot of longevity with each partner group.
+
+```{task}
+What happens if you swap the order of the arguments in the plot above?
+```
+
+```{solution}
+Here R hasn't been quite so clever this time. Since the `y` value is now a `factor` R has now converted this into a `numeric` type (see [here](#factconv)) and then produced a scatterplot; which is perhaps less useful here.
+
+``{r}
+plot(ff$longevity, ff$partner.type, ylab = "Partner type", xlab = "Longevity (days)")
+``
+
+```
+
+## Multiple plots
+
+We can also arrange multiple plots by using a function `par()` to set some plotting parameters. There are lots of options you can set with `par()`, but we will just use one called `mfrow`, which sets up a grid, where each element of the grid can contain a separate plot. We will try to replicate Figure \@ref(fig:fruitflies). (I've used a loop here for brevity, but you could do each plot explicitly):
+    
+```{r, fig.width = 7, fig.height = 7}
+## set up 2 x 2 grid of plots
+## (mfrow takes a vector with number of
+## rows and number of columns)
+par(mfrow = c(2, 2))
+
+## plot controls
+plot(ffc$thorax, ffc$longevity, pch = 20,
+     xlab = "Thorax length (mm)", 
+     ylab = "Longevity (days)", 
+     main = "Controls",
+     xlim = range(ff$thorax),
+     ylim = range(ff$longevity))
+
+titles <- c("One partner", "Eight partners")
+partners <- c("1", "8")
+for(i in 1:length(titles)) {
+    ## extract subset of data
+    temp <- ff[ff$partners == partners[i], ]
+    
+    ## create vector of initial point characters
+    temp_pch <- rep(20, nrow(temp))
+    
+    ## turn off point characters for all entries not
+    ## in the virgin
+    temp_pch[temp$partner.type != "Virgin"] <- 1
+    
+    ## produce plot (notice that only the controls are plotted
+    ## but the axes are correct)
+    plot(temp$thorax, temp$longevity, 
+         xlab = "Thorax length (mm)", 
+         ylab = "Longevity (days)", 
+         main = titles[i],
+         xlim = range(ff$thorax),
+         ylim = range(ff$longevity), 
+         pch = temp_pch)
+    
+    ## add legend
+    legend(0.65, 95, pch = c(20, 1), legend = c("Virgin", "Inseminated"))
+}
+## reset par
+par(mfrow = c(1, 1))
+```
+
+You can see that we can do an awful lot with base R graphics, but the code can become verbose very quickly. Notice we haven't added trend lines to the plot either, and have doubled-up on the legends. In the next practical we will see that with the right packages we can produce something better in just a few lines of code.
+
+## Other common plots
+
+Just to finish off this introduction, note that R has various other plot functions. A **line** plot can be drawn by setting e.g. `plot(x, y, type = "l")`, or added to an existing plot using the `lines()` function or `abline()`. Bar plots can also be generated (see `?barplot()`). **Histograms** can be plotted using `hist()` e.g.
+
+```{r}
+## histogram of thorax lengths
+hist(ff$thorax)
+```
+
+and some objects automatically have their own plot method. For example, to do a **kernel density plot** you can run the `density()` function on some data, and then `plot()` the resulting object e.g.
+
+```{r}
+## kernel density plot of thorax lengths
+plot(density(ff$thorax))
+```
+
+In fact, many non-standard R objects have their own `plot()` method, which is utilised by developers to provide important plot types that are specific to certain objects (for example, a **linear regression** can be fitted using the `lm()` function, and if the resulting object is passed to `plot()`, then this returns a suite of **residual** plots that are fundamental to checking the model etc.)
+
+In this course we are going to focus on plotting **data**, and we will cover the use of a very powerful and flexible package called `ggplot2` in the next practical.

@@ -294,18 +294,20 @@ sign_num(-1)
 
 ```{info, title = "Aside", collapsible = FALSE}
 A really useful function in R is called `paste()`. This allows us to concatenate objects into strings, which is particularly useful for printing to the screen. For example:
-\newline
+    
 ``{r}
 x <- 10
 paste("The variable x is", x)
 ``
+
 We can see that this has taken the value of `x` (which is `r x`), and created a character vector of length 1 containing the concatenated string `"The variable x is 10"`. Notice by default that `paste()` inserts a space between the arguments it's concatenating, this can be suppressed using the `sep` argument, or by using the `paste0()` function e.g. note the difference between the first function and the latter two (which are equivalent) below:
-\newline
+
 ``{r}
 paste("x =", 1)
 paste("x =", 1, sep = "")
 paste0("x =", 1)
 ``
+
 ```
 
 ```{task}
@@ -413,7 +415,9 @@ whoknows(c(10, 17))
 
 There is even a useful `stopifnot()` function, which takes a conditional statement as an argument and stops the code if the statement is not true. This is particularly useful for checking inputs. Notice that our functions have been quite sloppy so far, and really we should check that the variables that we are entering into the function are of the correct form. A better piece of code is:
 
-<a id="tidyscript"></a>
+```{hypertarget, label="tidyscript"}
+```
+
 ```{r}
 whoknows <- function(x) {
     ## check `x` variable is present
@@ -551,7 +555,7 @@ allprimes <- function(x) {
                 ## break out of the while loop
                 j <- i + 10
             } 
-            ## increment j
+        ## increment j
             j <- j + 1
         }
         ## if j == i + 1, then i must be prime
@@ -569,161 +573,167 @@ allprimes(1000)
 
 ```
 
-<!-- ## Using `apply()` functions -->
+## Using `apply()` functions
 
-<!-- There are several ubiquituous functions that you'll see used often in R code, I'll introduce four main ones (though there are others): `apply()`, `lapply()`, `sapply()` and `tapply()`. -->
+There are several ubiquituous functions that you'll see used often in R code, I'll introduce four main ones (though there are others): `apply()`, `lapply()`, `sapply()` and `tapply()`.
 
-<!-- Their sole *raison d'&ecirc;tre* (as far as I can tell) is to make code more concise. Essentially they allow you to replace the use of a loop with a single line of code that aids legibility. They do not (as far as I'm aware) make the code faster (for that you can see various functions in packages like `dplyr`. -->
+Their sole *raison d'&ecirc;tre* (as far as I can tell) is to make code more concise. Essentially they allow you to replace the use of a loop with a single line of code that aids legibility. They do not (as far as I'm aware) make the code faster (for that you can see various functions in packages like `dplyr`.
 
-<!-- For ultimate speed, one always wants to try to use **vectorised** operations in R, but sometimes looping over various margins of an object can be useful, and these functions can help. -->
+For ultimate speed, one always wants to try to use **vectorised** operations in R, but sometimes looping over various margins of an object can be useful, and these functions can help.
 
-<!-- ### `apply()` -->
+### `apply()`
 
-<!-- The `apply()` function applies a function to either rows or columns of a matrix (in fact it applies to any dimension of an `array`, but we will restrict ourselves here to `matrix` types only). For example, consider that we have a matrix `x` as below: -->
+The `apply()` function applies a function to either rows or columns of a matrix (in fact it applies to any dimension of an `array`, but we will restrict ourselves here to `matrix` types only). For example, consider that we have a matrix `x` as below:
 
-<!-- ```{r} -->
-<!-- x <- matrix(1:12, 3, 4) -->
-<!-- x -->
-<!-- ``` -->
+```{r}
+x <- matrix(1:12, 3, 4)
+x
+```
 
-<!-- Now we might want to calculate the *mean* say, of each row, in which case we could write a loop: -->
+Now we might want to calculate the **mean** say, of each **row**, in which case we could write a loop:
 
-<!-- ```{r} -->
-<!-- ## set output vector -->
-<!-- xmn <- numeric(nrow(x)) -->
+```{r}
+## set output vector
+xmn <- numeric(nrow(x))
 
-<!-- ## calculate mean for each row -->
-<!-- for(i in 1:nrow(x)) xmn[i] <- mean(x[i, ]) -->
+## calculate mean for each row
+for(i in 1:nrow(x)) {
+    xmn[i] <- mean(x[i, ])
+}
 
-<!-- ## print means -->
-<!-- xmn -->
-<!-- ``` -->
+## print means
+xmn
+```
 
-<!-- Note that here we had to set up an output vector (`xmn`) and then populate it with values. We used ***vectorised*** functions (`mean()`) to calculate the means for each row, but we required a loop to extract each row as a `vector` (the `i`th row is `x[i, ]`). We could do this in a single line using `apply()`: -->
+Note that here we had to set up an output vector (`xmn`) and then populate it with values. We used ***vectorised*** functions (`mean()`) to calculate the means for each row, but we required a loop to extract each row as a `vector` (the `i`th row is `x[i, ]`). We could do this in a single line using `apply()`:
 
-<!-- ```{r} -->
-<!-- xmn <- apply(x, 1, mean) -->
-<!-- xmn -->
-<!-- ``` -->
+```{r}
+xmn <- apply(x, 1, mean)
+xmn
+```
 
-<!-- Here the first argument to `apply()` is the matrix, the second argument determines the *margin* (`1` for rows and `2` for columns), and the third argument determines the function you want to apply to each row/column (`mean()`), and must take a vector of values as its first argument. To calculate the means of each column of `x` we can write: -->
+Here the first argument to `apply()` is the matrix, the second argument determines the *margin* (`1` for rows and `2` for columns), and the third argument determines the function you want to apply to each row/column (`mean()`), and must take a vector of values as its first argument. To calculate the **means** of each **column** of `x` we can write:
 
-<!-- ```{r} -->
-<!-- ymns <- apply(x, 2, mean) -->
-<!-- ymns -->
-<!-- ``` -->
+```{r}
+ymns <- apply(x, 2, mean)
+ymns
+```
 
-<!-- We can also use user-defined functions, for example to divide each row by its sum, we could use: -->
+```{info}
+In practice, since wanting to calculate **means** and **sums** of rows/columns of matrix-like objects is so **ubiquitous**, R provides some specific functions to do this: notably `rowSums()`, `colSums()`, `rowMeans()`, `colMeans()` that are simpler and faster than `apply()` for these specific summary measures.
+```
 
-<!-- ```{r} -->
-<!-- apply(x, 1, function(vec) { -->
-<!--     return(vec / sum(vec)) -->
-<!-- }) -->
-<!-- ``` -->
+We can also use user-defined functions, for example to divide each row by its sum, we could use:
 
-<!-- Here each row of `x` is passed into our function as a **local** object called `vec`, the function then divides each element of `vec` by its sum and returns the resulting vector. Note that `apply()` returns an output matrix with dimensions `ncol(x)` $\times$ `nrow(x)` here, so we might want to transpose if we want to return in the original dimensions: -->
+```{r}
+apply(x, 1, function(vec) {
+    return(vec / sum(vec))
+})
+```
 
-<!-- ```{r} -->
-<!-- t(apply(x, 1, function(vec) { -->
-<!--     return(vec / sum(vec)) -->
-<!-- })) -->
-<!-- ``` -->
+Here each row of `x` is passed into our function as a **local** object called `vec`, the function then divides each element of `vec` by its sum and returns the resulting vector. Note that `apply()` returns an output matrix with dimensions `ncol(x)` $\times$ `nrow(x)` here, so we might want to transpose if we want to return in the original dimensions:
 
-<!-- Other arguments can be passed to our user-defined function as extra arguments to apply, as long as the first argument to our user-defined function corresponds to each row/column e.g. to divide each line by a variable `n` we could: -->
+```{r}
+t(apply(x, 1, function(vec) {
+    return(vec / sum(vec))
+}))
+```
 
-<!-- ```{r} -->
-<!-- t(apply(x, 1, function(vec, n) { -->
-<!--     return(vec / n) -->
-<!-- }, n = 10)) -->
-<!-- t(apply(x, 1, function(vec, n) { -->
-<!--     return(vec / n) -->
-<!-- }, n = 2)) -->
-<!-- ``` -->
+Other arguments can be passed to our user-defined function as extra arguments to apply, as long as the first argument to our user-defined function corresponds to each row/column e.g. to divide each line by a variable `n` we could:
 
-<!-- We can also save our user-defined function as an object and pass it into `apply()` e.g. -->
+```{r}
+t(apply(x, 1, function(vec, n) {
+    return(vec / n)
+}, n = 10))
+t(apply(x, 1, function(vec, n) {
+    return(vec / n)
+}, n = 2))
+```
 
+We can also save our user-defined function as an object and pass it into `apply()` e.g.
 
-<!-- ```{r} -->
-<!-- divn <- function(vec, n) { -->
-<!--     return(vec / n) -->
-<!-- } -->
-<!-- t(apply(x, 1, divn, n = 10)) -->
-<!-- t(apply(x, 1, divn, n = 2)) -->
-<!-- ``` -->
+```{r}
+divn <- function(vec, n) {
+    return(vec / n)
+}
+t(apply(x, 1, divn, n = 10))
+t(apply(x, 1, divn, n = 2))
+```
 
-<!-- ```{task} -->
-<!-- Use `apply()` to return the range of each column of the matrix `x` defined above. Return as a 2 $\times$ 4 matrix. -->
-<!-- ``` -->
+```{task}
+Use `apply()` to return the range of each column of the matrix `x` defined above. Return as a 2 $\times$ 4 matrix.
+```
 
-<!-- ```{solution} -->
+```{solution}
 
-<!-- ``{r, eval = FALSE} -->
-<!-- t(apply(x, 2, range)) -->
-<!-- `` -->
+``{r, eval = FALSE}
+t(apply(x, 2, range))
+``
 
-<!-- ``` -->
+```
 
-<!-- ### `lapply()` and `sapply()` -->
+### `lapply()` and `sapply()`
 
-<!-- These functions essentially do the same thing but on lists, so each element of a list is passed to a corresponding function e.g. -->
+These functions essentially do the same thing but on lists, so each element of a list is passed to a corresponding function e.g.
 
-<!-- ```{r} -->
-<!-- x <- list(matrix(1:4, 2, 2), matrix(1:9, 3, 3)) -->
-<!-- x -->
-<!-- ``` -->
+```{r}
+x <- list(matrix(1:4, 2, 2), matrix(1:9, 3, 3))
+x
+```
 
-<!-- To get the dimensions of each element of the list we could use something like: -->
+To get the dimensions of each element of the list we could use something like:
 
-<!-- ```{r} -->
-<!-- lapply(x, dim) -->
-<!-- ``` -->
+```{r}
+lapply(x, dim)
+```
 
-<!-- We can see that `lapply()` returns a list object with the dimensions. The function `sapply()` is a user-friendly version of `lapply()` that always returns a simpler object than a list if possible e.g. -->
+We can see that `lapply()` returns a list object with the dimensions. The function `sapply()` is a user-friendly version of `lapply()` that always returns a simpler object than a list if possible e.g.
 
-<!-- ```{r} -->
-<!-- sapply(x, dim) -->
-<!-- ``` -->
+```{r}
+sapply(x, dim)
+```
 
-<!-- ```{info, title = "Note", collapsible = FALSE} -->
-<!-- Again, be careful of the format returned by these functions. In this case `sapply()` returns a 2 $\times$ 2 matrix where the dimensions are returned down the columns. If you are in doubt, check with a trivial example like this one. -->
-<!-- ``` -->
+```{info, title = "Note", collapsible = FALSE}
+Again, be careful of the format returned by these functions. In this case `sapply()` returns a 2 $\times$ 2 matrix where the dimensions are returned down the columns. If you are in doubt, check with a trivial example like this one.
+```
 
-<!-- ### `tapply()` -->
+### `tapply()`
 
-<!-- A very useful function is `tapply()`. This takes three arguments: the first is a vector of values, the second is a `factor` vector of the same length, and the third is a function. `tapply()` groups the first vector according to the levels of the second vector (the `factor`), and then applies the function to these subgroups. For example, R has a `datasets` package that provides a series of data sets---here we will look at one called `chickwts`. -->
+A very useful function is `tapply()`. This takes three arguments: the first is a vector of values, the second is a `factor` vector of the same length, and the third is a function. `tapply()` groups the first vector according to the levels of the second vector (the `factor`), and then applies the function to these subgroups. For example, R has a `datasets` package that provides a series of data sets---here we will look at one called `chickwts`.
 
-<!-- ```{r} -->
-<!-- ## load the datasets package -->
-<!-- library(datasets) -->
+```{r}
+## load the datasets package
+library(datasets)
 
-<!-- ## summarise the chickwts data -->
-<!-- head(chickwts) -->
-<!-- summary(chickwts) -->
-<!-- ``` -->
+## summarise the chickwts data
+head(chickwts)
+summary(chickwts)
+```
 
-<!-- Here we have loaded the `chickwts` data set, that records chick weights in an experiment, where newly hatched chicks were randomly allocated into six groups, and each group was given a different feed supplement. Their weights in grams after six weeks are given along with feed types. So if we wanted to measure the mean weight at six weeks for chicks fed different diets, we could use: -->
+The `chickwts` data set records chick weights in an experiment, where newly hatched chicks were randomly allocated into six groups, and each group was given a different feed supplement. Their weights in grams after six weeks are given along with feed types. So if we wanted to measure the mean weight at six weeks for chicks fed different diets, we could use:
 
-<!-- ```{r} -->
-<!-- tapply(chickwts$weight, chickwts$feed, mean) -->
-<!-- ``` -->
+```{r}
+tapply(chickwts$weight, chickwts$feed, mean)
+```
 
-<!-- ```{task} -->
-<!-- The `datasets` package provides data on from an experiment to compare yields (as measured by dried weight of plants) obtained under a control and two different treatment conditions (stored as the `PlantGrowth` data set). Summarise this data set and produce an estimate of the mean yield for each experimental group. Generate means and standard deviations for each experimental group. -->
-<!-- ``` -->
+```{task}
+The `datasets` package provides data on from an experiment to compare yields (as measured by dried weight of plants) obtained under a control and two different treatment conditions (stored as the `PlantGrowth` data set). Summarise this data set and produce an estimate of the mean yield for each experimental group. Generate means and standard deviations for each experimental group.
+```
 
-<!-- ```{solution} -->
+```{solution}
 
-<!-- ``{r, eval = FALSE} -->
-<!-- ## summarise data -->
-<!-- summary(PlantGrowth) -->
+``{r, eval = FALSE}
+## summarise data
+summary(PlantGrowth)
 
-<!-- ## generate mean yields per experimental group -->
-<!-- tapply(PlantGrowth$weight, PlantGrowth$group, mean) -->
+## generate mean yields per experimental group
+tapply(PlantGrowth$weight, PlantGrowth$group, mean)
 
-<!-- ## generate mean and SD yields per experimental group -->
-<!-- tapply(PlantGrowth$weight, PlantGrowth$group, function(x) { -->
-<!--     c(mean(x), sd(x)) -->
-<!-- }) -->
-<!-- `` -->
+## generate mean and SD yields per experimental group
+## using a user-defined function
+tapply(PlantGrowth$weight, PlantGrowth$group, function(x) {
+    c(mean(x), sd(x))
+})
+``
 
-<!-- ``` -->
+```

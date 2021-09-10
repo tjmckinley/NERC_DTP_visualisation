@@ -32,13 +32,3 @@ All data files can be downloaded as a ZIP file from [here](https://exeter-data-a
 
 * [Advanced Visualisation](advis/AdVisSlides/AdVisHandout.pdf)
 * [Data Wrangling](advis/DataWrSlides/DataWrHandout.pdf)
-
-<!-- ## Tasks {-} -->
-
-<!-- ```{task} -->
-<!-- All **tasks** will be denoted in panel boxes like this one. In the HTML version, all solutions can be toggled by hitting the **Show Solution** buttons. In the PDF version solutions are given in the Appendix and are linked via the **Show Solution** buttons. -->
-<!-- ``` -->
-
-<!-- ```{solution} -->
-<!-- The answer is, of course, 42. -->
-<!-- ``` -->

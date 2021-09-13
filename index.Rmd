@@ -83,3 +83,4 @@ The answer is, of course, 42.
 ## Acknowledgements {-}
 
 I am indebted to [Dr Matt Castle](https://www.biostats.lifesci.cam.ac.uk/about-us), whose excellent "Introduction to R" practicals form the basis of the introductory content. I am also indebted to my late friend and colleague [Dr John Joseph Valletta](https://www.gigrower.co.uk/2020/10/30/remembering-jj-valletta-1983-2020/) for sharing his excellent Git lectures, which form the basis of the "Version Control" chapter. Thanks also to [Professor Dave Hodgson](https://biosciences.exeter.ac.uk/staff/profile/index.php?web_id=david_hodgson) for various materials/data sets.
+

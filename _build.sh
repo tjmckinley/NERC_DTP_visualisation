@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ## clean up folder
 rm -rf docs/
@@ -10,36 +10,38 @@ Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
 ## copy nojekyll file
 cp .nojekyll docs/
 
-## compile lecture slides
-cd slides
-./compile.sh -p IntroToR
-./compile.sh -p IntroToR -b 1
-./compile.sh -p IntroToR -h 1
-cd ..
+## declare an array variable
+chNames=("intro" "advis")
+chPaths=("intro" "advis")
 
-## copy required files to uploadFiles
-cp intro/uploadFiles/* docs/intro/uploadFiles
-if [ -f intro/datasetsIntro.zip ]; then
-    rm intro/datasetsIntro.zip
-fi
-zip -rj intro/datasetsIntro.zip intro/uploadFiles
-cp intro/datasetsIntro.zip docs/intro/uploadFiles/
-cp slides/IntroToR/IntroToRSLIDES* docs/intro/uploadFiles/
-cp slides/IntroToR/IntroToRHANDOUT* docs/intro/uploadFiles/
+## get length of an array
+arraylength=${#chNames[@]}
+
+for (( i=0; i<${arraylength}; i++ )); 
+do
+    ## extract name and path
+    chName=${chNames[$i]}
+    chPath=${chPaths[$i]}
+
+    ## compile lecture slides
+    cd slides
+    ./compile.sh -p $chName
+    ./compile.sh -p $chName -b 1
+    ./compile.sh -p $chName -h 1
+    cd ..
+    
+    ## copy required files to uploadFiles
+    cp $chPath/uploadFiles/* docs/$chPath/uploadFiles
+    if [ -f $chPath/datasets$chPath.zip ]; then
+        rm $chPath/datasets$chPath.zip
+    fi
+    zip -rj $chPath/datasets$chName.zip $chPath/uploadFiles
+    mv $chPath/datasets$chPath.zip docs/$chPath/uploadFiles/
+    cp slides/$chName/${chName}SLIDES* docs/$chPath/uploadFiles/
+    cp slides/$chName/${chName}HANDOUT* docs/$chPath/uploadFiles/
+done
 
 ## create zip for ELE
 rm docs.zip
 zip -r docs.zip docs
-
-
-
-# ## copy required files for workshop
-# cp dataFiles.zip docs/
-# cp AdVisSlides/AdVisHandout.pdf docs/
-# cp DataWrSlides/DataWrHandout.pdf docs/
-# cd docs
-# zip slides.zip AdVisHandout.pdf DataWrHandout.pdf
-# cd ..
-# mkdir docs/uploadFiles
-# cp -r advis/uploadFiles/* docs/uploadFiles
 

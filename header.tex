@@ -1,5 +1,6 @@
 % latex macro to create task boxes
-\usepackage{tcolorbox, comment, geometry, listings}
+\usepackage{comment, geometry, listings}
+\usepackage[most]{tcolorbox}
 \tcbuselibrary{breakable}
 
 \newgeometry{margin=1in}
@@ -19,8 +20,8 @@
 \newcommand{\eblockI}{\end{tcolorbox}}
 
 %add tabbed solutions environment
-\newcommand{\bmp}{\begin{minipage}[c]{0.5\textwidth}}
-\newcommand{\emp}{\end{minipage}}
+\newcommand{\bmp}{\begin{tcbraster}[raster columns = 2, raster valign = top]}
+\newcommand{\emp}{\end{tcbraster}}
 \newcommand{\bblockST}[1]{\begin{tcolorbox}[title = #1, colframe=taskCol1, breakable, parbox = false]}
 \newcommand{\eblockST}{\end{tcolorbox}}
 

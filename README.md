@@ -1,45 +1,28 @@
-# RtutorialSkeleton
+# Lecture notes
 
-This provides a template for R practicals written using the `bookdown` package. The template provides some customised "Task" and "Solution" boxes amongst other things. To see some examples on how to use this template, see here:
+This repo contains lecture notes and slides for CSC3031 Applied Data Science 
+module. 
 
-[https://tjmckinley.github.io/RtutorialSkeleton/](https://tjmckinley.github.io/RtutorialSkeleton/)
+The `template` branch contains the `RtutorialSkeleton` code that can be merged 
+if new changes are made. The `main` branch contains the lecture slides.
 
-You can download or clone the repository and then compile the project. This can be done on any platform by loading the "skeleton.Rproj" file in RStudio. The "Build Book" button in the "Build" pane can be used to compile the practical. 
+There is a Git submodule named `slides`. In this folder is a clone of the 
+`slideTemplate` repo (again, the `template` branch contains the template,
+and the `main` branch contains the new slides. In contrast this repo
+can be rebased currently). 
 
-After the build is complete, all necessary files will be included in the `docs` folder which is made as part of the build. If you want to link the PDF document within the HTML gitbook document, then you need to compile the PDF first. After compilation, the file `index.html` contains examples on how to use the template.
+To completely compile all of the lecture notes, one can run the `_build.sh` 
+script. This will compile all lecture slides and lecture notes, and create
+a compressed `.zip` file that can be uploaded to ELE. When setting the 
+`chNames` and `chPath` variables:
 
-## To publish using `gh-pages`
+* Upload files are zipped according to `$chPath/dataFiles${chName}.zip`.
+* Slides should be located in `slides/$chName/${chName}.Rmd`.
 
-One way to publish this online is to use the `gh-pages` branch on GitHub. **The following assumes that your source code is in the `main` branch, and that no uncommitted changes exist in the repo. You have been warned!**
+To do this, upload the `docs.zip` to ELE as a `File` (not `Folder`), then
+click on the uploaded file and unzip it, then click on the folder, locate
+the `index.html` file and set this to be the **Main File**. Then all
+links should work.
 
-Firstly, build your document, which should place all files in a `docs` folder. Then, copy the file `.nojekyll` into `docs/` (this is required to make sure figures render correctly when deployed).
-
-**Assuming that the branch `tempBranch` does not exist**, then on the command line run:
-
-```
-git checkout main
-git checkout -b tempBranch
-git add -f docs
-git commit -m "Added docs to repo"
-git subtree split --prefix docs -b gh-pages
-git push origin gh-pages --force
-```
-
-At this point the page has been deployed, and can be found at `https://USERNAME.github.io/REPONAME/`, where `USERNAME` and `REPONAME` should be replaced appropriately. You can see this deployment here:
-
-[https://tjmckinley.github.io/RtutorialSkeleton/](https://tjmckinley.github.io/RtutorialSkeleton/)
-
-Next, you might want to store a copy of the `docs` folder, since the next set of `git` commands will remove it. On the command line this can be done as:
-
-```
-rm docs.zip
-zip -r docs.zip docs/
-```
-
-Finally, clean up your repo:
-
-```
-git checkout main
-git branch -D gh-pages tempBranch
-```
-
+Remember to remove relative links from the PDF, but these can be included
+in the HTML.

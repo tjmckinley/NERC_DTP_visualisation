@@ -1,14 +1,36 @@
+# (PART) Advanced visualisation and Data Wrangling in R {-}
+
 # Visualisation using `ggplot2` {#advis}
 
-R has very powerful and flexible plotting capabilities, that enable you to produce almost any type of plot (standard or customised) that you like. The downside is that the syntax can be verbose, so for complex plots it can be time consuming to code up. 
+```{info, collapsible = FALSE}
+A PDF handout for this part of the module can be found on the ELE page or via the link [here](advis/uploadFiles/advisHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](advis/uploadFiles/advisSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](advis/uploadFiles/advisSLIDES.html).
 
-A general package that has been developed for visualisation of complex data sets is called [`ggplot2`](https://ggplot2.tidyverse.org/). This provides a wide variety of standard plot types and flexible customisation options, with a unifying syntax. In this part of the module, we will introduce `ggplot2` and illustrate its use on a range of real-world examples.
-
-```{info, title = "Note", collapsible = FALSE}
-We will not focus on using R's base graphics capabilities here, but will provide some comparison code for some of the plots (if you are interested) in order to show you how you can generate similar plots with the base graphics capabilities.
+All data files needed can be downloaded from ELE, or via the link [here](advis/uploadFiles/datasetsadvis.zip).
 ```
 
-Let's start with a motivating example.
+## Introduction to `tidyverse`
+
+Now that you're comfortable with R, and specifically with the concept of `data.frame` objects, we can begin to really start unlocking the power of R for analysing complex data sets. The ability to work with and visualise data frames is one of the key reasons why R is so popular among statisticians and data scientists. Although a vast amount can be achieved using base R functionality, one of R's other key strengths is the vast array of [packages](https://cran.r-project.org/web/packages/) that it supports, which add a rich variety of additional functionality to R.
+
+A suite of packages that are fast becoming *de rigueur* for performing myriad data science tasks is known as the [`tidyverse`](https://www.tidyverse.org/). These packages provide powerful functions for doing visualisation and manipulation of complex data sets. In this workshop we will introduce key `tidyverse` packages, and show how they can be used to efficiently process and visualise complex data sets.
+
+### `tidyverse` packages {-}
+
+The [`tidyverse`](https://www.tidyverse.org/) is a suite of packages, including e.g. `tidyr`, `dplyr`, `ggplot2`, `purrr`, `tibble` and `readr`. Although these packages can each be installed and loaded separately, they are designed to work together, and as such will simply install and load the `tidyverse` directly, rather than worry too much about which functions belong to which packages.
+
+As usual, if you want to install `tidyverse`, use:
+
+```{r, eval = FALSE}
+install.packages("tidyverse")
+```
+
+and once installed, it can be loaded using:
+
+```{r, eval = FALSE}
+library(tidyverse)
+```
+
+in the usual way. Let's start with a motivating example.
 
 ## Gapminder
 
@@ -35,9 +57,15 @@ include_graphics("advis/images/gapminder.png")
 
 ## Introduction to `ggplot2`
 
-We have seen that the R base graphics system is highly flexible, and it can be used to produce high-quality, bespoke visualisations. However, doing so can be a lot of work! Let's show an alternative way to produce similar plots using the `ggplot2` package. We will introduce the code first, and then talk through it.
+R has very powerful and flexible plotting capabilities, that can be used to produce high-quality, bespoke visualisations. The downside is that the syntax can be verbose, so for complex plots it can be time consuming to code up. 
 
-First we load the `tidyverse` (of which `ggplot2` is included).
+A general package that has been developed for visualisation of complex data sets is called [`ggplot2`](https://ggplot2.tidyverse.org/). This provides a wide variety of standard plot types and flexible customisation options, with a unifying syntax. In this part of the module, we will introduce `ggplot2` and illustrate its use on a range of real-world examples.
+
+```{info, title = "Note", collapsible = FALSE}
+We will not focus on using R's base graphics capabilities here, but will provide some comparison code for some of the examples (if you are interested) in order to show you how you can generate similar plots without `ggplot2`.
+```
+
+We will introduce some example code first, and then talk through it. First we load the `tidyverse` (of which `ggplot2` is included---you could just load `ggplot2` if you prefer).
 
 ```{r, message = FALSE, cache = FALSE}
 library(tidyverse)
@@ -747,79 +775,75 @@ and use `ggplot2` to reproduce something similar to the plot below:
 
 ```{solution, multCode = TRUE, titles = c("ggplot2", "Base R")}
 
-For comparison the `ggplot2` and base R versions of the code are below. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
+For comparison `ggplot2` and base R versions of the code are provided. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
 
 ``{r, fig.height = 4, fig.width = 8}
 ## produce summary plot
 ggplot(ff, aes(y = longevity, x = thorax, 
-               linetype = partner.type, shape = partner.type)) +
+        linetype = partner.type, 
+        shape = partner.type)) +
     geom_point() +
     stat_smooth(method = "lm", se = FALSE) +
-    facet_wrap(~ partners) +
-    labs(linetype = "Partner Type", shape = "Partner Type") +
+    facet_wrap(~partners) +
+    labs(linetype = "Partner Type", 
+         shape = "Partner Type") +
     ylab("Longevity (days)") +
-    xlab("Thorax length (mm)")
+    xlab("Thorax length (mm)") +
+    theme_bw()
 ``
 
 ####
 
-For comparison the `ggplot2` and base R versions of the code are below. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
+`r ifelse(is_latex_output(), "\\begin{comment}\n", "")`
 
-``{r, fig.width = 7, fig.height = 7}
+For comparison `ggplot2` and base R versions of the code are provided. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
+
+`r ifelse(is_latex_output(), "\\end{comment}\n", "")`
+
+``{r, fig.width = 7, fig.height = 7, latexsize = "scriptsize"}
 ## set up 2 x 2 grid of plots
-## (mfrow takes a vector with number of
-## rows and number of columns)
 par(mfrow = c(2, 2))
 
-## plot controls (set range to be the range of the data
+## plot controls (set range to be the range of the data 
 ## so that it's the same on all plots)
 plot(ff$thorax[ff$partner.type == "Control"], 
-    ff$longevity[ff$partner.type == "Control"], pch = 20,
-    xlab = "Thorax length (mm)", 
-    ylab = "Longevity (days)", 
-    main = "Controls",
-    xlim = range(ff$thorax),
-    ylim = range(ff$longevity))
+    ff$longevity[ff$partner.type == "Control"], 
+    pch = 20, xlab = "Thorax length (mm)", 
+    ylab = "Longevity (days)", main = "Controls",
+    xlim = range(ff$thorax), ylim = range(ff$longevity))
 
-## fit linear model and add fitted line
-## using abline() - you could also do this
-## using lines() and a bunch of coordinates
-temp_lm <- lm(longevity ~ thorax, data = ff[ff$partner.type == "Control", ])
+## fit linear model and add fitted line using abline()
+temp_lm <- lm(longevity ~ thorax, 
+    data = ff[ff$partner.type == "Control", ])
 abline(coef(temp_lm)[1], coef(temp_lm)[2])
 
 titles <- c("One partner", "Eight partners")
 partners <- c("1", "8")
 for(i in 1:length(titles)) {
-    ## extract subset of data for brevity in
-    ## subsequent code
+    ## extract subset of data for brevity of code
     temp <- ff[ff$partners == partners[i], ]
     
-    ## create vector of initial point characters
+    ## set point characters
     temp_pch <- rep(20, nrow(temp))
-    
-    ## turn off point characters for all entries not
-    ## in the virgin
     temp_pch[temp$partner.type != "Virgin"] <- 1
     
-    ## produce plot (notice that only the controls are plotted
-    ## but the axes are correct)
+    ## produce plot
     plot(temp$thorax, temp$longevity, 
-        xlab = "Thorax length (mm)", 
-        ylab = "Longevity (days)", 
-        main = titles[i],
-        xlim = range(ff$thorax),
-        ylim = range(ff$longevity), 
-        pch = temp_pch)
+        xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
+        xlim = range(ff$thorax), ylim = range(ff$longevity),
+        main = titles[i], pch = temp_pch)
     
-    ## fit linear model and add fitted line
-    ## using abline()
-    temp_lm <- lm(longevity ~ thorax, data = temp[temp$partner.type == "Virgin", ])
+    ## fit linear models and add fitted lines using abline()
+    temp_lm <- lm(longevity ~ thorax, 
+        data = temp[temp$partner.type == "Virgin", ])
     abline(coef(temp_lm)[1], coef(temp_lm)[2])
-    temp_lm <- lm(longevity ~ thorax, data = temp[temp$partner.type == "Inseminated", ])
+    temp_lm <- lm(longevity ~ thorax, 
+        data = temp[temp$partner.type == "Inseminated", ])
     abline(coef(temp_lm)[1], coef(temp_lm)[2], lty = 2)
     
     ## add legend
-    legend(0.65, 95, pch = c(20, 1), lty = 1:2, legend = c("Virgin", "Inseminated"))
+    legend(0.65, 95, pch = c(20, 1), lty = 1:2, 
+        legend = c("Virgin", "Inseminated"))
 }
 ## reset par
 par(mfrow = c(1, 1))

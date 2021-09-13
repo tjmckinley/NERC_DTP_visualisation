@@ -1,5 +1,11 @@
 # Programming in R
 
+```{info, collapsible = FALSE}
+A PDF handout for this part of the module can be found on the ELE page or via the link [here](intro/uploadFiles/progHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](intro/uploadFiles/progSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](intro/uploadFiles/progSLIDES.html).
+
+All data files needed can be downloaded from ELE, or via the link [here](intro/uploadFiles/datasetsintro.zip).
+```
+
 The popularity of R is in part due to its fantastic packages and extremely flexible graphical capabilities. It is often easy to forget that it is a fully functional programming language in its own right. In this section we cover how to implement some standard programming practices, such as `for` and `while` loops, conditional `if` statements and so on.
 
 ```{info, title = "Note", collapsible = FALSE}

@@ -3,9 +3,9 @@
 # Getting Started in R {#gettingstarted}
 
 ```{info, collapsible = FALSE}
-A PDF handout for this part of the module can be found on the ELE page or via the link [here](intro/uploadFiles/IntroToRHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](intro/uploadFiles/IntroToRSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](intro/uploadFiles/IntroToRSLIDES.html).
+A PDF handout for this part of the module can be found on the ELE page or via the link [here](intro/uploadFiles/introHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](intro/uploadFiles/introSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](intro/uploadFiles/introSLIDES.html).
 
-All data files needed can be downloaded from ELE, or via the link [here](intro/uploadFiles/datasetsIntro.zip).
+All data files needed can be downloaded from ELE, or via the link [here](intro/uploadFiles/datasetsintro.zip).
 ```
 
 R---available at [https://cran.r-project.org/](https://cran.r-project.org/)---is a comprehensive statistical programming language. It can be thought of as an open-source, freely available implementation of the [S](https://en.wikipedia.org/wiki/S_(programming_language)) language. R is an **interpreted language**, and so can be used interactively, without having to compile the code into an executable file. 

@@ -1,10 +1,18 @@
 # Data Wrangling {#wrangling}
 
+```{info, title = "Note", collapsible = FALSE}
+A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](advis/uploadFiles/datawrHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](advis/uploadFiles/datawrSLIDES.pdf) and [here](advis/uploadFiles/datawrSLIDES.html)", "")`.
+
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](advis/uploadFiles/datasets.zip)", "")`.
+```
+
 It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 
 
-> Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
+```{info, title = "Note", collapsible = FALSE}
+Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
 
 [^tidyversepackages]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
+```
 
 Before we go any further, if you haven't already, please load `tidyverse`:
 
@@ -235,7 +243,9 @@ In essence we can **read** what we have done in much the same way as if we were 
 
 Try doing the same level of data cleaning in Excel as easily...
 
-> **Note**: we can also pass the result of the right-hand side out using the assignment operator `<-` e.g. `iris <- iris %>% filter(Species = "versicolor")` would overwrite the `iris` data to produce a new data set with only `versicolor` entries. 
+```{info, title = "Note", collapsible = FALSE} 
+We can also pass the result of the right-hand side out using the assignment operator `<-` e.g. `iris <- iris %>% filter(Species = "versicolor")` would overwrite the `iris` data to produce a new data set with only `versicolor` entries.
+```
 
 Once we've got our head around pipes, we can begin to use some of the other useful functions in `tidyverse` to do some really useful things.
 

@@ -2,10 +2,10 @@
 
 # Visualisation using `ggplot2` {#advis}
 
-```{info, collapsible = FALSE}
-A PDF handout for this part of the module can be found on the ELE page or via the link [here](advis/uploadFiles/advisHANDOUT.pdf). A PDF version of the slides (not in handout form) can be found [here](advis/uploadFiles/advisSLIDES.pdf), and a HTML version (which should be compatible with screen-readers) can be found [here](advis/uploadFiles/advisSLIDES.html).
+```{info, title = "Note", collapsible = FALSE}
+A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](advis/uploadFiles/advisHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](advis/uploadFiles/advisSLIDES.pdf) and [here](advis/uploadFiles/advisSLIDES.html)", "")`.
 
-All data files needed can be downloaded from ELE, or via the link [here](advis/uploadFiles/datasetsadvis.zip).
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](advis/uploadFiles/datasets.zip)", "")`.
 ```
 
 ## Introduction to `tidyverse`
@@ -47,9 +47,11 @@ cat("\\begin{center}\\href{https://www.youtube.com/embed/jbkSRLYSojo}{\\includeg
 
 For a slightly longer presentation, his TED talk on global development has been watched over 11 million times. If you have 20 minutes, it can be found [here](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread), and is well worth a watch!
 
-> More-or-less as I had finished an earlier version of these notes, the news broke that Professor Rosling had sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the immense contribution that he made to the world of public health and education. He presented a world-view based on facts and data. To this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
+```{info, collapsible = FALSE}
+Professor Rosling sadly passed away on 7th February 2017, aged 68. I hope you will find some time to explore the [Gapminder](https://www.gapminder.org/) website, and appreciate the immense contribution that he made to the world of public health and education. He presented a world-view based on facts and data. To this end he provided innovative and fascinating ways to explore and understand data, disseminated these findings with pathos and humour, and used this information to challenge many of our pre-conceptions about public health and the developing world. An obituary from the Guardian can be found [here](https://www.theguardian.com/global-development/2017/feb/07/hans-rosling-obituary).
+```
 
-The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this pracical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
+The [Gapminder](https://www.gapminder.org/) website provides really informative interactive visualisations for many fascinating data sets. In this practical we will explore how to use R to try to recreate something similar to the types of visualisation that Gapminder provides, and see how high-end R packages---such as `ggplot2`---have been developed that provide a systematic and flexible way to generate complex plots / visualisations. Our aim for this workshop is to emulate the plot in Figure \@ref(fig:gapminder).
 
 ```{r, gapminder, fig.cap = "Life expectancy against GDP---screenshot from Gapminder project", echo = FALSE, out.width = "70%", out.height = "70%"}
 include_graphics("advis/images/gapminder.png")
@@ -409,7 +411,9 @@ ggplot(iris) +
 
 This doesn't add anything more to the plot here since the colours are redundant. Later we will see a better example of this.
 
-> **Note** there is also a `facet_grid()` option that allows us to facet by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more details.
+```{info, title = "Note", collapsible = FALSE}
+There is also a `facet_grid()` option that allows us to facet by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more details.
+```
 
 ### Statistical transformations
 
@@ -558,23 +562,30 @@ ggplot(gapminder[gapminder$year == 1952, ],
 The plots differ purely in the labels for the $x$-axis.
 ```
 
-> **Important**: `ggplot2` also allows you to save the plot as an object, which can be updated at a later date or used within other functions. For example,
-> ```{r}
+```{info, title = "Important", collapsible = FALSE} 
+`ggplot2` also allows you to save the plot as an object, which can be updated at a later date or used within other functions. For example,
+
+``{r}
 p <- ggplot(gapminder[gapminder$year == 1952, ], 
->       aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
->    geom_point()
-> ```
-> creates an object called `p` that contains the plot information. This will not be plotted until the object is **printed** to the screen e.g.
-> ```{r, message = FALSE}
-> p
-> ```
-> **Note**: If using `ggplot` inside functions you may have to explicitly use the `print()` function (e.g. `print(p)`).
-> 
-> This can be useful if we want to add things to an existing plot at a later stage without having to rewrite the entire plot. For example, to set the scales on plot `p` we can do:
-> ```{r, message = FALSE}
-> p <- p + scale_x_log10()
-> p
-> ```
+      aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+   geom_point()
+``
+creates an object called `p` that contains the plot information. This will not be plotted until the object is **printed** to the screen e.g.
+
+``{r, message = FALSE}
+p
+``
+
+**Note**: If using `ggplot` inside functions you may have to explicitly use the `print()` function (e.g. `print(p)`).
+
+This can be useful if we want to add things to an existing plot at a later stage without having to rewrite the entire plot. For example, to set the scales on plot `p` we can do:
+
+``{r, message = FALSE}
+p <- p + scale_x_log10()
+p
+``
+
+```
 
 `ggplot2` has lots of built in transformations e.g. `"log"`, `"exp"`, `"sqrt"`, `"log10"` and so on. Or you can define your own. Notice that we have not transformed the data, we have merely told `ggplot()` on what scale to plot it. This sorts out the axis tick labelling automatically. 
 
@@ -647,7 +658,9 @@ ggplot(gapminderNoOc[gapminderNoOc$year == 1952, ],
 
 This is an informative plot. We can see that African countries tend to have lower GDP per capita than the Americas for example; with Asia and Africa the poorest continents in the 1950s in terms of GDP. 
 
-> **Aside**: what does the `Oceania` density plot tell us about the range of GDPs in the Oceania continent?
+```{task, title = "Question"} 
+What does the `Oceania` density plot tell us about the range of GDPs in the Oceania continent?
+```
 
 #### Positions
 
@@ -745,7 +758,7 @@ Let's return to the fruitflies data from previous practicals. Recall:
 
 > *A cost of increased reproduction in terms of reduced longevity has been shown for female fruitflies, but not for males. We have data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.*
 > 
-> *The flies used were an outbred stock. Sexual activity was manipulated by supplying individual males with one or eight receptive virgin females per day. The longevity of these males was compared with that of two control types. The first control consisted of two sets of individual males kept with one or eight newly inseminated females. Newly inseminated females will not usually remate for at least two days, and thus served as a control for any effect of competition with the male for food or space. The second control was a set of individual males kept with no females. There were 25 males in each of the five groups, which were treated identically in number of anaesthetizations (using $\mathrm{CO}_2$) and provision of fresh food medium.*
+> *The flies used were an outbred stock. Sexual activity was manipulated by supplying individual males with one or eight receptive virgin females per day. The longevity of these males was compared with that of two control types. The first control consisted of two sets of individual males kept with one or eight newly inseminated females. Newly inseminated females will not usually re-mate for at least two days, and thus served as a control for any effect of competition with the male for food or space. The second control was a set of individual males kept with no females. There were 25 males in each of the five groups, which were treated identically in number of anaesthetisations (using $\mathrm{CO}_2$) and provision of fresh food medium.*
 > 
 > The data should have the following columns:
 > 
@@ -762,7 +775,7 @@ ff <- readRDS("advis/uploadFiles/ff.rds")
 ```
 
 ```{task}
-The file [`ff.rds`](advis/uploadFiles/ff.rds) contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
+The file `ff.rds` contains the data from this experiment. Download this data set to your working directory, read it into R using the command:
     
 ``{r, eval = FALSE}
 ff <- readRDS("ff.rds")

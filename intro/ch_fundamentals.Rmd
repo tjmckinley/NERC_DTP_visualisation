@@ -1,5 +1,9 @@
 # Fundamentals of R
 
+```{info, title = "Note", collapsible = FALSE}
+See [here](#introinfo) for slides and datasets.
+```
+
 ## Variables in R
 
 R makes use of symbolic variables, i.e. words or letters that can be used to represent or store other values or objects. We will use the assignment operator `<-` to 'assign' a value (or object) to a given word (or letter). Run the following commands to see how this works (don't worry about the comments, these are for your understanding):
@@ -1123,7 +1127,7 @@ A .csv file is simply a text file where each element is separated by a comma (th
 
 In fact, it is good practice to store your data in a much simpler way than many people are used to. Generally, try to avoid spaces between words at all in your data, even in column headers. Underscores are much safer. Try to avoid using long words (since you will have to type them out each time you want to access the corresponding elements), and often I will try to convert as much to lower case as possible (since R is case sensitive, so it speeds up your typing).
 
-### Example: sexual reproduction in fruitflies
+### Example: sexual reproduction in fruitflies {#fruitflies}
 
 These are data from [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0), when at the time the paper was published the cost of increased reproduction in terms of reduced longevity had been shown for female fruitflies, but not for males. The authors set up an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.
 

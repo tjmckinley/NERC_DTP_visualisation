@@ -2,9 +2,9 @@
 
 R has fantastic graphical capabilities. You can produce almost **any** type of plot you like in R, and customise it in almost any way; although to do so may require quite a lot of coding!
     
-To this end many great visualisation packages have been developed to produce a wide variety of different plots applicable to a wide range of data type. We will explore the use of one specific package---[`ggplot2`](https://ggplot2.tidyverse.org/)---in the later [Advanced Visualisation](#advis) practical. In the meantime, just to illustrate some ideas, we can produce some very simple plots quite easily using R's base graphics capabilities. 
+To this end many great visualisation packages have been developed to produce a wide variety of different plots applicable to a wide range of data types. We will explore the use of one specific package---[`ggplot2`](https://ggplot2.tidyverse.org/)---in the later [Advanced Visualisation](#advis) practical. In the meantime, just to illustrate some ideas, we can produce some very simple plots quite easily using R's base graphics capabilities. 
 
-The plot in the original paper is shown in Figure \@ref(fig:fruitflies).
+As an illustration, we return to the fruitflies data set we saw [earlier](#fruitflies) from [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0). The plot in the original paper is shown in Figure \@ref(fig:fruitflies) and we will replicate this here.
 
 ```{r, fruitflies, fig.cap = "Plot of fruitfly data stratified by experimental group", out.width = '60%', echo = FALSE}
 include_graphics("intro/images/fruitflies.png")
@@ -32,7 +32,7 @@ ffc <- ff[ff$partner.type == "Control", ]
 plot(ffc$thorax, ffc$longevity)
 ```
 
-Here we can see that R has produced a scatterplot by default, with `thorax` on the $x$-axis and `longevity` on the $y$-axis. It does this because it knows you are trying to plot a `numeric` vector against another `numeric` vector, and so this is a sensible default. **Note that we have extracted the controls only into a new data set `ffc` for ease-of-use.**
+Here we passed `ffc$thorax` as the `x` argument, and `ffc$longevity` as the `y` argument to `plot()`, and we can see that R has produced a scatterplot by default. It does this because it knows you are trying to plot a `numeric` vector against another `numeric` vector, and so this is a sensible default. **Note that we have extracted the controls only into a new data set `ffc` for ease-of-use.**
 
 You will notice that the plot is not very neat. There are some arguments that we can add to help improve the axis labels and suchlike, e.g.
 
@@ -65,7 +65,7 @@ There are some functions that allow us to **add to**, or **overlay**, existing p
 ## extract subset of data
 ffone <- ff[ff$partners == "1", ]
 
-## plot
+## produce scatterplot
 plot(ffone$thorax, ffone$longevity, 
      xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
      main = "Males kept with one partner", pch = 20)
@@ -79,11 +79,11 @@ points(ffone$thorax[ffone$partner.type == "Inseminated"],
 ```{r, ref.label = "plotff", echo = FALSE}
 ```
 
-Notice there is no legend, we have to add that manually using the `legend()` function:
+Notice there is no legend, we have to add that manually using the `legend()` function. The first two arguments are the $x$- and $y$-coordinates for the top left corner of the legend box. Here we manually set the corresponding point characters (`pch`) and colours (`col`) and add the appropriate legend text (`legend`):
     
-    ```{r, plotff1, eval = FALSE}
+```{r, plotff1, eval = FALSE}
 ## add legend
-legend(0.65, 95, pch = rep(20, 3), 
+legend(0.65, 95, pch = rep(20, 2), 
        col = c("black", "red"), 
        legend = c("Virgin", "Inseminated"))
 ```
@@ -99,7 +99,7 @@ Say we wished to use different point characters---rather than different colours-
 Because `points()` will **overlay** the original set of points, which might have a different point type, and thus won't look as you want it to look. For example:
 
 ``{r}
-## plot
+## produce scatterplot
 plot(ffone$thorax, ffone$longevity, 
     xlab = "Thorax length (mm)", ylab = "Longevity (days)", 
     main = "Males kept with one partner", pch = 20)
@@ -114,7 +114,7 @@ points(ffone$thorax[ffone$partner.type == "Inseminated"],
 
 There are various ways you can circumvent this behaviour, and one way is simply to pass a `vector` of point characters to the original `plot()` call, rather than use `points()`.
         
-```{info, collapsible = FALSE}
+```{info, title = "Note", collapsible = FALSE}
 You can set a vector of point characters or colours, where the vector is the same length as the number of points you want to plot, and each entry defines the relevant colour or character for a given point.
 
 Previously we have set a single number, e.g. `pch = 20`, which R automatically expands to a vector "beneath-the-hood". However, we can have more fine-grained control over the way the points are plotted by using vectors where appropriate.
@@ -126,8 +126,8 @@ For example:
 ## create vector of initial point characters
 temp_pch <- rep(20, nrow(ffone))
 
-## turn off point characters for all entries not
-## in the virgin
+## set point characters for all entries not
+## partnered with virgin partners
 temp_pch[ffone$partner.type != "Virgin"] <- 1
 
 ## produce plot (notice that only the controls are plotted
@@ -212,7 +212,7 @@ for(i in 1:length(titles)) {
 par(mfrow = c(1, 1))
 ```
 
-You can see that we can do an awful lot with base R graphics, but the code can become verbose very quickly. Notice we haven't added trend lines to the plot either, and have doubled-up on the legends. In the next practical we will see that with the right packages we can produce something better in just a few lines of code.
+You can see that we can do an awful lot with base R graphics, but the code can become verbose very quickly. Notice we haven't added trend lines to the plot either, and have doubled-up on the legends. Often we have to manually extend the margins in order to fit legends in (though we were fine here). In the next practical we will see that with the right packages we can produce something better in just a few lines of code.
 
 ## Other common plots
 

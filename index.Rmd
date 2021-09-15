@@ -27,6 +27,7 @@ description: "CSC3031: Applied Data Science---Lecture Notes"
 ```{r include = FALSE, purl = FALSE, cache = FALSE}
 ## set seed for reproducibility
 set.seed(123654)
+#opts_chunk$set(cache = TRUE)
 ```
 
 Data science is an inter-disciplinary scientific field that aims to extract knowledge and insights from observed data, encompassing ideas of statistical modelling, machine learning, data visualisation and computer science. The ability to be able to process, visualise and analyse complex data sets is a sought-after skill set in modern biomedical science, particularly in the era of "big data". 
@@ -37,20 +38,24 @@ This module requires that you have some experience of using computer programming
 
 ## Recommended reading {-}
 
-I heartily recommend the following books:
+The following books are probably the most relevant to this module:
+
+* [R for Data Science](https://www.oreilly.com/library/view/r-for-data/9781491910382/) by Hadley Wickham and Garrett Grolemund (2016), available for free online at [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/);
+* [ggplot2](https://www.springer.com/gp/book/9780387981413) by Hadley Wickham (2009), available for free online at [https://ggplot2-book.org/](https://ggplot2-book.org/);
+* [Pro Git Book](https://www.apress.com/gp/book/9781484200773) by Scott Chacon and Ben Straub, available freely online at [https://git-scm.com/book/en/v2](https://git-scm.com/book/en/v2).
+
+In case you want other useful reading materials, I can recommend:
     
-* [Statistics: An Introduction Using R](https://www.amazon.com/Statistics-Introduction-Michael-J-Crawley/dp/0470022981/ref=sr_1_1?s=books&ie=UTF8&qid=1484432671&sr=1-1&keywords=an+introduction+to+statistics+with+r+crawley) by Mick Crawley (2005);
-* [The R Book](https://www.amazon.com/R-Book-Michael-J-Crawley/dp/0470973927/ref=sr_1_1?s=books&ie=UTF8&qid=1484432596&sr=1-1&keywords=the+r+book) by Mick Crawley (2007).
+* [Statistics: An Introduction Using R](https://www.wiley.com/en-gb/Statistics%3A+An+Introduction+Using+R%2C+2nd+Edition-p-9781118941096) by Mick Crawley (2005);
+* [The R Book](https://www.wiley.com/en-gb/The+R+Book%2C+2nd+Edition-p-9780470973929) by Mick Crawley (2007).
 
 "The R Book" is a fairly hefty tome, but is pretty comprehensive. "Statistics: An Introduction Using R" is an attenuated version of "The R Book" and provides a good introduction to using R, as well as a good grounding in common statistical methods using R.
 
-[Hadley Wickham](http://hadley.nz/) and colleagues have also written many great R packages and several great books, some of which we will delve into in much more detail later on:
+In addition to those listed above, [Hadley Wickham](http://hadley.nz/) and colleagues have also written many great R packages and several more books, especially:
     
-* [R for Data Science](https://www.amazon.com/R-Data-Science-Hadley-Wickham/dp/1491910399/ref=as_li_ss_tl?ie=UTF8&qid=1469550189&sr=8-1&keywords=R+for+data+science&linkCode=sl1&tag=devtools-20&linkId=6fe0069f9605cf847ed96c191f4e84dd) by Hadley Wickham and Garrett Grolemund (2016), also with a great companion [website](http://r4ds.had.co.nz/);
-* [ggplot2](https://www.amazon.com/dp/0387981403/ref=cm_sw_su_dp?tag=ggplot2-20) by Hadley Wickham (2009);
-* [Advanced R](https://www.amazon.com/dp/1466586966/ref=cm_sw_su_dp?tag=devtools-20) by Hadley Wickham (2014), which has a useful companion [website](http://adv-r.had.co.nz/).
+* [Advanced R](https://www.routledge.com/Advanced-R-Second-Edition/Wickham/p/book/9780815384571) by Hadley Wickham (2014), available for free online at [http://adv-r.had.co.nz/](http://adv-r.had.co.nz/).
 
-These books are all available in the University library and some can be read freely online at the above links.
+All of these books are available in the University library and/or can be read freely online at the above links.
 
 ## Structure of this module {-}
 
@@ -82,5 +87,5 @@ The answer is, of course, 42.
 
 ## Acknowledgements {-}
 
-I am indebted to [Dr Matt Castle](https://www.biostats.lifesci.cam.ac.uk/about-us), whose excellent "Introduction to R" practicals form the basis of the introductory content. I am also indebted to my late friend and colleague [Dr John Joseph Valletta](https://www.gigrower.co.uk/2020/10/30/remembering-jj-valletta-1983-2020/) for sharing his excellent Git lectures, which form the basis of the "Version Control" chapter. Thanks also to [Professor Dave Hodgson](https://biosciences.exeter.ac.uk/staff/profile/index.php?web_id=david_hodgson) for various materials/data sets.
+I am indebted to [Dr Matt Castle](https://www.biostats.lifesci.cam.ac.uk/about-us), whose excellent "Introduction to R" practicals form the basis of the introductory content. I am also indebted to my late friend and colleague [Dr John Joseph Valletta](https://www.gigrower.co.uk/2020/10/30/remembering-jj-valletta-1983-2020/) and [Professor Dave Hodgson](https://biosciences.exeter.ac.uk/staff/profile/index.php?web_id=david_hodgson) for sharing various materials/data sets.
 

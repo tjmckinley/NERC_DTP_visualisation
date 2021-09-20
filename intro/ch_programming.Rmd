@@ -665,6 +665,24 @@ t(apply(x, 1, function(vec, n) {
 }, n = 2))
 ```
 
+```{info, title = "Aside: ellipsis (...) arguments", collapsible = FALSE}
+Notice that when we ran:
+
+``{r, eval = FALSE}
+apply(x, 1, function(vec, n) {
+    return(vec / n)
+}, n = 10)
+``
+
+the `apply()` function does not have an argument called `n`. Our **custom** function does however, and the `apply()` knows to pass `n = 10` through to it. It only knows how to do this through the use of a special argument called the **ellipsis** argument, which is denoted by `...`.
+
+``{r, echo = FALSE, out.width = "50%"}
+include_graphics("intro/images/ellipsis.png")
+``
+
+**Ellipsis** arguments are very useful, but need to be used with care! They can only be used if a corresponding function has been written to use them, and although they support positional matching, it is often helpful to be explicit and use **named** matching.
+```
+
 We can also save our user-defined function as an object and pass it into `apply()` e.g.
 
 ```{r}

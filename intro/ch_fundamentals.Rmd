@@ -512,7 +512,7 @@ z * y
 
 If you add or multiply vectors of different lengths then R automatically repeats the smaller vector to make it bigger. This generates a warning if the length of the smaller vector is not a divisor of the length of the longer vector. Division and subtraction work in the same way e.g.
 
-```{r, error = T}
+```{r, error = TRUE}
 c(1:6) * c(1:2)
 c(1:3) * c(1:2)
 ```
@@ -523,8 +523,8 @@ This is a useful property if the shorter vector is of length 1, in which case R 
 c(1:3) * 2
 ```
 
-```{info, title = "Note", collapsible = FALSE}
-You must be **very careful** with this. I only use this feature when multiplying a vector by a scalar; otherwise I will always generate vectors of the same length, since I think this makes explicit what you are trying to achieve. Hence instead of writing `c(1:6) * c(1:2)`, I would write `c(1:6) * rep(1:2, 3)`. (I personally would rather that R did not allow elementwise operations on vectors that are of different lengths, unless one of the lengths is one. However, it does, and one should be careful...)
+```{info, title = "Important", collapsible = FALSE}
+You must be **very careful** with this. I only use this feature when multiplying a vector by a scalar; otherwise I will always generate vectors of the same length, since I think this makes explicit what you are trying to achieve. Hence instead of writing `c(1:6) * c(1:2)`, I would write `c(1:6) * rep(1:2, 3)`. (I personally would rather that R did not allow elementwise operations on vectors that are of different lengths, unless one of the lengths is one. However, it does, and so one should be careful...)
 ```
 
 R will also perform **matrix multiplication** (e.g. dot products) on vectors, and this is described in a [later section](#matmult).
@@ -1098,19 +1098,6 @@ The important difference (to R at least) between a `matrix` object and a `data.f
 `data.frames` are very important for statistical analysis, as they frequently fit the form of available data. They are so important in fact that a lot of statistical functions actually expect this, and we devote entire later [sections](#advis) to reading, summarising, plotting and manipulating data.
 ```
 
-## Saving outputs {#save}
-
-R allows you to save various things, with regards to inputs we can save:
-
-* the full history of all commands used in the current session---via `savehistory()`. This creates text files with '.Rhistory' suffixes.
-* Individual script files (as text files with '.R' suffixes). We've already seen these.
-
-With regards to outputs we can save:
-
-* the current R workspace---via `save.image()`. This creates a **binary** file with a '.RData' suffix. This can be reloaded into R using the `load()` function, and includes all objects in the current workspace.
-* A selection of objects---via the `save()` function. Here we can extract subsets of objects and save them. For example, `save(x, y, file = "practical1.RData")` will save only the objects `x` and `y` into a file called "practical1.RData". Alternatively a character vector of objects can be supplied e.g. `save(list = c("x", "y"), file = "practical1.RData")` will do the same thing as the previous command.
-* A single object can be saved using `saveRDS()`. This saves into a binary file with a suffix '.rds'. This is really useful for saving single objects, often cleaned `data.frame` objects, which can be loaded into R without having to recreate from scratch again. For example, `saveRDS(x, "x.rds")` would save the `x` object into a file called "x.rds". This can be loaded into a new session via the `readRDS()` function. Another useful feature is that `readRDS()` can be used to pass the contents of a .rds file directly into an object of your choice e.g. `y <- readRDS("x.rds")` will create a new object called `y`, that contains the contents of the file "x.rds".
-
 ## Reading in data
 
 Most data are stored in e.g. Excel files. Although some packages allow Excel files to be read directly into R, it is (in my opinion) much better practice to save the data as a **text file**, since this strips out unnecessary formatting and results in smaller file that can be universally used by any end user. Excel also has lots of other problems; see e.g. [here](https://nsaunders.wordpress.com/2016/08/25/data-corruption-using-excel-12-years-and-counting/) for various examples.
@@ -1213,3 +1200,17 @@ mean(ff$thorax[ff$partner.type == "Control"])
 ```
 
 We will see many more complex examples in coming practicals.
+
+## Saving outputs {#save}
+
+R allows you to save various things, with regards to inputs we can save:
+
+* the full history of all commands used in the current session---via `savehistory()`. This creates text files with '.Rhistory' suffixes.
+* Individual script files (as text files with '.R' suffixes). We've already seen these.
+
+With regards to outputs we can save:
+
+* the current R workspace---via `save.image()`. This creates a **binary** file with a '.RData' suffix. This can be reloaded into R using the `load()` function, and includes all objects in the current workspace.
+* A selection of objects---via the `save()` function. Here we can extract subsets of objects and save them. For example, `save(x, y, file = "practical1.RData")` will save only the objects `x` and `y` into a file called "practical1.RData". Alternatively a character vector of objects can be supplied e.g. `save(list = c("x", "y"), file = "practical1.RData")` will do the same thing as the previous command.
+* A single object can be saved using `saveRDS()`. This saves into a binary file with a suffix '.rds'. This is really useful for saving single objects, often cleaned `data.frame` objects, which can be loaded into R without having to recreate from scratch again. For example, `saveRDS(x, "x.rds")` would save the `x` object into a file called "x.rds". This can be loaded into a new session via the `readRDS()` function. Another useful feature is that `readRDS()` can be used to pass the contents of a .rds file directly into an object of your choice e.g. `y <- readRDS("x.rds")` will create a new object called `y`, that contains the contents of the file "x.rds".
+

@@ -1,7 +1,7 @@
 # Programming in R
 
 ```{info, title = "Note", collapsible = FALSE}
-A PDF handout for the slides for Chapters 3 and 4 can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](intro/uploadFiles/progHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](intro/uploadFiles/progSLIDES.pdf) and [here](intro/uploadFiles/progSLIDES.html)", "")`.
+A PDF handout for the slides for Chapter 3 can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](intro/uploadFiles/progHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](intro/uploadFiles/progSLIDES.pdf) and [here](intro/uploadFiles/progSLIDES.html)", "")`.
 ```
 
 The popularity of R is in part due to its fantastic packages and extremely flexible graphical capabilities. It is often easy to forget that it is a fully functional programming language in its own right. In this section we cover how to implement some standard programming practices, such as `for` and `while` loops, conditional `if` statements and so on.
@@ -76,12 +76,14 @@ For single line pieces of code, it is not always necessary to use curly brackets
 ```{info, title = "Important", collapsible = FALSE}
 The use of **indentation** to delineate what is inside of the `for` loop. Unlike say Python, these indentations are not necessary for R to work, but in my opinion greatly help the comprehension of the code. Along with comments and spacing, this is a useful habit to get into, hence why I insist upon it here. For example, something like:
 \newline
+
 ``
 for(i in 1:10) {
 x <- runif(10)
 print(x)
 }
 ``
+
 is bad programming practice (in my opinion).
 ```
     
@@ -123,13 +125,15 @@ x
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
-`for` loops in R can loop over any type of vector, not just sequential indices. For example, 
+`for` loops in R can loop over any type of vector, not just sequential indices. For example,
+
 ``{r}
 letters[1:5]
 for(i in letters[1:5]) {
     print(i)
 }
 ``
+
 ```
 
 ### `while` loops
@@ -585,6 +589,89 @@ allprimes <- function(x) {
 ## calculate all primes between 1 and 1,000
 allprimes(1000)
 ``
+
+```
+
+```{info, title = "Interactive debugging", collapsible = TRUE}
+A ***really*** useful function is called `browser()`. This enables you to enter into **interactive debug** mode at some arbitrary point inside a function. This is great for both code development but also for finding and fixing bugs. For example:
+    
+``{r, eval = FALSE}
+checkprime <- function(x) {
+    browser()
+    ## check whether x can be divided by something
+    ## other than itself to leave a whole number
+    for(i in 2:x) {
+        if(x %% i == 0 & i != x) {
+            return(paste(x, "is not a prime number")) 
+        }
+    }
+    return(paste(x, "is a prime number"))
+}
+checkprime(53)
+``
+
+``
+Called from: checkprime(53)
+Browse[1]> 
+``
+
+Here you can interact with the function, and run code line-by-line and examine objects to check they are as you expect. For example, I can use `ls()` to show what objects are in the **local workspace** (within the function):
+    
+``
+Browse[1]> ls()
+[1] "x"
+``
+
+Here we just have a local object called `x`, and if we print `x` to the screen we get:
+    
+``
+Browse[1]> x
+[1] 53
+``
+
+as expected. Hitting `Return` or entering `n` allows you to run the code in the function line-by-line, starting from where the `browser()` function was initialised. You can type `c` to continue execution until the next statement, or `Q` to quit the function. The `browser()` statement can be commented out or deleted once you are happy that the function is doing what it should be doing. A list of useful commands that can be used with `browser()` is below:
+
+ Symbol    | Meaning 
+:--------: | :--------
+`c`    | exit the browser and continue execution at the next statement 
+`f` | finish execution of the current loop or function 
+`help` | print this list of commands 
+`n` | evaluate the next statement, stepping over function calls
+`s` | evaluate the next statement, stepping into function calls.
+`Q` | exit the browser and the current evaluation and return to the top-level prompt
+
+One more tip is that you can use `browser()` with conditional statements e.g.
+
+``{r, eval = FALSE}
+checkprime <- function(x) {
+    ## check whether x can be divided by something
+    ## other than itself to leave a whole number
+    for(i in 2:x) {
+        if(i == 32) {
+            browser()
+        }
+        if(x %% i == 0 & i != x) {
+            return(paste(x, "is not a prime number")) 
+        }
+    }
+    return(paste(x, "is a prime number"))
+}
+checkprime(53)
+``
+
+``
+> checkprime(53)
+Called from: checkprime(53)
+Browse[1]> ls()
+[1] "i" "x"
+Browse[1]> x
+[1] 53
+Browse[1]> i
+[1] 32
+Browse[1]> Q
+``
+
+Here we didn't stop the code until `i == 32`, at which point we have two variables in the local environment: `i` and `x`.
 
 ```
 

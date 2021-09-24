@@ -1,8 +1,18 @@
 # Simple plotting
 
+```{info, title = "Note", collapsible = FALSE}
+A PDF handout for the slides for Chapter 4 can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](intro/uploadFiles/simpleplotsHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](intro/uploadFiles/simpleplotsSLIDES.pdf) and [here](intro/uploadFiles/simpleplotsSLIDES.html)", "")`.
+
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](intro/uploadFiles/datasets_intro.zip)", "")`.
+```
+
 R has fantastic graphical capabilities. You can produce almost **any** type of plot you like in R, and customise it in almost any way; although to do so may require quite a lot of coding!
     
 To this end many great visualisation packages have been developed to produce a wide variety of different plots applicable to a wide range of data types. We will explore the use of one specific package---[`ggplot2`](https://ggplot2.tidyverse.org/)---in the later [Advanced Visualisation](#advis) practical. In the meantime, just to illustrate some ideas, we can produce some very simple plots quite easily using R's base graphics capabilities. 
+
+## Simple plots
+
+### Scatterplots
 
 As an illustration, we return to the fruitflies data set we saw [earlier](#fruitflies) from [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0). The plot in the original paper is shown in Figure \@ref(fig:fruitflies) and we will replicate this here.
 
@@ -10,7 +20,7 @@ As an illustration, we return to the fruitflies data set we saw [earlier](#fruit
 include_graphics("intro/images/fruitflies.png")
 ```
 
-The simplest way to produce a scatterplot is to use R's generic `plot()` function. Here we will plot lifespan (`longevity`) against thorax length (`thorax`) from the fruitfly experiment data set we saw previously. For ease, the tidied `ff.rds` file can be downloaded from [here](intro/uploadFiles/ff.rds).
+The simplest way to produce a scatterplot is to use R's generic `plot()` function. Here we will plot lifespan (`longevity`) against thorax length (`thorax`) from the fruitfly experiment data set we saw previously. `r ifelse(!is_latex_output(), "For ease, the tidied 'ff.rds' file can be downloaded from [here](intro/uploadFiles/ff.rds).", "")`
 
 ```{r, eval = FALSE}
 ## read in the data
@@ -60,6 +70,8 @@ plot(ffc$thorax, ffc$longevity,
 ```
 
 There are some functions that allow us to **add to**, or **overlay**, existing plots. As an example, let's say we want to plot the data for **males housed with one female**, and then colour each point in the plot according to `partner.type` type (equivalent to the top-right figure in Figure \@ref(fig:fruitflies)). One way to do this is to produce a plot with all points on it (this helps to set the axis ranges correctly), and then overlay different points according to different subsets of the data. We can use the `points()` function to do this.
+
+\newpage
         
 ```{r, plotff, eval = FALSE}
 ## extract subset of data
@@ -79,6 +91,8 @@ points(ffone$thorax[ffone$partner.type == "Inseminated"],
 ```{r, ref.label = "plotff", echo = FALSE}
 ```
 
+\newpage 
+
 Notice there is no legend, we have to add that manually using the `legend()` function. The first two arguments are the $x$- and $y$-coordinates for the top left corner of the legend box. Here we manually set the corresponding point characters (`pch`) and colours (`col`) and add the appropriate legend text (`legend`):
     
 ```{r, plotff1, eval = FALSE}
@@ -93,7 +107,7 @@ legend(0.65, 95, pch = rep(20, 2),
 
 ```{task, title = "Question"}
 Say we wished to use different point characters---rather than different colours---to represent the different `partner` types. Why would it be difficult to use `points()` na&iuml;vely here to do this?
-    ```
+```
 
 ```{solution, title = "Answer"}
 Because `points()` will **overlay** the original set of points, which might have a different point type, and thus won't look as you want it to look. For example:
@@ -119,8 +133,8 @@ You can set a vector of point characters or colours, where the vector is the sam
 
 Previously we have set a single number, e.g. `pch = 20`, which R automatically expands to a vector "beneath-the-hood". However, we can have more fine-grained control over the way the points are plotted by using vectors where appropriate.
 ```
-        
-For example:
+
+\newpage
     
 ```{r}
 ## create vector of initial point characters
@@ -141,6 +155,8 @@ plot(ffone$thorax, ffone$longevity,
 ## add legend
 legend(0.65, 95, pch = c(20, 1), legend = c("Virgin", "Inseminated"))
 ```
+
+\newpage
 
 Note that R will try to be clever if you pass different types of object into the `plot()` function. For example:
     
@@ -164,11 +180,105 @@ plot(ff$longevity, ff$partner.type, ylab = "Partner type", xlab = "Longevity (da
 
 ```
 
+\newpage
+
+### Line plots
+
+As a simple example of a line plot we can use some data from [Diggle (1990)](https://global.oup.com/academic/product/time-series-9780198522263?cc=gb&lang=en&) on monthly deaths from bronchitis, emphysema and asthma in the UK, between 1974--1979. The data are contained in the file `ldeaths.csv``r ifelse(!is_latex_output(), ", which can be downloaded from [here](intro/uploadFiles/ldeaths.csv)", "")`. Make sure it is downloaded to the working directory.
+
+Firstly we load in the data:
+
+```{r, eval = FALSE}
+## load lung disease data set
+ldeaths <- read.csv("ldeaths.csv")
+summary(ldeaths)
+```
+
+```{r, echo = FALSE}
+## load lung disease data set
+ldeaths <- read.csv("intro/uploadFiles/ldeaths.csv")
+summary(ldeaths)
+```
+
+```{r}
+head(ldeaths)
+```
+
+```{info, title = "Aside", collapsible = FALSE}
+We can see that the `date` column has been read in as a `character` vector, which is what we expect given the input file. However, R has a special data type that can be used to store and manipulate dates. This is very helpful when we want to plot, since it can automatically capture the correct ordering. There are also various base R functions that can manipulate dates (for example, if you want to extract the month or year say, or find the time difference bewteen two dates). A neat recent package is [`lubridate`](https://lubridate.tidyverse.org/), which is part of the `tidyverse`. We will use some of its functionality in the future, but here we just need to use a base R function called `as.Date()` to convert the `date` column into a `Date` object. The `format = "%d-%m-%Y"` argument tells `as.Date()` the structure of the input (`%Y` = four digit year, `%m` = two digit month, `%d` = two digit day, all seperated by hyphens (`-`)).
+
+``{r}
+## convert character to date
+ldeaths$date <- as.Date(ldeaths$date, format = "%Y-%m-%d")
+summary(ldeaths)
+``
+
+```
+
+Now we can produce a line plot for the monthly deaths per male by using `plot()` as before, but this time setting `type = "l"` e.g.
+
+```{r}
+## line plot of deaths over time for males
+plot(ldeaths$date[ldeaths$sex == "male"],
+    ldeaths$deaths[ldeaths$sex == "male"], type = "l")
+```
+
+We can use the `lty` argument to change the line type e.g.
+
+```{r}
+## line plot of deaths over time for males
+plot(ldeaths$date[ldeaths$sex == "male"],
+    ldeaths$deaths[ldeaths$sex == "male"], type = "l", lty = 2)
+```
+
+When plotting multiple groups it is a better idea to use the `lines()` function to add new lines to existing plots. This is because if you simply try expand `lty` to be different for different groups, then you can get unwanted behaviour.
+
+```{task}
+Produce a plot of deaths against date, but pass a vector to `lty`, where each element of the vector is a `1` for males and `2` for females. What happens and why?
+```
+
+```{solution}
+
+``{r}
+## PROBLEMATIC line plot of deaths over time for males
+plot(ldeaths$date, ldeaths$deaths, type = "l", lty = ifelse(ldeaths$sex == "male", 1, 2))
+``
+
+Here the lines are joined in order, so the beginning of the male line is joined to the end of the female line. Furthermore the change in line-type is ignored. This is because there is nothing in the code to say the lines are separate, and so R treats the co-ordinates as defining one line, and thus there can only be one line type.
+```
+
+The code below shows a better solution, but note that you have to manually expand the $y$-axis when calling `plot()`, since the `male` and `female` subgroups have different ranges[^ranges].
+
+```{r}
+## better line plot of deaths over time for males
+plot(ldeaths$date[ldeaths$sex == "male"], 
+     ldeaths$deaths[ldeaths$sex == "male"], type = "l",
+     ylim = range(ldeaths$deaths))
+lines(ldeaths$date[ldeaths$sex == "female"], 
+     ldeaths$deaths[ldeaths$sex == "female"], lty = 2)
+```
+
+[^ranges]: the `range(x)` function here returns a vector of minimum and maximum values from the input vector `x`
+
+This looks better. Note that as before we can tidy up the axis labels and also add a legend. Note that there is not really enough space on the plot above for a legend, so I have manually extended the `ylim` range a bit more to allow for it. (I've also set the legend $x$-location using a different date format, just to illustrate how you can adapt the code in case you have dates stored in a different format---see `?strptime` for more examples.)
+
+```{r}
+## better line plot of deaths over time for males
+plot(ldeaths$date[ldeaths$sex == "male"], 
+     ldeaths$deaths[ldeaths$sex == "male"], type = "l",
+     ylim = c(min(ldeaths$deaths), 3000),
+     xlab = "Date", ylab = "Number of deaths")
+lines(ldeaths$date[ldeaths$sex == "female"], 
+     ldeaths$deaths[ldeaths$sex == "female"], lty = 2)
+legend(as.Date("01/01/1977", format = c("%d/%m/%Y")), 3000,
+       lty = 1:2, legend = c("Males", "Females"))
+```
+
 ## Multiple plots
 
 We can also arrange multiple plots by using a function `par()` to set some plotting parameters. There are lots of options you can set with `par()`, but we will just use one called `mfrow`, which sets up a grid, where each element of the grid can contain a separate plot. We will try to replicate Figure \@ref(fig:fruitflies). (I've used a loop here for brevity, but you could do each plot explicitly):
     
-```{r, fig.width = 7, fig.height = 7}
+```{r, fig.width = 7, fig.height = 7, out.width = "70%"}
 ## set up 2 x 2 grid of plots
 ## (mfrow takes a vector with number of
 ## rows and number of columns)
@@ -220,14 +330,16 @@ Just to finish off this introduction, note that R has various other plot functio
 
 ```{r}
 ## histogram of thorax lengths
-hist(ff$thorax)
+hist(ff$thorax, xlab = "Thorax length (mm)", main = "")
 ```
 
 and some objects automatically have their own plot method. For example, to do a **kernel density plot** you can run the `density()` function on some data, and then `plot()` the resulting object e.g.
 
+\newpage
+
 ```{r}
 ## kernel density plot of thorax lengths
-plot(density(ff$thorax))
+plot(density(ff$thorax), xlab = "Thorax length (mm)", main =)
 ```
 
 In fact, many non-standard R objects have their own `plot()` method, which is utilised by developers to provide important plot types that are specific to certain objects (for example, a **linear regression** can be fitted using the `lm()` function, and if the resulting object is passed to `plot()`, then this returns a suite of **residual** plots that are fundamental to checking the model etc.)

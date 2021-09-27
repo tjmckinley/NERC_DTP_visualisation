@@ -204,6 +204,8 @@ Notice that we did not have to use the `$` operator to extract columns. This mak
 
 Note that `ggplot2` **builds** plots up by *adding* together components. There are lots of ways to do this. Here I have set up "global" options for the plot using the `ggplot()` function. I then **add** (`+`) to this the type of plot I want i.e. `+ geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))` (in this case including the aesthetics in the `geom_*` call). The addition sign is important. If I want to split the function over multiple lines, make sure the `+` sign is at the **end** of each line, so R knows that the plot is not complete at the point.
 
+\newpage
+
 Putting all this together we have:
 
 ```{r}
@@ -364,6 +366,8 @@ As a quick aside, notice that when we set the `alpha` channel above, we did not 
 ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width, colour = Species))
 ```
+
+\newpage
 
 ```{r}
 ggplot(iris) +
@@ -612,6 +616,8 @@ p <- p + labs(colour = "Continent", size = "Population size")
 p
 ```
 
+\newpage
+
 Not bad. Finally notice that by default `ggplot2` uses a light-grey background. This seems to prove somewhat divisive. There is a solid theory behind choosing this as the default, since it provides clarity without having too much contrast. However, some people don't like it, and so there are options to turn this off (using `theme()`). In this case we can simply turn this off using `theme_bw()` (a black-and-white theme).
 
 ```{r}
@@ -773,6 +779,8 @@ Let's return to the fruitflies data from previous practicals. Recall:
 ```{r, echo = FALSE}
 ff <- readRDS("advis/uploadFiles/ff.rds")
 ```
+
+\newpage
 
 ```{task}
 The file `ff.rds` contains the data from this experiment. Download this data set to your working directory, read it into R using the command:

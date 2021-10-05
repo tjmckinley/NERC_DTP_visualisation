@@ -12,6 +12,7 @@ It is estimated that data scientists spend around [50-80% of their time cleaning
 Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
 
 [^tidyversepackages]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
+
 ```
 
 Before we go any further, if you haven't already, please load `tidyverse`:
@@ -279,7 +280,7 @@ Produce a table of estimates for the mean *and* variance of both sepal lengths a
 iris %>% 
     group_by(Species) %>%
     summarise(mnL = mean(Sepal.Length), varL = var(Sepal.Length),
-              mnW = mean(Sepal.Width), varW = var(Sepal.Width))
+        mnW = mean(Sepal.Width), varW = var(Sepal.Width))
 ``
 
 ```
@@ -752,7 +753,7 @@ ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) +
     labs(fill = "Sex")
 ```
 
-```{r, echo = FALSE, eval = FALSE}
+```{r, echo = FALSE, eval = FALSE, fig.width = 7, fig.height = 7}
 p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
     geom_bar(stat = "identity") +
     scale_y_continuous(
@@ -764,7 +765,7 @@ p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex))
     ylab("Population counts (x1000)") +
     xlab("Age (yrs)") +
     labs(fill = "Sex")
-ggsave("DataWrSlides/advis/images/poppyramid.pdf", p)
+#ggsave("poppyramid.pdf", p)
 ```
 
 Beautiful isn't it? (The stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.

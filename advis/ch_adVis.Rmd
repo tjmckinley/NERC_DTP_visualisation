@@ -36,7 +36,7 @@ in the usual way. Let's start with a motivating example.
 
 [Professor Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling) has made a name for himself in the field of data visualisation with his groundbreaking [Gapminder](https://www.gapminder.org/) project. 
 
-```{r, screenshot.alt = "advis/images/hans.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
+```{r, screenshot.alt = "advis/images/hans.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html", out.width = "100%"}
 include_url("https://www.youtube.com/embed/jbkSRLYSojo")
 ```
 

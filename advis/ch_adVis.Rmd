@@ -405,6 +405,7 @@ ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width)) +
     facet_wrap(~ Species)
 ```
+
 Neat eh? Note that we can also use different aesthetics within the facets. For example, we could also add a `colour` aesthetic e.g.
 
 ```{r}
@@ -428,6 +429,7 @@ ggplot(iris) +
     geom_point(aes(x = Sepal.Length, y = Sepal.Width)) +
     stat_smooth(aes(x = Sepal.Length, y = Sepal.Width))
 ```
+
 Notice that this has added a `loess` smoothed line to the plot[^loess]. We could instead add a linear line if we prefer, by setting a `method` argument to `stat_smooth` e.g.
 
 [^loess]: just think of this as a smoothed line-of-best-fit through the data for the time being
@@ -474,6 +476,12 @@ Mixtures of "global" and "local" aesthetics can be used where necessary, which i
 ### Scales
 
 Scales control the details of how data values are translated to visual properties. These allow us to control translations from data to aesthetics. We will see some simple examples of these in due course.
+
+```{info, title = "Note", collapsible = FALSE}
+Some really useful colour palettes for categorical data in particular were designed by Cynthia Brewer and can be found through the colorbrewer website: [https://colorbrewer2.org/](https://colorbrewer2.org/). These provide a range of sequential, diverging and qualitative colour palettes, that can also be chosen to be colour-blind, print or photocopy friendly. `ggplot2` offers a `scales_*_brewer()` function that enables you to use these palettes for your own plots. More information can be found [here](https://ggplot2.tidyverse.org/reference/scale_brewer.html).
+
+A set of colour palettes with similar properties that make them colour-blind and print friendly, but have better support for continuous colour scales are the viridis palettes. Information can be found [here](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html). The [`viridis`](https://cran.r-project.org/web/packages/viridis/index.html) package contains `ggplot2` bindings for these palettes, and more information on these can be found [here](https://ggplot2.tidyverse.org/reference/scale_viridis.html).
+```
 
 ## A more complex example: Gapminder
 
@@ -758,6 +766,24 @@ ggplot(gapminderNoOc,
 
 ```
 
+## Saving plots
+
+To save plots you can use the `ggsave()` function. This allows you to write out your file to a range of formats, and specify size, resolution etc. as required e.g.
+
+```{r, eval = FALSE}
+## produce lovely plot
+p <- ggplot(gapminderNoOc,
+       aes(x = gdpPercap, fill = continent)) +
+    geom_density(position = "stack") +
+    scale_x_log10() +
+    facet_wrap(~year)
+
+## save plot as PDF
+ggsave("myplot.pdf", p)
+```
+
+Take a look at the help file `?ggsave` for more details.
+
 ## Additional task
 
 Let's return to the fruitflies data from previous practicals. Recall:
@@ -871,3 +897,141 @@ par(mfrow = c(1, 1))
 ``
     
 ```
+
+## Additional (non-mandatory) functionality: going beyond static plots
+
+There has been a whole ecosystem of packages that have evolved from the core `tidyverse`. One such package is [`gganimate`](https://gganimate.com/articles/gganimate.html), which, as the name suggests, allows one to turn `ggplot2` plots into animations. 
+
+The website for the package can be found [here](https://gganimate.com/articles/gganimate.html). We will not give a full demonstration here, but instead show how we can produce an animation similar to that of Professor Rosling's, with the addition of two more lines of code.
+
+```{info, title = "Note", include = ifelse(is_latex_output(), TRUE, FALSE), collapsible = FALSE}
+You will have to view these plots on the HTML notes to interact with them since PDF documents will only include static plots.
+```
+
+Firstly, you will need to install `gganimate`, and you might also have to install the `gifski` and `av` packages in order to write out the animation into a `.gif` or other video file. Then:
+
+```{r, eval = FALSE}
+## load library
+library(gganimate)
+
+## produce plot (ignoring year)
+p <- ggplot(gapminder, 
+    aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_log10() + 
+    scale_size_area(max_size = 10) + 
+    xlab("log10(GDP per capita)") +
+    ylab("Life expectancy at birth (years)") + 
+    labs(colour = "Continent", size = "Population size") + 
+    theme_bw()
+
+## turn into animation, using year to guide transitions
+p <- p + transition_time(year) +
+    ggtitle("{frame_time}")
+p
+```
+
+```{r, eval = FALSE, echo = FALSE}
+## load library
+library(gganimate)
+
+## create plot for PDF
+p <- ggplot(filter(gapminder, year == 1952), 
+    aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_log10() + 
+    scale_size_area(max_size = 10) + 
+    xlab("log10(GDP per capita)") +
+    ylab("Life expectancy at birth (years)") + 
+    labs(colour = "Continent", size = "Population size") + 
+    ggtitle("1952") +
+    theme_bw()
+ggsave("advis/images/gapminder_gif.png", p)
+
+## produce plot (ignoring year)
+p <- ggplot(gapminder, 
+    aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_log10() + 
+    scale_size_area(max_size = 10) + 
+    xlab("log10(GDP per capita)") +
+    ylab("Life expectancy at birth (years)") + 
+    labs(colour = "Continent", size = "Population size") + 
+    theme_bw()
+
+## turn into animation, using year to guide transitions
+p <- p + transition_time(year) +
+    ggtitle("{frame_time}")
+
+## save as gif (renders to gif by default)
+anim_save("advis/images/gapminder.gif", p)
+
+## save to mp4 (needs new renderer argument)
+anim_save("advis/images/gapminder.mp4", animate(p, renderer = av_renderer()))
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), FALSE, TRUE)}
+include_graphics("advis/images/gapminder.gif")
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), TRUE, FALSE)}
+include_graphics("advis/images/gapminder_gif.png")
+```
+
+Neat eh? To save animations, once can use the `anim_save()`, similarly to the `ggsave()` function we saw earlier. 
+
+```{r, eval = FALSE}
+## save as gif (renders to gif by default)
+anim_save("gapminder.gif", p)
+
+## save to mp4 (needs new renderer argument)
+anim_save("gapminder.mp4", animate(p, renderer = av_renderer()))
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), FALSE, TRUE)}
+p <- htmltools::tags$video(src = "advis/images/gapminder.mp4", width = "320", height = "320", type = "video/mp4", controls = NA)
+htmltools::div(p, align = "center")
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), TRUE, FALSE)}
+include_graphics("advis/images/gapminder_mp4.png")
+```
+
+Take a look at the [`gganimate` website](https://gganimate.com/articles/gganimate.html) for more examples and ideas.
+
+Another useful package is [`plotly`](https://plotly.com/r/), which allows you to generate interactive plots from data (if you are viewing the HTML note, then try interacting with the plot below). There is even a useful `ggplotly()` function to automatically turn `ggplot2` figures into `plotly` figures.
+
+```{r, message = FALSE, warning = FALSE}
+## load library
+library(plotly)
+
+## produce plot from 1952
+p <- ggplot(filter(gapminder, year == 1952), 
+    aes(x = gdpPercap, y = lifeExp, size = pop, colour = continent)) +
+    geom_point() + 
+    scale_x_log10() + 
+    scale_size_area(max_size = 10) + 
+    xlab("log10(GDP per capita)") +
+    ylab("Life expectancy at birth (years)") + 
+    guides(size = "none") +
+    labs(colour = "Continent") + 
+    ggtitle("1952") +
+    theme_bw()
+```
+
+```{r, eval = ifelse(is_latex_output(), TRUE, FALSE)}
+## turn into interactive plot
+ggplotly(p, width = 420, height = 420)
+```
+
+```{r, echo = FALSE, eval = ifelse(!is_latex_output(), TRUE, FALSE)}
+## turn into interactive plot
+p <- ggplotly(p, width = 420, height = 420)
+htmltools::div(p, align = "center")
+```
+
+```{info, title = "Note", collapsible = FALSE}
+`plotly` is much more flexible than just converting `ggplot2` figures, and is not restricted to R (you can also use it as a standalone package, or through e.g. Python, Julia or MatLab as well)---see [https://plotly.com/graphing-libraries/](https://plotly.com/graphing-libraries/) for more details. It is also being actively developed, which is why it still has a few teething problems, such as an inability to handle multiple legends currently, which is why I had to turn the `size` legend off using the function `guides(size = "none")` in the above code. Hopefully future updates will fix this, but it gives you an idea about what's possible.
+```
+
+Another awesome package is [`shiny`](https://shiny.rstudio.com/), which enables you to create **interactive webpages** directly from R. We will not cover `shiny` in this module, but please take a look at the [gallery](https://shiny.rstudio.com/gallery/) for lots of ideas and examples in case you are interested. 

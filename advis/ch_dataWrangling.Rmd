@@ -10,10 +10,9 @@ It is estimated that data scientists spend around [50-80% of their time cleaning
 
 ```{info, title = "Note", collapsible = FALSE}
 Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
+```
 
 [^tidyversepackages]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
-
-```
 
 Before we go any further, if you haven't already, please load `tidyverse`:
 
@@ -102,7 +101,17 @@ arrange(iris, Species, Sepal.Length)
 head(arrange(iris, Species, Sepal.Length))
 ```
 
-Notice once again that the first argument to `arrange()` is the data set, and then subsequent arguments are the columns that we wish to order by. Again, we do not require the `$` operator here.
+Notice once again that the first argument to `arrange()` is the data set, and then subsequent arguments are the columns that we wish to order by. A `desc()` function wrapped around a variable name means that the sort is in *descending* order, e.g.
+
+```{r, eval = FALSE}
+arrange(iris, Species, desc(Sepal.Length))
+```
+
+```{r, echo = FALSE}
+head(arrange(iris, Species, desc(Sepal.Length)))
+```
+
+Again, we do not require the `$` operator here.
 
 ### Select columns
 
@@ -138,16 +147,16 @@ select(iris, Species, starts_with("Sepal"))
 
 See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) for more examples.
 
-Note that we can also remove columns using a `-` operator e.g.
+Note that we can also remove columns using a `!` operator e.g.
 
 ```{r, eval = FALSE}
-select(iris, -starts_with("Petal"))
+select(iris, !starts_with("Petal"))
 ```
 
 or 
 
 ```{r, eval = FALSE}
-select(iris, -Petal.Length, -Petal.Width)
+select(iris, !c(Petal.Length, Petal.Width))
 ```
 
 would remove the petal columns.
@@ -265,10 +274,10 @@ In this case we can think of what we want to do as "grouping" the data by `Speci
 ```{r}
 iris %>% 
     group_by(Species) %>%
-    summarise(mn = mean(Sepal.Length))
+    summarise(mn = mean(Sepal.Length), .groups = "drop")
 ```
 
-The `summarise()` function (note, this is different to the `summary()` function), applies a function to a `data.frame` or subsets of a `data.frame`. 
+The `summarise()` function (note, this is different to the `summary()` function), applies a function to a `data.frame` or subsets of a `data.frame` (the `.groups = "drop"` argument just drops the grouping information after the summaries have been completed---there are other options if required). 
 
 ```{task}
 Produce a table of estimates for the mean *and* variance of both sepal lengths and widths, within each species.
@@ -280,14 +289,14 @@ Produce a table of estimates for the mean *and* variance of both sepal lengths a
 iris %>% 
     group_by(Species) %>%
     summarise(mnL = mean(Sepal.Length), varL = var(Sepal.Length),
-        mnW = mean(Sepal.Width), varW = var(Sepal.Width))
+        mnW = mean(Sepal.Width), varW = var(Sepal.Width), .groups = "drop")
 ``
 
 ```
 
 ## Reshaping data sets
 
-Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `gather()` and `spread()`. The `gather()` function takes multiple columns, and gathers them into key-value pairs. The `spread()` function is its converse, it takes two columns (`key` and `value`) and spreads these into multiple columns. These ideas are best illustrated by an example.
+Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `pivot_longer()` and `pivot_wider()`. The `pivot_longer()` function takes multiple columns, and gathers them into key-value pairs. The `pivot_wider()` function is its converse, it takes two columns (`key` and `value`) and spreads these into multiple columns. These ideas are best illustrated by an example.
 
 ### Example: Gapminder
 
@@ -333,16 +342,18 @@ Notice that the `rename()` function takes the same form as other `tidyverse` fun
 This is OK here because we have a copy of our **raw** data saved in an external file. This, combined with the use of **scripts**, means we have a backup of the original data in case anything goes wrong. Don't overwrite your original data set!
 ```
 
-The next thing we need to do is to collapse the **year** columns down. Ideally we want a column corresponding to **country**, a column corresponding to **year** and a final column corresponding to **GDP**. We are going to do this by using the `gather()` function. Note that the arguments to `gather()` are:
+The next thing we need to do is to collapse the **year** columns down. Ideally we want a column corresponding to **country**, a column corresponding to **year** and a final column corresponding to **GDP**. We are going to do this by using the `pivot_longer()` function. Note the key arguments to `pivot_longer()` are:
 
 * `data`: this gives the name of the data frame;
-* `key`: gives the name of the column that will contain the collapsed column names (e.g. `1800`, `1801` etc.);
-* `value`: gives the name of the columns that will contain the **values** in each of the cells of the collapsed column (e.g. the corresponding GDP values);
-* the final set of arguments correspond to those columns we wish to collapse. Here we want to collapse everything ***except*** `country`, which we can do using the `-` operator.
+* `cols`: the columns to pivot into longer format;
+* `names_to`: the name of the column to create from the data currently stored as column names (e.g. `1800`, `1801` etc.);
+* `values_to`: gives the name of the columns that will contain the **values** in each of the cells of the collapsed column (e.g. the corresponding GDP values);
+
+Here we want to collapse everything ***except*** `country`, which we can do using the `!` operator.
 
 ```{r}
 gp_income <- gp_income %>%
-    gather(key = year, value = gdp, -country)
+    pivot_longer(!country, names_to = "year", values_to = "gdp")
 gp_income
 ```
 
@@ -392,7 +403,7 @@ To do all of the previous data cleaning operation using pipes, we can write:
 ```{r, message = FALSE, eval = FALSE}
 gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
-                gather(year, gdp, -country) %>%
+                pivot_longer(!country, names_to = "year", values_to = "gdp") %>%
                 mutate(year = as.numeric(year)) %>%
                 filter(!is.na(country)) %>%
                 filter(!is.na(gdp)) %>%
@@ -402,7 +413,7 @@ gp_income <- read_csv("indicator gapminder gdp_per_capita_ppp.csv") %>%
 ```{r, include = FALSE}
 gp_income <- read_csv("advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv") %>%
                 rename(country = `GDP per capita`) %>%
-                gather(year, gdp, -country) %>%
+                pivot_longer(!country, names_to = "year", values_to = "gdp") %>%
                 mutate(year = as.numeric(year)) %>%
                 filter(!is.na(country)) %>%
                 filter(!is.na(gdp)) %>%
@@ -414,7 +425,7 @@ Now we can begin to motor. For example, we might want to produce a mean GDP for 
 ```{r}
 gp_income %>% 
     group_by(country) %>%
-    summarise(mn = mean(gdp))
+    summarise(mn = mean(gdp), .groups = "drop")
 ```
 
 ```{task}
@@ -426,7 +437,7 @@ Produce the mean GDP for each year, averaged across countries.
 ``{r}
 gp_income %>% 
     group_by(year) %>%
-    summarise(mn = mean(gdp))
+    summarise(mn = mean(gdp), .groups = "drop")
 ``
 
 Notice that although `year` is a numerical variable, R can still group by unique values here.
@@ -435,7 +446,7 @@ Notice that although `year` is a numerical variable, R can still group by unique
 We must be a bit careful here, since we may have less samples for some countries/years than for others. This affects the uncertainty in our estimates, though it is not too difficult to extract standard errors for each grouping and thus produce confidence intervals to quantify which estimates are more uncertain than others (this is where proper **statistical modelling** is paramount).
 
 ```{task}
-Load in the file ["indicator hiv estimated prevalence 15-49.csv"](uploadFiles/indicator hiv estimated prevalence 15-49.csv). This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `gather()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
+Load in the file ["indicator hiv estimated prevalence 15-49.csv"](uploadFiles/indicator hiv estimated prevalence 15-49.csv). This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `pivot_longer()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
 ```
 
 ```{solution}
@@ -443,7 +454,7 @@ Load in the file ["indicator hiv estimated prevalence 15-49.csv"](uploadFiles/in
 ``{r, message = FALSE, eval = FALSE}
 gp_hiv <- read_csv("indicator hiv estimated prevalence 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
-            gather(year, prevalence, -country) %>%
+            pivot_longer(!country, names_to = "year", values_to = "prevalence") %>%
             mutate(year = as.numeric(year)) %>%
             filter(!is.na(country)) %>%
             filter(!is.na(prevalence)) %>%
@@ -454,7 +465,7 @@ gp_hiv <- read_csv("indicator hiv estimated prevalence 15-49.csv") %>%
 ``{r, message = FALSE, echo = FALSE}
 gp_hiv <- read_csv("advis/uploadFiles/indicator hiv estimated prevalence 15-49.csv") %>%
             rename(country = `Estimated HIV Prevalence% - (Ages 15-49)`) %>%
-            gather(year, prevalence, -country) %>%
+            pivot_longer(!country, names_to = "year", values_to = "prevalence") %>%
             mutate(year = as.numeric(year)) %>%
             filter(!is.na(country)) %>%
             filter(!is.na(prevalence)) %>%
@@ -543,10 +554,6 @@ full_join(gp_income, gp_hiv, by = c("year", "country"))
 
 What do you notice about the **left-** and **full-** outer joins here? Why is this so?
 
-```{info, title = "Note", collapsible = FALSE}
-There is a great cheat sheet for joining by Jenny Bryan that can be found [here](http://stat545.com/bit001_dplyr-cheatsheet.html).
-```
-
 Hopefully we have now cleaned two data sets, merged them together and can now proceed with visualising them. We want to plot HIV prevalence against GDP per capita, and so an **inner join** is sufficient here. 
 
 ```{task}
@@ -578,7 +585,7 @@ Total population data are available in the "indicator gapminder population.csv" 
 ``{r, message = FALSE, eval = FALSE}
 ## read in data
 gp_pop <- read_csv("indicator gapminder population.csv") %>%
-                gather(year, pop, -`Total population`) %>%
+                pivot_longer(!`Total population`, names_to = "year", values_to = "pop") %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
                 filter(!is.na(country)) %>%
@@ -591,12 +598,13 @@ anti_join(gp, gp_pop, by = c("year", "country"))
 
 ## join to gp table
 gp <- inner_join(gp, gp_pop, by = c("year", "country"))
+gp
 ``
 
 ``{r, message = FALSE, echo = FALSE}
 ## read in data
 gp_pop <- read_csv("advis/uploadFiles/indicator gapminder population.csv") %>%
-                gather(year, pop, -`Total population`) %>%
+                pivot_longer(!`Total population`, names_to = "year", values_to = "pop") %>%
                 rename(country = `Total population`) %>%
                 mutate(year = as.numeric(year)) %>%
                 filter(!is.na(country)) %>%
@@ -609,6 +617,7 @@ anti_join(gp, gp_pop, by = c("year", "country"))
 
 ## join to gp table
 gp <- inner_join(gp, gp_pop, by = c("year", "country"))
+gp
 ``
 
 ```
@@ -698,7 +707,7 @@ us <- us %>%
     mutate(age = ifelse(age == "90-94", "80+", age)) %>%
     mutate(age = ifelse(age == "95+", "80+", age)) %>%
     group_by(age) %>%
-    summarise(male = sum(male), female = sum(female))
+    summarise(male = sum(male), female = sum(female), .groups = "drop")
 ```
 
 ```{task}
@@ -712,19 +721,19 @@ germany <- germany %>%
     mutate(age = ifelse(age == "80-84", "80+", age)) %>%
     mutate(age = ifelse(age == "85+", "80+", age)) %>%
     group_by(age) %>%
-    summarise(male = sum(male), female = sum(female))
+    summarise(male = sum(male), female = sum(female), .groups = "drop")
 ``
 
 ```
 
-We will now join the three data sets together on the `age` column, before gathering together the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
+We will now join the three data sets together on the `age` column, before pivoting the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
 
 ```{r}
 pop <- germany %>%
         inner_join(mexico, "age", suffix = c("_Germany", "_Mexico")) %>%
         inner_join(us, "age") %>%
         rename(male_US = male, female_US = female) %>%
-        gather("country", "pop", -age) %>%
+        pivot_longer(!age, names_to = "country", values_to = "pop") %>%
         separate(country, c("sex", "country"), sep = "_") %>%
         mutate(country = factor(country), sex = factor(sex)) %>%
         mutate(age = factor(age, levels = unique(mexico$age)))
@@ -777,15 +786,15 @@ In the year 2000, the population distribution of Mexico shows a very bottom-heav
 ```{r}
 pop %>%
     group_by(country, age) %>%
-    summarise(pop = sum(pop)) %>%
+    summarise(pop = sum(pop), .groups = "drop_last") %>%
     arrange(country, age) %>%
     mutate(cumprop = cumsum(pop / sum(pop))) %>%
-    select(-pop) %>%
-    spread(age, cumprop)
+    select(!pop) %>%
+    pivot_wider(names_from = age, values_from = cumprop)
 ```
 
 ```{task}
-Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators. Notice that we have used the `spread()` function to produce a table that is **not** in 'tidy' format, but is better for visualising these specific outcomes.
+Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask one of the demonstrators. Notice that we have used the `pivot_wider()` function to produce a table that is **not** in 'tidy' format, but is better for visualising these specific outcomes. Note also the `.groups = "drop_last"` argument to summarise, which ensures that the `age` grouping is dropped, but not the `country` grouping, which is needed to correctly calculate the cumulative proportions *within each country*.
 ```
 
 We can see here that around 55% of Mexicans are younger than 25, compared to around 27% of Germans and 35% of Americans. We can also look at these figures split by sex:
@@ -795,22 +804,24 @@ pop %>%
     arrange(country, sex, age) %>%
     group_by(country, sex) %>%
     mutate(cumprop = cumsum(pop / sum(pop))) %>%
-    select(-pop) %>%
-    spread(age, cumprop)
+    select(!pop) %>%
+    pivot_wider(names_from = age, values_from = cumprop)
 ```
 
 Mexico also has a very high proportion of young females: in fact 33% of the current population of women are of pre-reproductive age (0--14 years) and 49% are of reproductive age (15--44). This means Mexico's population is expected to rapidly increase in the near future. A general pattern is that as countries transition from more agricultural economies to more industrialised economies, birth rates drop (due to better access to family planning, increased job opportunities for women, and various other factors). As soon as birth rates approach death rates then population growth declines, and the population pyramid becomes more top-heavy. The US is currently classed as a medium-growth country, and Germany a negative-growth country. The population pyramid plot also helps visualise the overall differences in population sizes between the three countries.
 
 A good description of population demographics can be found in this short video:
 
-```{r, screenshot.alt = "advis/images/population.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html"}
+```{r, screenshot.alt = "advis/images/population.jpg", echo = FALSE, eval = opts_knit$get("rmarkdown.pandoc.to") == "html", out.width = "100%"}
 include_url("https://www.youtube.com/embed/QsBT5EQt348")
+```
+
+```{r, eval = opts_knit$get("rmarkdown.pandoc.to") == "latex", echo = FALSE, results = "asis"}
+cat("\\begin{center}\\href{https://www.youtube.com/embed/QsBT5EQt348}{\\includegraphics[width = 0.8\\textwidth]{advis/images/population.jpg}}\\end{center}")
 ```
 
 Another great site on these sorts of topics is the [OurWorldInData](https://ourworldindata.org/) project.
 
 ## Epilogue
 
-These workshops have only really scratched the surface as to what can be achieved using `tidyverse`. We haven't touched on the apply functions included in the [`purrr`](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf) package; we haven't looked at the utility of **list-columns**; or began to explore the myriad other `ggplot2` geoms, such as `geom_violin()`, `geom_bar()` or `geom_hex()`. We haven't looked at packages such as [`gganimate`](https://gganimate.com/articles/gganimate.html), or [`plotly`](https://plot.ly/r/) for turning your R plots into interactive HTML graphics, or the wonderful [`shiny`](https://shiny.rstudio.com/gallery/) package for creating fully interactive websites.
-
-Nonetheless, I hope that this workshop has helped to spark your interest in some of the more powerful features of R. Please browse the myriad `ggplot2` galleries for inspiration, and don't hesitate to ask if you have any further questions. 
+These workshops have only really scratched the surface as to what can be achieved using `tidyverse`. We haven't touched on the apply functions included in the [`purrr`](https://github.com/rstudio/cheatsheets/raw/master/purrr.pdf) package; we haven't looked at the utility of **list-columns**; or began to explore the myriad other `ggplot2` geoms, such as `geom_violin()`, `geom_bar()` or `geom_hex()`. Nonetheless, I hope that these last few weeks have helped to spark your interest in some of the more powerful features of R. We will now expand on some of these ideas to do some exploration and visualisation of complex COVID-19 data over the next couple of sessions.

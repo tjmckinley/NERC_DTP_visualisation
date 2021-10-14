@@ -300,7 +300,7 @@ Another key feature of `tidyverse` is the power it gives you to reshape data set
 
 ### Example: Gapminder
 
-Let's pull up some data. You should have access to a .csv file called ["indicator gapminder gdp_per_capita_ppp.csv"](uploadFiles/indicator gapminder gdp_per_capita_ppp.csv). This is a digital download of the [Gapminder](https://www.gapminder.org/) GDP per capita data that can be found in the `gapminder` package. All the data sets used in the [Gapminder](https://www.gapminder.org/) project can be downloaded from [https://www.gapminder.org/data/](https://www.gapminder.org/data/).
+Let's pull up some data. You should have access to a `.csv` file called `r ifelse(!is_latex_output(), "[indicator gapminder gdp_per_capita_ppp.csv](advis/uploadFiles/indicator gapminder gdp_per_capita_ppp.csv)", "indicator gapminder gdp_per_capita_ppp.csv")`. This is a digital download of the [Gapminder](https://www.gapminder.org/) GDP per capita data that can be found in the `gapminder` package. All the data sets used in the [Gapminder](https://www.gapminder.org/) project can be downloaded from [https://www.gapminder.org/data/](https://www.gapminder.org/data/).
 
 Download this file and save it into your working directory. Now let's read in the data using the `read_csv()` function in `tidyverse`[^readcsv]:
 
@@ -446,7 +446,7 @@ Notice that although `year` is a numerical variable, R can still group by unique
 We must be a bit careful here, since we may have less samples for some countries/years than for others. This affects the uncertainty in our estimates, though it is not too difficult to extract standard errors for each grouping and thus produce confidence intervals to quantify which estimates are more uncertain than others (this is where proper **statistical modelling** is paramount).
 
 ```{task}
-Load in the file ["indicator hiv estimated prevalence 15-49.csv"](uploadFiles/indicator hiv estimated prevalence 15-49.csv). This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `pivot_longer()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
+Load in the file `r ifelse(!is_latex_output(), "[indicator hiv estimated prevalence 15-49.csv](advis/uploadFiles/indicator hiv estimated prevalence 15-49.csv)", "indicator hiv estimated prevalence 15-49.csv")`. This file contains the estimated HIV **prevalence** in people of age 15--49 in different countries over time. **Prevalence** is defined here to be the estimated number of people living with HIV per 100 population. Produce a **tidy** data set called `gp_hiv` using the tools in `tidyverse` that we introduced above. The dataset needs to run from 1991 onwards, and we want to end up with columns `country`, `year` and `prevalence`. [Note that a couple of the years have no values in the data set, and by default R reads these columns in as `character` columns. Hence when you `pivot_longer()` the data to create a `prevalence` column, all the numbers will be converted into `characters`. One way to deal with this is to convert the column back into numbers once you have filtered away all the guff!]
 ```
 
 ```{solution}
@@ -500,7 +500,7 @@ gp_hiv %>%
 We now have two data sets: `gp_income` and `gp_hiv`. In order to visualise and analyse them, we need to link them together. A key skill to have in data manipulation is the ability to **join** data sets (or tables) together. The `dplyr` package provides various functions to do this, depending on ***how*** you want to join the tables.
 
 ```{info, title = "Note", collapsible = FALSE}
-In case you haven't managed to complete the last task, the `gp_hiv` data is available as ["gp_hiv.rds"](uploadFiles/gp_hiv.rds). You can read this into R using `gp_hiv <- readRDS("gp_hiv.rds")` and continue with the practical.
+In case you haven't managed to complete the last task, the `gp_hiv` data is available as `r ifelse(!is_latex_output(), "[gp_hiv.rds](advis/uploadFiles/gp_hiv.rds)", "gp_hiv.rds")`. You can read this into R using `gp_hiv <- readRDS("gp_hiv.rds")` and continue with the practical.
 ```
 
 In order to join two tables, you must have one or more variables **in common**. In this case we want to match by `country` and `year`, to produce a data set that contains `country`, `year`, `gdp` and `prevalence`.
@@ -657,7 +657,7 @@ gp %>%
 include_graphics("advis/images/Population_pyramid_example.png")
 ```
 
-Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: ["Germanypop.csv"](uploadFiles/Germanypop.csv), ["Mexicopop.csv"](uploadFiles/Mexicopop.csv) and ["USpop.csv"](uploadFiles/USpop.csv), each with the following columns:
+Here we look at the population counts for three countries: Germany, Mexico and the US from the year 2000. You should have access to three files: `r ifelse(!is_latex_output(), "[Germanypop.csv](advis/uploadFiles/Germanypop.csv)", "Germanypop.csv")`, `r ifelse(!is_latex_output(), "[Mexicopop.csv](advis/uploadFiles/Mexicopop.csv)", "Mexicopop.csv")` and `r ifelse(!is_latex_output(), "[USpop.csv](advis/uploadFiles/USpop.csv)", "USpop.csv")`, each with the following columns:
 
 * **male**: Population counts for males ($\times$ 1000);
 * **female**: Population counts for females ($\times$ 1000).

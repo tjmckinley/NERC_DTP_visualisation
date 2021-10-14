@@ -147,6 +147,8 @@ select(iris, Species, starts_with("Sepal"))
 
 See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) for more examples.
 
+\newpage
+
 Note that we can also remove columns using a `!` operator e.g.
 
 ```{r, eval = FALSE}
@@ -223,6 +225,8 @@ iris %>% filter(Species == "versicolor") %>% head()
 ```{info, title = "Note", collapsible = FALSE}
 When we did this before we would write something like `filter(iris, Species == "versicolor")` i.e. we required the first argument of `filter()` to be a `data.frame` (or `tibble`). The pipe operator `%>%` does this automatically, so the outcome from the left-hand side of the operator is passed as the ***first*** argument to the right-hand side function. This makes the code more succinct, and easier to read (because we are not repeating pieces of code).
 ```
+
+\newpage 
 
 Pipes can be chained together multiple times. For example:
 
@@ -507,6 +511,8 @@ In order to join two tables, you must have one or more variables **in common**. 
 
 There should be *at most* one entry for each `country` $\times$ `year` combination. We can check this using the `count()` function in `dplyr`:
 
+\newpage
+
 ```{r}
 gp_income %>% count(country, year) %>% summary()
 gp_hiv %>% count(country, year) %>% summary()
@@ -728,7 +734,7 @@ germany <- germany %>%
 
 We will now join the three data sets together on the `age` column, before pivoting the `male` and `female` counts for each country into two columns: one of population counts (`pop`) and one relating to `sex` (which actually captures `sex` and `country` at this stage). We will then separate the `sex` and `country` values into two separate columns. We do this using a single piped workflow that avoids us having to create lots of temporary objects.
 
-```{r}
+```{r, pop, eval = FALSE}
 pop <- germany %>%
         inner_join(mexico, "age", suffix = c("_Germany", "_Mexico")) %>%
         inner_join(us, "age") %>%
@@ -740,6 +746,11 @@ pop <- germany %>%
 pop
 ```
 
+\newpage
+
+```{r, ref.label = "pop", echo = FALSE}
+```
+
 ```{task}
 Go through the workflow above and understand what each line is doing and why. Add comments to the code. If you don't understand, please ask!
 ```
@@ -748,7 +759,7 @@ Go through the workflow above and understand what each line is doing and why. Ad
 
 Finally, we have wrangled our data into a useful form for data analysis. Now we will try and plot some population pyramids using `ggplot2`. We do this by tricking `ggplot` into plotting stacked barplots, with `males` being plotted below the zero line, and `females` above the zero line. We then flip the axes and use faceting and colours to denote countries and sex respectively.
 
-```{r}
+```{r, popvis, eval = FALSE}
 ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
     geom_bar(stat = "identity") +
     scale_y_continuous(
@@ -756,25 +767,15 @@ ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) +
         labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
     ) +
     coord_flip() +
-    facet_wrap(~ country, ncol = 1) +
+    facet_wrap(~country, ncol = 1) +
     ylab("Population counts (x1000)") +
     xlab("Age (yrs)") +
     labs(fill = "Sex")
 ```
 
-```{r, echo = FALSE, eval = FALSE, fig.width = 7, fig.height = 7}
-p <- ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
-    geom_bar(stat = "identity") +
-    scale_y_continuous(
-        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
-        labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
-    ) +
-    coord_flip() +
-    facet_wrap(~ country, ncol = 1) +
-    ylab("Population counts (x1000)") +
-    xlab("Age (yrs)") +
-    labs(fill = "Sex")
-#ggsave("poppyramid.pdf", p)
+\newpage
+
+```{r, ref.label = "popvis", echo = FALSE}
 ```
 
 Beautiful isn't it? (The stereotypical gender colours are purely a coincidence due to the defaults in `ggplot2`, please feel free to change them to something less egregious.) These plots are hugely informative. We know that countries experiencing fast population growth typically have a large number of individuals of reproductive age, with a wider base to the pyramid. In contrast, populations that have slow, static or even negative growth typically have more older individuals; their pyramids tend to be wider at the top. We can also see that the US has a much larger population than Mexico or Germany.
@@ -809,6 +810,8 @@ pop %>%
 ```
 
 Mexico also has a very high proportion of young females: in fact 33% of the current population of women are of pre-reproductive age (0--14 years) and 49% are of reproductive age (15--44). This means Mexico's population is expected to rapidly increase in the near future. A general pattern is that as countries transition from more agricultural economies to more industrialised economies, birth rates drop (due to better access to family planning, increased job opportunities for women, and various other factors). As soon as birth rates approach death rates then population growth declines, and the population pyramid becomes more top-heavy. The US is currently classed as a medium-growth country, and Germany a negative-growth country. The population pyramid plot also helps visualise the overall differences in population sizes between the three countries.
+
+\newpage
 
 A good description of population demographics can be found in this short video:
 

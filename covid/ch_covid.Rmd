@@ -12,7 +12,7 @@ All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), 
 
 In an influential early paper on COVID-19 mortality risk, [Professor David Spiegelhalter](http://www.statslab.cam.ac.uk/~david/) compared COVID-19 mortality rates to the "normal" risk of dying from other causes, in order to find a suitable analogue to aid understanding about the risk of mortality following COVID-19 infection. 
 
-> *"As covid-19 turns from a societal threat into a matter of risk management, it is vital that the associated risks are understood and clearly communicated. But these risks vary hugely between people, and so finding appropriate analogues is a challenge. Although covid-19 is a complex multisystem disease that can cause prolonged illness, here I focus solely on the risks of dying from covid-19 and explore the use of "normal" risk---the risk of death from all causes each year---as an aid to transparent communication."*---David Spiegelhalter
+> *'As covid-19 turns from a societal threat into a matter of risk management, it is vital that the associated risks are understood and clearly communicated. But these risks vary hugely between people, and so finding appropriate analogues is a challenge. Although covid-19 is a complex multisystem disease that can cause prolonged illness, here I focus solely on the risks of dying from covid-19 and explore the use of "normal" risk---the risk of death from all causes each year---as an aid to transparent communication.'*---David Spiegelhalter
 
 [Spiegelhalter D. Use of "normal" risk to improve understanding of dangers of covid-19, *BMJ*, 2020; 370 :m3259](https://www.bmj.com/content/370/bmj.m3259).
 

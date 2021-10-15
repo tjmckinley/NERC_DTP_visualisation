@@ -3,7 +3,7 @@
 ```{info, title = "Note", collapsible = FALSE}
 A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](advis/uploadFiles/datawrHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](advis/uploadFiles/datawrSLIDES.pdf) and [here](advis/uploadFiles/datawrSLIDES.html)", "")`.
 
-All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](advis/uploadFiles/datasets.zip)", "")`.
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](advis/uploadFiles/datasets_advis.zip)", "")`.
 ```
 
 It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 

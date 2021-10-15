@@ -1127,7 +1127,7 @@ The data should have the following columns:
 * **longevity**: lifespan, in days.
 * **thorax**: length of thorax, in mm.
 
-The file [`ff.csv`](intro/uploadFiles/ff.csv) contains the data from this experiment. Download this data set to your working directory. (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `ff`:
+The file `r ifelse(!is_latex_output(), "[ff.csv](intro/uploadFiles/ff.csv)", "ff.csv")` contains the data from this experiment. Download this data set to your working directory. (You can view this file in a text editor if you so wish.) We can load this into R using the `read.csv()` function, here storing the resulting `data.frame` as an R object called `ff`:
 
 ```{r, eval = FALSE}
 ff <- read.csv("ff.csv")

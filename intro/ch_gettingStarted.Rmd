@@ -304,5 +304,6 @@ The following packages will also be needed, though in theory they should either 
 * `tinytex`
 * `datasets`
 * `readxl`
+* `lubridate`
 
 

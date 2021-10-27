@@ -206,7 +206,7 @@ ggplot(lifetables) +
 In the paper two plots are produced, one on the original scale and one on the log-scale.
 
 ```{task}
-Reproduce the plot above, but for the log-hazard rate. Try to keep the axis labels in the same format as Figure \@ref(fig:spiegelhalter). [**Hint**: set an appropriate `scales_y_continuous` argument, rather than log-transforming the hazard rate directly. Take a look at the help file `?scales_y_continuous` if you're stuck, paying attention to the `trans` and `breaks` arguments.]
+Reproduce the plot above, but for the log-mortality rate. Try to keep the axis labels in the same format as Figure \@ref(fig:spiegelhalter). [**Hint**: set an appropriate `scales_y_continuous` argument, rather than log-transforming the mortality rate directly. Take a look at the help file `?scales_y_continuous` if you're stuck, paying attention to the `trans` and `breaks` arguments.]
 ```
 
 ```{solution}

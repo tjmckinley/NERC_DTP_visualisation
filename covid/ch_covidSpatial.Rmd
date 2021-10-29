@@ -2,64 +2,373 @@
 
 In this part of the practical, we will utilise the skills we have learned so far to produce spatial maps of COVID-19 risk. To do this we will use the [`sf`](https://r-spatial.github.io/sf/) package, which is a brilliant package that makes many spatial analysis / Geographic Information System (GIS) tasks much more straightforward to implement.
 
-In the first part of this practical, let's produce some spatial plots of population size at the **regional** level. To do this we will have to combine information from different data sources together, hence we will need to perform various data wrangling tasks, including **joining** of tables.
+```{info, title = "Note", collapsible = FALSE}
+A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](covid/uploadFiles/spatialCovidHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](covid/uploadFiles/spatialCovidSLIDES.pdf) and [here](covid/uploadFiles/spatialCovidSLIDES.html)", "")`.
 
-Firstly, the data for **population sizes** is contained in the `pop` object we generated earlier e.g.
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](covid/uploadFiles/datasets_covid.zip)", "")`.
+```
+
+Let's imagine that we have been tasked with producing spatially explicit summaries of COVID-19 transmission in England and Wales, based on publicly available data. For ease, the version of the data used in the analysis below is found in the  `r ifelse(!is_latex_output(), "[ltla_2021-10-26.csv](covid/uploadFiles/ltla_2021-10-26.csv)", "*ltla_2021-10-26.csv*")` file, which has been downloaded from:
+
+[https://coronavirus.data.gov.uk/details/download](https://coronavirus.data.gov.uk/details/download)
+
+These data correspond to **cumulative deaths within 28 days of positive COVID-19 test** by date-of-death for all Lower Tier Local Authority (LTLA) regions (more on these later). This has been downloaded as a `.csv` file, so can be read easily into R using e.g. `read_csv()` as we have seen before.
+
+The data consist of:
+
+* `areaCode`: the LTLA area code;
+* `areaName`: the LTLA area name;
+* `areaType`: the type of area;
+* `date`: date;
+* `cumDeaths28DaysByDeathDate`: cumulative deaths within 28 days of positive COVID-19 test.
+
+```{r, include = FALSE}
+## load tidyverse
+library(tidyverse)
+
+## read in data
+covid <- read_csv("covid/uploadFiles/ltla_2021-10-26.csv")
+```
+
+```{task}
+Read this data set into R as a data frame called `covid`. Summarise the data set, converting columns if required to produce informative summaries.
+```
+
+```{solution}
+
+``{r, eval = FALSE}
+## load tidyverse
+library(tidyverse)
+
+## read in data
+covid <- read_csv("ltla_2021-10-26.csv")
+
+## summarise data
+mutate(covid, across(where(is.character), factor)) %>%
+    summary()
+``
+
+``{r, echo = FALSE, message = FALSE}
+## summarise data
+mutate(covid, across(where(is.character), factor)) %>%
+    summary()
+``
+
+```
+
+```{task}
+Are these data "tidy"? 
+```
+
+```{solution}
+Yes, these data are "tidy", since each row corresponds to an observation and each column to a variable.
+```
+
+```{task}
+Using simple R functions, determine how many observations there are. Check that each `areaCode` maps to a unique `areaName`, and then determine how many LTLA regions the data contains? 
+```
+
+```{solution}
+To find the number of observations we could use `nrow()` e.g.
+
+``{r}
+## extract number of observations
+nrow(covid)
+``
+
+There are various ways to check unique matching, but one option is to use `group_by()` and `summarise()`/`count()` to extract unique area code / name combinations, and then check there are no replicate codes or names.
+
+``{r}
+## extract unique code/name combinations
+temp <- group_by(covid, areaCode, areaName) %>%
+    count()
+## check all area codes are unique
+group_by(temp, areaName) %>%
+    count() %>%
+    summary()
+## check all area names are unique
+group_by(temp, areaName) %>%
+    count() %>%
+    summary()
+``
+
+This shows that amongst unique pairings of codes and names, each code and each name appears exactly once, meaning that each code maps exactly to a single name.
+
+Again, we can extract the number of LTLA regions in various ways, but since codes are unique we can simply count the number of unique codes in the data:
+
+``{r}
+## number of unique LTLAs
+length(unique(covid$areaCode))
+``
+
+```
+
+Here we can see that the data set is large: `r format(nrow(covid), big.mark = ",")` observations across `r format(length(unique(covid$areaCode)), big.mark = ",")` LTLA regions. Not the sort of data set we want to manipulating with point-and-click software!
+
+A key question throughout the COVID-19 pandemic has been to understand spatial heterogeneity in disease rates over time. Ultimately these ideas formed the basis of policies such as the **four-tier localised restrictions** that were introduced in the autumn/winter of 2020 and withdrawn in early 2021.
+
+One thing we could do is explore how the epidemic trajectories varied between different LTLAs. However, we have cumulative death counts, so let's convert these to the number of new deaths at each time point. These can be calculated by taking the difference in cumulative deaths between consecutive time points. Again, there are various approaches, including using loops etc., but here we will use a function called `lag()`^[or alternatively, one called `lead()`], which takes a vector and returns the ***previous*** value corresponding to each element. A key challenge here is that we need to do this within each LTLA separately, however we can exploit `group_by()` once again.
+
+As such, we will ***order*** the data by date, ***group*** by LTLA, and then calculate the difference between the cumulative counts at each day and the cumulative counts at the previous day. This gives the number of new COVID-19 deaths at each day. The **grouping** ensures that the differences are only calculated ***within each LTLA***. Here we go:
 
 ```{r}
+## calculate new deaths at each day within each LTLA
+covid <- arrange(covid, areaCode, date) %>%
+    group_by(areaCode) %>%
+    mutate(deaths = cumDeaths28DaysByDeathDate - lag(cumDeaths28DaysByDeathDate)) %>%
+    ungroup()
+covid
+```
+
+We can check that this has worked within each LTLA by extracting the first few rows for each `areaCode`, which we will do by using `group_by()` and a function called `slice()`, which enables us to extract particular rows (similar in effect to using subsetting, but can be used in a piped workflow. For example, `covid[1:3, ]` is equivalent to `slice(covid, 1:3)`). Here the data are already arranged by `date` within each `areaCode`, so the code below should extract the first three time points for each LTLA.
+
+```{r}
+## extract first three rows of each areaCode
+group_by(covid, areaCode) %>%
+    slice(1:3)
+```
+
+Here we can see that the first entry in the `deaths` column for each LTLA is `NA`, which corresponds to a missing value. This is because we do not know what the cumulative deaths are before the first entry, and hence the `lag()` function returns an `NA` as expected. We can see that the code worked as expected here, but it's worth checking a summary also to check that the number of deaths are always positive for example.
+
+```{r}
+## summarise data
+mutate(covid, across(where(is.character), factor)) %>%
+    summary()
+```
+
+OK, now let's assume we want to plot the death trajectories over time for different LTLAs. Clearly including all LTLAs would make for an uninterpretable plot (imagine `r format(length(unique(covid$areaCode)), big.mark = ",")` different lines on the same plot). Instead, let's extract the first 10 LTLAs with the highest number of deaths across the whole time series. One way to do this is to calculate the largest cumulative death count in each LTLA, and then extract the 10 LTLAs with the largest counts. The code below does this by using `group_by()` again, and then using `summarise()` to extract the total deaths within each region, then ordering and slicing this summary table to extract the relevant area codes for the regions-of-interest, before using a `semi_join()`^[remember a `semi_join()` is a filtering join, which returns all rows of the left-hand side table that match the right-hand side table] to return the rows of the original data corresponding to the LTLAs-of-interest. Again, there are lots of ways one could do this.
+
+```{r}
+## extract the LTLAS with the largest number of deaths
+largestDeaths <- group_by(covid, areaCode, areaName) %>%
+    summarise(mDeaths = max(cumDeaths28DaysByDeathDate), .groups = "drop") %>%
+    arrange(desc(mDeaths)) %>%
+    slice(1:10)
+largestDeaths
+largestDeaths <- semi_join(covid, largestDeaths, by = "areaCode")
+```
+
+```{task}
+Produce a plot of the death trajectories over time, stratified by LTLA for these ten regions with the largest outbreaks (in terms of absolute numbers of deaths).
+```
+
+```{solution}
+
+``{r, fig.width = 10, fig.height = 5, out.width = "80%"}
+## produce time-series plot of deaths
+ggplot(largestDeaths) +
+    geom_line(aes(x = date, y = deaths, colour = areaName)) +
+    xlab("Date") + ylab("Deaths within 28 days of a positive death") +
+    labs(colour = "LTLA")
+``
+
+```
+
+Hopefully your plot should look something like the one below (I've set monthly $x$-axis labels using `scales_x_date()` and made them look a bit nicer using `theme()`---figuring this out involved judicious use of Google and StackOverFlow, don't be limited only by what you've been taught, if there's a will, there's usually a way!)
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5, out.width = "80%", message = FALSE}
+## produce time-series plot of deaths
+p <- ggplot(largestDeaths) +
+    geom_line(aes(x = date, y = deaths, colour = areaName)) +
+    xlab("Date") + ylab("Deaths within 28 days of a positive death") +
+    labs(colour = "LTLA") +
+    scale_x_date(date_breaks = "1 month") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("slides/spatialCovid/images/timeseries.png", p)
+p
+```
+
+We can see that Birmingham was the hardest-hit LTLA in terms of absolute numbers of deaths within 28 days of a positive COVID-19 test. We can also see clearly the first wave, driven by the introduction of a novel and highly transmissible virus into a completely susceptible population. We can see the drop in deaths following the first national lockdown that began on the 26th March 2020 and the end of the first wave in the summer. Lockdown restrictions began to be eased during May 2020. Localised (tiered) restrictions were introduced in the summer of 2020, but a rise in deaths during the early autumn of 2020 resulted in a second national lockdown, which began on November 5th 2020 but was eased in late November/early December 2020, with additional easing over the Christmas period. We then see a rise in deaths through January 2021 with a new (third) national lockdown starting on 6th January. Lockdown restrictions began to be eased in early March 2021 and throughout the subsequent summer. We are beginning to see cases rise as part of a third wave, driven in part by the emergence of a new "delta" variant of the pathogen. However, in part due to the widespread rollout of vaccination, which began in late 2020, the absolute numbers of deaths in the third wave seem to be lower than in previous waves. Untangling the likely impacts of the different control measures, and the causes of the epidemic dynamics remains an area of intensive ongoing research.
+
+## Death rates over space and time
+
+Of course, we know from previous chapters that absolute numbers of deaths are difficult to compare directly between different populations, since they depend in part on how many individuals are in each population. Hence we can employ a similar methodology to the one we explored in the previous workshop, by adjusting the death counts by population size, thus producing death rates rather than death counts. In the next part of this practical, let's produce some spatial plots of death rates. To do this we will have to combine information from different data sources together, hence we will need to perform various data wrangling tasks, including **joining** of tables.
+
+We will use the Office for National Statistics mid-year population estimates from 2019, which can be found in the `r ifelse(!is_latex_output(), "[ukmidyearestimates20192019ladcodes.xls](covid/uploadFiles/ukmidyearestimates20192019ladcodes.xls)", "*ukmidyearestimates20192019ladcodes.xls*")` file, which has been downloaded from:
+
+[https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland)
+
+This is an Excel file, and so we can use the `readxl` package, and `read_excel()` function to load this into R. Taking a look at the Excel file, we can see that the relevant data is stored in cells `A5:O435` of the `MYE3` worksheet. Load this into R using the following commands:
+
+```{r, eval = FALSE}
+## load library
+library(readxl)
+
+## read in the correct worksheet from the .xls
+pop <- read_excel("ukmidyearestimates20192019ladcodes.xls", 
+    sheet = "MYE3", range = "A5:O435")
 pop
 ```
 
-You can see various things here. Firstly, as we noted earlier, this data frame contains population estimates at different spatial scales, defined in the `Geography` column. Let's take a look at the different entries:
-    
-    ```{r}
-unique(pop$Geography)
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+## load library
+library(readxl)
+
+## read in the correct worksheet from the .xls
+pop <- read_excel("covid/uploadFiles/ukmidyearestimates20192019ladcodes.xls", 
+    sheet = "MYE3", range = "A5:O435")
+pop
 ```
-
-To get a feel for how these different spatial hierarchies relate to each other, we can have a look at the `Admin. geography hierarchy` worksheet in the original Excel file (`ukmidyearestimates20182019ladcodes.xls`). This is shown in Figure @ref(fig:spatialRegions).
-
-```{r, spatialRegions, fig.cap = "Spatial hierarchy", echo = FALSE, out.width = '90%'}
-include_graphics("covid/images/spatialRegions.png")
-```
-
-Here we can see that the top of the hierarchy is **country**, and then within **England** we have **regions**, and within **regions** we have **counties** and so on. The `pop` data frame we produced earlier has population counts by age and sex in all of these different spatial hierarchies.
-
-We are going to produce some maps at the **regional** level, and hence we can begin by subsetting the `pop` data frame to extract the population counts corresponding to **regions** only.
 
 ```{task}
-Extract the subset of the `pop` data frame corresponding to the `Region` estimates. Save this as a new object called `pop_regions`.
+In fact, most of this data frame is not necessary, so amend the `pop` object to include only the `Code`, `Name`, `Geography1` and `Estimated Population  mid-2019` columns. Change the name of the `Estimated Population  mid-2019` to `population`.
 ```
 
 ```{solution}
 
 ``{r}
-pop_regions <- filter(pop, Geography == "Region")
+## simplify data
+pop <- select(pop, Code, Name, Geography1, `Estimated Population  mid-2019`) %>%
+    rename(population = `Estimated Population  mid-2019`)
+pop
 ``
 
 ```
 
-Your new data frame should look like:
+You can see various things here. Firstly, note that this data frame contains population estimates at different spatial scales, defined in the `Geography1` column. Let's take a look at the different entries:
     
-    ```{r}
-pop_regions
+```{r}
+unique(pop$Geography1)
 ```
 
-Notice the `code` and `Name` columns; these correspond to **unique** codes that can be used to **join** different data sets together. Here we will join the population data to a data set containing the relevant spatial information for mapping---in this case a **regional boundary map**.
+To get a feel for how these different spatial hierarchies relate to each other, see Figure \@ref(fig:spatialRegions), which I took from the `Admin geography hierarchy` worksheet in the Excel file.
+
+```{r, spatialRegions, fig.cap = "Spatial hierarchy", echo = FALSE, out.width = '90%'}
+include_graphics("covid/images/spatialRegions.png")
+```
+
+Here we can see that the top of the hierarchy is **country**, and then within **England** we have **regions**, and within **regions** we have **counties** and so on. The `pop` data frame we produced earlier has population counts in all of these different spatial hierarchies, but here we want to extract just those that are relevant for the COVID-19 death data.
+
+Notice that the `pop` data set contains population counts at various spatial scales. The `Code` column looks like it should be cross-referenced against the `areaCode` column of the `covid` data set, despite the column names being different. However, we don't want to take this as a given, and so in the first instance let's check that they do in fact match up. We can do this in various ways, but I will use [`anti_join()`](#anti_join), which should return all entries from one table that don't match in another table.
+
+```{info, title = "Aside on joins", collapsible = FALSE}
+To join two tables we need to use the `by` argument to define which columns we are joining by. For example, the code:
+    
+``{r, eval = FALSE}
+inner_join(table1, table2, by = "code")
+``
+
+will join two tables, `table1` and `table2` according to the `code` column. This requires that the `code` column is **present in both data sets**. However, it is possible to join two tables by a common column, even if the column names differ. For example, if `table1` has a column called `code1`, which contains the same information as column `code2` in `table2`, then the two tables can be joined using the syntax:
+    
+``{r, eval = FALSE}
+inner_join(table1, table2, by = c("code1" = "code2"))
+``
+
+Note that the **order** is important here; the left-hand side of the `by = c("code1" = "code2")` has to correspond to the left-hand side data set (`table1`), and visa-versa. The code:
+    
+``{r, eval = FALSE}
+inner_join(table1, table2, by = c("code2" = "code1"))
+``
+
+would **not work** here. You can join by multiple columns by extending `by` argument e.g. `by = c("code1" = "code2", "name1" = "name2")` and so on.
+```
+
+Again, there are lots of ways to do this, but we will use `anti_join()`, and since the column names are different, we can use the approach below:
+
+```{r}
+## check that area codes and names can be matched
+group_by(covid, areaCode, areaName) %>%
+    slice(1) %>%
+    anti_join(pop, by = c("areaCode" = "Code", "areaName" = "Name"))
+```
+
+Interesting. It seems that there are three regions that can't be matched by both `areaCode` and `areaName`. I suspect this is because the `areaNames` might have some errors or differences (usually the **codes** are more reliable). We can check this by inner-joining the three missing rows above to the `pop` data frame again, but this time using only the `areaCode`, and see what we get:
+
+```{r}
+## check for differences in non-matching rows
+group_by(covid, areaCode, areaName) %>%
+    slice(1) %>%
+    anti_join(pop, by = c("areaCode" = "Code", "areaName" = "Name")) %>%
+    inner_join(pop, by = c("areaCode" = "Code")) %>%
+    select(areaCode, areaName, Name)
+```
+
+So here the `inner_join()` returns **matches** by `areaCode`, and we can see that these three rows **can** be matched by code, but not by name. Furthermore, the names differ slightly, but they seem reasonable to me, and there's no reason to think there is a problem with the data here. Hence we proceed by matching only using `areaCode` subsequently.
+
+```{r}
+## check that area codes can be matched
+group_by(covid, areaCode) %>%
+    slice(1) %>%
+    anti_join(pop, by = c("areaCode" = "Code"))
+```
+
+Hence there are no regions that can't be matched using area code.
+
+```{task}
+Check there are no duplicate `Code` entries in the `pop` data set.
+```
+
+```{solution}
+To check for duplicate codes, we can do e.g.
+
+``{r}
+## check for duplicate codes
+group_by(pop, Code) %>%
+    count() %>%
+    summary()
+``
+
+Hence there are no duplicate codes and we should be safe to match.
+```
+
+We can simply do an `inner_join()` to join the two data frames (I'm also removing the `Geography1` and `areaType` columns since they are extraneous here):
+
+```{r}
+## join time-series counts to population sizes
+covid_pop <- inner_join(covid, pop, by = c("areaCode" = "Code")) %>%
+    select(!c(Geography1, areaType))
+covid_pop
+```
+
+We will now create a new data set, which returns the number of deaths per week (rather than daily), this is to smooth the data out a bit and get a clearer picture of death rates over time. We can use the `ceiling_date()` from the `lubridate` package^[another discovery via Google and StackOverFlow] to round dates up to the nearest week, we will then group by `areaCode`, `population` and `week`, and then produce death counts for each group. Note that the each unique `areaCode` maps to a unique `population`, so the grouping by `population` just ensures this column is retained after `summarise()` has run. Note also the `na.rm = TRUE` argument to the `sum()` function---this is because there are some `NA` values in the death counts which occur at the first time point, and should be ignored when summing, else `sum()` will also return an `NA`.
+
+```{r}
+## load lubridate
+library(lubridate)
+
+## round death counts to nearest week using lubridate functions
+covid_week <- mutate(covid_pop, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, areaName, population, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop")
+covid_week
+```
+
+```{task}
+Create a new column---`death_rates`---in `covid_week` containing death rates in each LTLA, expressed as number of deaths per 100,000 population. 
+```
+
+```{solution}
+
+``{r, fig.width = 10, fig.height = 5, out.width = "80%"}
+## create death rates column
+covid_week <- mutate(covid_week, death_rates = 100000 * deaths / population)
+covid_week
+``
+
+```
+
+Now we have a time-series of population fatality rates by LTLA, we will now produce maps of these death rates over time.
+
+### Spatial shapefiles
+
+We will now explore how you can load spatial shapefiles into R, and use these for producing detailed spatio-temporal maps of a variable of interest.
 
 ```{info, title = "Spatial data", collapsible = FALSE}
-Some data will be associated with a particular geographical entities, such as spatial regions or point locations. The **locations** of these geographical entities in space are typically characterised by a **coordinate reference system** (CRS). 
+Spatial data is associated with particular geographical entities, such as coordinates that define spatial regions or point locations. The **locations** of these geographical entities in space are typically characterised by a **coordinate reference system** (CRS) and sometimes a **projection**. 
 
-A key challenge is that spatial locations are three-dimensional (the Earth is a sphere), but maps are two-dimensional, and so in order to produce a two-dimensional map it is necessary to **project** a set of 3D coordinates down to a set of 2D coordinates. There are many different ways to do this, resulting in a wide variety of different CRS systems and projections. As such, spatial data---such as point locations or polygons---require more than just a set of coordinates, since they also require the correct CRS, projections and associated meta-data, such as names and other attributes.
+A key challenge is that spatial locations are three-dimensional (the Earth is a sphere), but maps are two-dimensional, and so in order to produce a map it is necessary to **project** a set of 3D coordinates down to a set of 2D coordinates. There are many different ways to do this, resulting in a wide variety of different CRS systems and projections. As such, spatial data---such as point locations or polygons---require more than just a set of coordinates; they also require the correct CRS, projections and associated meta-data, such as names and other attributes.
 
 For more general information about spatial reference systems, see [https://en.wikipedia.org/wiki/Geographic_coordinate_system](https://en.wikipedia.org/wiki/Geographic_coordinate_system).
+
+It is beyond the scope of this workshop to give a detailed introduction to spatial mapping and Geographical Information Systems (GIS) methodologies. Instead we will simply use a shapefile for LTLAs that has already been projected into 2D-space using British National Grid References.
 ```
 
 ```{info, title = "Shapefiles", collapsible = FALSE}
-A common format for storing spatial information and attributes associated with each spatial element is as a ["shapefile"](https://en.wikipedia.org/wiki/Shapefile). Although we refer to a "shapefile" as a singular noun, in practice it is a collection of different files with different suffixes (e.g. `.shp`, `.shx`, `.dbf`) that together provide all the necessary information for characterising the spatial system. 
+A common format for storing spatial information, and attributes associated with each spatial element, is a ["shapefile"](https://en.wikipedia.org/wiki/Shapefile). Although we refer to a "shapefile" as a singular noun, in practice it is a collection of different files with different suffixes (e.g. `.shp`, `.shx`, `.dbf`) that together provide all the necessary information for characterising the spatial system. 
 
 There are many great packages in R for working with spatial data, but we will use the [`sf`](https://r-spatial.github.io/sf/) package (standing for "Simple Features"), which allows us to read shapefile information into R as a `tibble` object, meaning that we can use many of the data manipulation/visualisation ideas that we have come across already to produce different spatial maps in a straightforward manner.
 
-The `sf` package provides many tools for manipulating spatial data, but here we will just use it to produce plots using default information contained in a shapefile.
+The `sf` package provides many tools for manipulating spatial data, including conversions between different choices of CRS or projection. However, here we will just use it to produce plots using default information contained in a shapefile that we have downloaded from the Office for National Statistics geoportal.
 ```
 
 Firstly, load the `sf` package. If it is not installed, then it can be installed in the usual way.
@@ -69,241 +378,455 @@ Firstly, load the `sf` package. If it is not installed, then it can be installed
 library(sf)
 ```
 
-Now we need to download the relevant shapefile. A range of useful shapefiles associated with UK electoral and administrative regions can be found at [https://geoportal.statistics.gov.uk/](https://geoportal.statistics.gov.uk/). In this case we want to download the **region** shapefile for **2019** (since the codes in the `pop` data set correspond to the 2019 regions). This can be downloaded from:
+Now we need to download the relevant shapefile. A range of useful shapefiles associated with UK electoral and administrative regions can be found at [https://geoportal.statistics.gov.uk/](https://geoportal.statistics.gov.uk/). In this case we want to download the **LTLA** shapefile for **December 2019** (since the codes in the `pop` data set correspond to regions in 2019).
+
+For ease, the version of the data used in the analysis below is found in the  `r ifelse(!is_latex_output(), "[Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip](covid/uploadFiles/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip)", "*Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip*")` file, which has been downloaded from:
+
+[https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019)](https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019))
+
+As discussed, a **shapefile** is actually a collection of files, rather than a single file. If you **unzip** the file above, this should produce a folder called `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC`, within which are five files:
     
-    [https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019)](https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019))
+* `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.cpg`
+* `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.dbf`
+* `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.prj`
+* `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shp`
+* `Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shx`
 
-For ease, I have included the relevant file here:  [Regions_(December_2019)_Boundaries_EN_BFC.zip](uploadFiles/Regions_(December_2019)_Boundaries_EN_BFC.zip).
+These contain all of the necessary spatial information and meta-data discussed earlier. We don't have to worry about what these files actually contain, instead the `sf` package will extract all of the necessary information for us. To do this, we use the `st_read()` function, to which we pass the path to the relevant `.shp` file.
 
-As discussed earlier, a **shapefile** is actually a collection of files, rather than a single file. If you **unzip** the file above, this should produce a folder called `Regions_(December_2019)_Boundaries_EN_BFC`, within which are five files:
-    
-    * `Regions_(December_2019)_Boundaries_EN_BFC.cpg`
-* `Regions_(December_2019)_Boundaries_EN_BFC.dbf`
-* `Regions_(December_2019)_Boundaries_EN_BFC.prj`
-* `Regions_(December_2019)_Boundaries_EN_BFC.shp`
-* `Regions_(December_2019)_Boundaries_EN_BFC.shx`
-
-These contain all of the necessary spatial information and meta-data discussed earlier. We don't have to worry about what these files actually contain, instead the `sf` package will extract all of the necessary information for us. To do this, we use the `st_read()` function, to which we pass the path to the relevant `.shp` file. 
+```{info, title = "Note"}
+There are higher resolution shapefiles available on the ONS Geoportal
 
 ```{r, eval = FALSE}
-regions <- st_read("Regions_(December_2019)_Boundaries_EN_BFC/Regions_(December_2019)_Boundaries_EN_BFC.shp")
-regions
+ltla <- st_read("Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shp")
+ltla
 ```
 
 ```{r, echo = FALSE}
-regions <- st_read("covid/uploadFiles/Regions_(December_2019)_Boundaries_EN_BFC/Regions_(December_2019)_Boundaries_EN_BFC.shp")
-regions
+ltla <- st_read("covid/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shp")
+ltla
 ```
 
-One thing you should notice is that the `regions` object we have just created is a special `tibble` object of class `sf`, and contains all the meta-data associated with each spatial region (e.g. `rgn19cd`, `rgn19nm`, `long`, `lat` etc.), as well as a special `geometry` column.
+One thing you should notice is that the `ltla` object we have just created is a special `tibble` object of class `sf`, and contains all the meta-data associated with each spatial region (e.g. `lad19cd`, `lad19nm`, `long`, `lat` etc.), as well as the CRS/projection, and a special `geometry` column.
 
 ```{info, title = "Note", collapsible = FALSE}
-The `geometry` column of an `sf` object contains the necessary spatial information; in this case each element of the column contains the spatial coordinates of a polygon that defines the associated spatial region. This column is not a simple R object anymore. In fact it is a `list`, where each element of the list is a special object called a `MULTIPOLYGON` object. This is possible because `data.frame` objects (and `tibble` objects) are simply `list` objects under-the-hood, and thus developers have recently cottoned onto the fact that lists of arbitrary objects can be included as columns in data frames, thus extending their utility.
+The `geometry` column of an `sf` object contains the necessary spatial information; in this case each element of the column contains the spatial coordinates of a **polygon** that defines the associated spatial region. This column is not a simple R object anymore. In fact it is a `list`, where each element of the list is a special object called a `MULTIPOLYGON` object. This is possible because `data.frame` objects (and `tibble` objects) are simply `list` objects under-the-hood, and thus developers have recently cottoned onto the fact that lists of arbitrary objects can be included as columns in data frames, thus extending their utility greatly.
 
-In this case we do not have to worry about the `geometry` column; but it is important to note that there is a special geom function in `ggplot2`---called `geom_sf()`---that has been written specifically to facilitate the plotting of these spatial components as shown below.
+In this case we do not have to worry about the `geometry` column; but it is important to note that there is a special geom function in `ggplot2`---called `geom_sf()`---that has been written specifically to facilitate the plotting of these spatial components, which we will use below.
 ```
+
+Here the key columns are:
+
+* `lad19cd`: Local Area District (LAD) code (of which LTLAs are a subset);
+* `lad19nm`: the LAD (LTLA) name;
+* `geometry`: the polygon defining the spatial shape of each LAD (LTLA).
 
 Let's plot the spatial object using `geom_sf()`:
     
-    ```{r}
+```{r, out.width = "70%"}
 ## plot the regions object
-ggplot(regions) + geom_sf()
+ggplot(ltla) + geom_sf()
 ```
 
-You can see here that we didn't need to tell `ggplot()` to plot the `geometry` column---this is automatically recognised by the `geom_sf()` function. Note that we can set other aesthetics, such as fill and border colours in the usual way, by linking to the associated column we wish to map to. To this end let's add the relevant population sizes to the `regions` object.
+You can see here that we didn't need to tell `ggplot()` to plot the `geometry` column---this is automatically recognised by the `geom_sf()` function. Note that we can set other aesthetics, such as fill and border colours in the usual way, by linking to the associated column we wish to map to. Notice also that the plot is produced using latitude and longitude, so there is an internal transform that goes on in the geom to convert British National Grid references to latitudes and longitudes. It can do this because the `sf` class has all the necessary CRS information stored within it.
 
-You will notice that some of the columns of the `regions` object look familiar. For example, the `rgn19cd` column looks very similar to the `Code` column of our `pop_regions` object earlier, despite the column names being different. In fact these two columns should match up. However, we don't want to take this as a given, and so in the first instance let's check that they do in fact match up. We can do this in various ways, but I will use [`anti_join()`](#anti_join), which should return all entries from one table that don't match in another table.
-    
-    ```{info, title = "Note", collapsible = FALSE}
-    To join two tables we need to use the `by` argument to define which columns we are joining by. For example, the code:
-        
-        ``{r, eval = FALSE}
-    inner_join(table1, table2, by = "code")
-    ``
-    
-    will join two tables, `table1` and `table2` according to the `code` column. This requires that the `code` column is **present in both data sets**. However, it is possible to join two tables by a common column, even if the column names differ. For example, if `table1` has a column called `code1`, which contains the same information as column `code2` in `table2`, then the two tables can be joined using the syntax:
-        
-        ``{r, eval = FALSE}
-    inner_join(table1, table2, by = c("code1" = "code2"))
-    ``
-    
-    Note that the **order** is important here; the left-hand side of the `by = c("code1" = "code2")` has to correspond to the left-hand side data set (`table1`), and visa-versa. The code:
-        
-        ``{r, eval = FALSE}
-    inner_join(table1, table2, by = c("code2" = "code1"))
-    ``
-    
-    would **not work** here. You can join by multiple columns by extending `by` argument e.g. `by = c("code1" = "code2", "name1" = "name2")` and so on.
-    ```
-    
-    ```{r}
-    ## check for any rows of `pop_regions` that can't be match to `regions`
-    anti_join(pop_regions, regions, by = c("Code" = "rgn19cd"))
-    ```
-    
-    ```{r}
-    ## check for any rows of `regions` that can't be match to `pop_regions`
-    anti_join(regions, pop_regions, by = c("rgn19cd" = "Code"))
-    ```
-    
-    ```{task, title = "Question"}
-    As an additional test you could join by `Code` **and** `Name`. Why would it not be sensible to do this na&iuml;vely here?
-        ```
-    
-    ```{solution, title = "Answer"}
-    It wouldn't be sensible to do that here because in the `pop_regions` data set the `Name` column is encoded in **upper-case**, whereas in the `regions` data frame the `rgn19nm` column is in **title-case**. Since R is *case sensitive*, these won't match even if the actual names are the same. 
-    
-    One option to check the names also match would be to change all the `rgn19nm` entries to upper-case (which can be done using the `toupper()` function). For example:
-        
-        ``{r}
-    ## check for any rows of `regions` that can't be match to `pop_regions`
-    test_regions <- mutate(regions, rgn19nm = toupper(rgn19nm))
-    anti_join(test_regions, pop_regions, by = c("rgn19cd" = "Code", "rgn19nm" = "Name"))
-    ``
-    
-    ``{r}
-    ## check for any rows of `pop_regions` that can't be match to `regions`
-    anti_join(pop_regions, test_regions, by = c("Code" = "rgn19cd", "Name" = "rgn19nm"))
-    ``
-    
-    Here you can see that some names differ slightly, in that `East of England` in the `regions` data frame is encoded as `EAST` in the `pop_regions` data frame. This type of comparison can be useful in highlighting any obvious anomalies. Here I am happy that the `Code` and `rgn19cd` are sufficient to correctly match the regions for plotting.
-    ```
-    
-    In this case it seems that we are able to **join** `regions` and `pop_regions` by the corresponding region code columns, and there are no mismatches.
-    
-    ```{info, title = "Important", collapsible = FALSE}
-    Since an `sf` object is a special type of data frame, if you want to join an `sf` object to another data frame but **keep the spatial information** so that you can use it for plotting etc., then you have to ensure that the `sf` object is the **left-hand** object in any **join**. If it is the right-hand object, then the combined data frame will strip all of the spatial information out.
-    ```
-    
-    ```{task}
-    Produce a data frame that contains the overall population counts (so aggregated over males, females and age-classes) for each region and join this to the `regions` data. Save the combined data frame as `temp_regions` so that the original shapefile data is not overwritten. Produce a spatial plot of each region where the spatial regions are coloured according to the population size.
-    ```
-    
-    ```{solution}
-    
-    ``{r}
-    ## aggregate population sizes
-    temp <- pop_regions %>%
-        group_by(Code) %>%
-        summarise(population = sum(population), .groups = "drop")
-    
-    ## join to `regions` data frame (making sure `regions` is on the
-    ## left-hand side of the join to maintain spatial information)
-    temp_regions <- inner_join(regions, temp, by = c("rgn19cd" = "Code"))
-    
-    ## plot regions coloured by population size
-    ggplot(temp_regions) +
-        geom_sf(aes(fill = population))
-    ``
-    
-    ```
-    
-    We can also do things like produce side-by-side spatial plots of population size by region, for males and females respectively. To do this we will create a `temp_regions` data frame to hold the joined tables, which will expand the `regions` data frame to contain multiple entries (male and female populations) for each region[^rightjoin]. We will then use `facet_wrap()` to create the side-by-side plots in the usual way.
-    
-    [^rightjoin]: notice that we use a `right_join` here so that `regions` is the *left-hand* table but is expanded to include all entries in the right-hand table `temp`, which includes population sizes for males and females in each region
-    
-    ```{r}
-    ## aggregate population sizes by male/female
-    temp <- pop_regions %>%
-        group_by(Code, sex) %>%
-        summarise(population = sum(population), .groups = "drop")
-    
-    ## join to `regions` data frame (making sure `regions` is on the
-    ## left-hand side of the join to maintain spatial information)
-    temp_regions <- right_join(regions, temp, by = c("rgn19cd" = "Code"))
-    
-    ## plot regions coloured by population size
-    ggplot(temp_regions) +
-        geom_sf(aes(fill = population)) +
-        facet_wrap(~sex)
-    ```
-    
-    Not very interesting here. Let's do a similar thing but for COVID-19 deaths between between 7 March and 26 June 2020. The original `publishedweek262020.xlsx` Excel spreadsheet contains **weekly death counts by region** in cells `A77:AB85` of the `Covid-19 - Weekly registrations` worksheet, so once again we read these data into R and manipulate into 'tidy' format as before:
+```{task}
+Check that the `lad19cd` identifiers are unique, and check that all `areaCode` entries in the `covid_week` data set can be matched to `lad19cd` entries in the `ltla` data set.
+```
+
+```{solution}
+
+``{r}
+## check for unique entries
+group_by(ltla, lad19cd) %>%
+    count() %>%
+    summary()
+
+## check that area codes and names can be matched
+group_by(covid_week, areaCode) %>%
+    slice(1) %>%
+    anti_join(ltla, by = c("areaCode" = "lad19cd"))
+``
+
+Here we can see that all codes match. If you match by `areaCode` and `areaName`, then you get the same mismatches as with the earlier `pop` comparison, so here we are safe to use `areaCode` only.
+```
+
+This is a pretty large object, and might take a while to render, and so we will avoid plotting it again, instead we will focus on LTLAs in Devon for the rest of this practical. The key question is: how do we extract the LTLAs in Devon if there is no county information in the `ltla` data set? For this we need a **lookup table**, which provides a mapping between the different spatial hierarchies, such as those shown in Figure \@ref(fig:spatialRegions). Handily, these can also be downloaded from the ONS Geoportal.
+
+For ease, the required lookup table is found in the  `r ifelse(!is_latex_output(), "[Local_Authority_District_to_County_(April_2019)_Lookup_in_England.csv](covid/uploadFiles/Local_Authority_District_to_County_(April_2019)_Lookup_in_England.csv)", "*Local_Authority_District_to_County_(April_2019)_Lookup_in_England.csv*")` file, which has been downloaded from:
+
+[https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(LUP_LAD_CTY)](https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(LUP_LAD_CTY))
+
+This data frame has columns:
+
+* `FID`: an indicator number (not relevant here);
+* `LAD19CD`: Local Area District (LAD) code (of which LTLAs are a subset);
+* `LAD19NM`: LAD name;
+* `CTY19CD`: county code;
+* `CTY19NM`: county name;
+
+and we can load into R in the usual way:
 
 ```{r, eval = FALSE}
-## create vector of column names in date format
-dates <- read_excel("publishedweek262020.xlsx",
-    sheet = "Covid-19 - Weekly registrations", range = "C6:AB6") %>%
-    colnames() %>%
-    as.numeric() %>%
-    as.Date(origin = "1899-12-30")
-
-## read in the correct cells from the .xlsx
-deaths_regions <- read_excel("publishedweek262020.xlsx",
-    sheet = "Covid-19 - Weekly registrations", range = "A77:AB85",
-    col_names = FALSE)
-colnames(deaths_regions) <- c("Code", "Name", as.character(dates))
-deaths_regions <- gather(deaths_regions, date, deaths, -Code, -Name) %>%
-    mutate(date = as.Date(date)) %>%
-    filter(date >= "2020-03-07" & date <= "2020-06-26") %>%
-    group_by(Code) %>%
-    summarise(deaths = sum(deaths), .groups = "drop")
-deaths_regions
+## read in lookup table
+lookup <- read_csv("Local_Authority_District_to_County_(April_2019)_Lookup_in_England.csv")
+lookup
 ```
 
 ```{r, echo = FALSE, message = FALSE}
-## create vector of column names in date format
-dates <- read_excel("covid/uploadFiles/publishedweek262020.xlsx",
-    sheet = "Covid-19 - Weekly registrations", range = "C6:AB6") %>%
-    colnames() %>%
-    as.numeric() %>%
-    as.Date(origin = "1899-12-30")
+## read in lookup table
+lookup <- read_csv("covid/uploadFiles/Local_Authority_District_to_County_(April_2019)_Lookup_in_England.csv")
+lookup
+```
 
-## read in the correct cells from the .xlsx
-deaths_regions <- read_excel("covid/uploadFiles/publishedweek262020.xlsx",
-    sheet = "Covid-19 - Weekly registrations", range = "A77:AB85",
-    col_names = FALSE)
-colnames(deaths_regions) <- c("Code", "Name", as.character(dates))
-deaths_regions <- gather(deaths_regions, date, deaths, -Code, -Name) %>%
-    mutate(date = as.Date(date)) %>%
-    filter(date >= "2020-03-07" & date <= "2020-06-26") %>%
-    group_by(Code) %>%
-    summarise(deaths = sum(deaths), .groups = "drop")
-deaths_regions
+```{info, title = "Checking for mismatches (again)", collapsible = TRUE}
+As before, it's always worth checking that codes that you think should match, do in fact match between data sets. Here we are expecting the `LAD19CD` and `LAD19NM` in the `lookup` data frame to match to the `lad19cd` and `lad19nm` columns of the `ltla` data frame. 
+
+``{r}
+## check for unique entries
+group_by(lookup, LAD19CD) %>%
+    count() %>%
+    summary()
+
+## check that area codes and names can be matched
+anti_join(ltla, lookup, by = c("lad19cd" = "LAD19CD"))
+``
+
+Here there are a few regions that can't be matched, but none of these regions are in Devon, and since we are using the lookup to extract LTLAs in Devon, we don't have to worry about this here.
+```
+
+We wish to extract all LTLAs in Devon, hence we can do this by filtering `lookup` to extract the LTLAs in Devon, and then doing an `inner_join()` with the `ltla` data frame:
+
+```{r}
+## extract shapefile for LTLAs in Devon
+devon <- filter(lookup, CTY19NM == "Devon")
+devon <- inner_join(ltla, devon, by = c("lad19cd" = "LAD19CD", "lad19nm" = "LAD19NM"))
+```
+
+```{info, title = "Important", collapsible = FALSE}
+Since an `sf` object is a special type of data frame, if you want to join an `sf` object to another data frame but **keep the spatial information** so that you can use it for plotting etc., then you have to ensure that the `sf` object is the **left-hand** object in any **join**. If it is the right-hand object, then the combined data frame will strip all of the spatial information out. This is why I did this in two steps in the code above, rather than use a pipe. 
+
+There is a way to pipe objects into arguments other than the first in subsequent functions, but this requires special notation. For completeness the piped code would be:
+
+``{r}
+devon <- filter(lookup, CTY19NM == "Devon") %>%
+    {inner_join(ltla, ., by = c("lad19cd" = "LAD19CD", "lad19nm" = "LAD19NM"))}
+``
+
+Here the curly brackets `{}` in the pipe means that the internal function does not adhere to the usual pipe rules, and instead the period `.` is used to denote the input object, and thus here the filtered `lookup` table is used as the **second** argument to the `inner_join()`, and not the first. If you're interested in some **non-standard pipe features**, then more details can be found in the [`magrittr` vignette](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html).
+```
+
+Let's check this in a plot:
+
+```{r}
+## plot LTLAs in Devon
+ggplot(devon) + geom_sf()
 ```
 
 ```{task}
-Produce a spatial plot of the **proportion** of total deaths in each region between 7 March and 26 June 2020.
+Produce a spatial plot of the COVID-19 death rates in LTLAs in Devon for the week ending 24th October 2021. Use the `fill` aesthetic to `geom_sf()` to colour the LTLA regions according to the death rates.
 ```
 
 ```{solution}
+(Note I have added a legend label with a line break in it (`\n`) below for clarity. I also don't like the default `ggplot2` continuous colour palette, so have used a `viridis` palette instead.)
 
-``{r}
-## generate regional proportions
-temp <- mutate(deaths_regions, prop = deaths / sum(deaths))
+``{r, message = FALSE}
+## load viridis
+library(viridis)
 
-## join to `regions` data frame (making sure `regions` is on the
-## left-hand side of the join to maintain spatial information)
-temp_regions <- right_join(regions, temp, by = c("rgn19cd" = "Code"))
-
-## plot regions coloured by number of deaths
-ggplot(temp_regions) +
-    geom_sf(aes(fill = prop))
+## extract death rates in relevant week, and then
+## join to the shapefile and plot
+filter(covid_week, week == "2021-10-24") %>%
+    {inner_join(devon, ., by = c("lad19cd" = "areaCode", "lad19nm" = "areaName"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = death_rates)) +
+        labs(fill = "Death rates per\n100,000 population") +
+        scale_fill_viridis_c()
 ``
 
 ```
 
 ```{task}
-Produce a spatial plot of the **population fatality risks** in each region between 7 March and 26 June 2020. What can you say about any spatial patterns you see?
+Produce a set of spatial plots of the COVID-19 death rates in LTLAs in Devon for each month from October 2020 to October 2021. 
 ```
 
 ```{solution}
 
-``{r}
-## generate regional PFRs
-temp <- group_by(pop_regions, Code) %>%
-    summarise(population = sum(population), .groups = "drop") %>%
-    inner_join(deaths_regions, by = "Code") %>%
-    mutate(PFR = deaths / population)
-
-## join to `regions` data frame (making sure `regions` is on the
-## left-hand side of the join to maintain spatial information)
-temp_regions <- right_join(regions, temp, by = c("rgn19cd" = "Code"))
-
-## plot regions coloured by number of deaths
-ggplot(temp_regions) +
-    geom_sf(aes(fill = PFR))
+``{r, devon_rates, fig.width = 8, fig.height = 8, out.width = "100%", eval = FALSE}
+## summarise death counts over months
+mutate(covid_pop, month = ceiling_date(date, unit = "month")) %>%
+    group_by(areaCode, areaName, population, month) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    mutate(death_rates = 100000 * deaths / population) %>%
+    filter(month >= "2020-10-01" & month <= "2021-10-01") %>%
+    {inner_join(devon, ., by = c("lad19cd" = "areaCode", "lad19nm" = "areaName"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = death_rates)) +
+        facet_wrap(~month) +
+        labs(fill = "Death rates per\n100,000 population") +
+        scale_fill_viridis_c()
 ``
 
-It looks to me like during the first COVID-19 wave the population fatality rates were highest in the North-West of England and London, and lowest in the South-West.
 ```
+
+Hopefully you will have a plot that looks something like:
+
+```{r, fig.width = 8, fig.height = 8, out.width = "100%", echo = FALSE, ref.label = "devon_rates"}
+```
+
+```{r, echo = FALSE, message = FALSE}
+ggsave("slides/spatialCovid/images/devon.png", width = 10, height = 10)
+```
+
+These plots are useful to show how the death rates differ between spatial regions, with the risk adjusted for population sizes. They can be used to elucidate on spatial patterns of spread, or hotspots of infections/deaths. Here we can see the impact of the second wave and the beginnings of the third wave in Devon, with higher monthly death rates in and around the east side of Devon. Note that these are not stratified by age, so this represents an average rate over all age groups. We know from earlier work that the rates for young people will be less than the plotted values, and the rates for older people will be higher. We lose some information in the smoothing by month of course. 
+
+Note also that these plots do not estimate ***infection rates*** directly. Although one might expect death rates to follow infection rates in some sense, there are various other considerations, such as differing demographics (some areas have a younger population on average than others), as well as the time-lag between infections and deaths (so increasing infection rates occur before you see an increase in death rates). Infection rates are very challenging to estimate, since we do not have regular surveillance testing data on **all individuals** in the population over time. Even then, since the diagnostic tests are not 100% sensitive and specific, there are always false positives and false negatives to deal with. This sort of problem requires the development of sophisticated statistical or mathematical models to try to reconstruct the likely infection rates and numbers of infections at a point in time (with uncertainty), based on the observed deaths (and other data sources such as hospitalisations). This is a remarkably difficult and challenging problem. However, the outcomes of the models can be visualised using the same techniques as we have seen here, except presenting model outputs as opposed to data (or even combinations of the two). Colleagues working on modelling the pandemic have used these exact same techniques to produce real-time maps and graphs describing the evolution of the pandemic, and to present the results of their modelling efforts to policy makers. Really important and insightful work.
+
+## Additional (non-mandatory) plot
+
+Here animated visuals can sometimes help to elucidate some general patterns. The spatial structure of the disease spread is perhaps easier to see in the animation of death counts over time (rather than death rates). Hence the plot below is a weekly plot of death counts in different LTLAs, alongside a time-series of the total death counts across the whole country from October 2020--October 2021. Here we can see the spatial structure that emerges as the second wave progresses, and since London has lots of LTLAs crammed into a small space, we visualise this as an inset plot. We note that it is difficult to incorporate uncertainty estimates into these plots, so we just visualise the raw data. (If you are reading this on the PDF, then go to the HTML notes to see the animation.)
+
+Here we can see early clusters of deaths in the north of England in particular, before spreading around the country and getting into London. We can also see the large outbreak in Birmingham that we picked up before. Then we see the outbreak receding as the second wave passes, and then the beginnings of the third wave towards the end.
+
+(Note that it's not perfect---I still can't get the plot sizes to align exactly. You can do this for a **static** plot using `patchwork`---in fact `patchwork` enables you to inset plots and also ensure that plots are aligned and resized exactly. However, this does not carry over to animations, and as such this is currently the best version I have. However, it gives you some insight into the sorts of things that you can do in R.)
+
+```{r, eval = ifelse(file.exists("covid/images/deaths.gif"), FALSE, TRUE), echo = FALSE}
+saveRDS(covid, "covid.rds")
+saveRDS(ltla, "ltla.rds")
+saveRDS(lookup, "lookup.rds")
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), FALSE, TRUE), out.width = "80%"}
+include_graphics("covid/images/deaths.gif")
+```
+
+```{r, echo = FALSE, eval = ifelse(is_latex_output(), TRUE, FALSE), out.width = "80%"}
+include_graphics("covid/images/deaths_gif.png")
+```
+
+```{info, title = "Code for producing animation", collapsible = TRUE}
+**Note**: this is additional material, and is not mandatory. Hence you are **not expected** to understand the code below fully. However, if you are interested in how I got this to work, then the code and some explanation is below. Note that you will need the `magick` package installed, and the animations may take a while to render. In fact this process is pretty memory intensive, and crashed my machine a few times when creating the combined `.gif` files. **So make sure you save all your work before you to attempt this (if indeed you want to)!** (Note that `magick` has not been installed on the University machines.)
+
+To produce this animation is slightly more convoluted than the previous animations, since it involves combining three separate animations---one for the national LTLAs, one for the London LTLAs, and one for the time-series. We can produce each separate animation using `gganimate`, as we have seen before. Notice that this time we use `transition_reveal()` in the time-series plot, rather than `transition_time()` (which we use in the spatial plots). This is because we want to allow time-points to gradually appear along the time-series. We need to make sure that there are the same number of transitions and at the same time-points between the three animations when we combine them. The `complete()` function is a useful tool for this, since it expands data frames to include any missing combinations of variables, so here we expand to include all combinations of LTLAs and weeks. This should mean that the animations operate on the same size data sets with the same transition times.
+
+We then use the [`magick`](https://cran.r-project.org/web/packages/magick/vignettes/intro.html#Animation) package to bind the three separate animations into one, and write out a new `.gif` file. At the moment we can't do this latter part in `gganimate`. Thanks to the solution [here](https://github.com/thomasp85/gganimate/wiki/Animation-Composition) for providing a means to get this working. Note that to get the inset working, we also have to re-scale the London frames, and insert them into the corresponding national frames.
+
+``{r, eval = FALSE}
+## extract London LTLAs
+london <- filter(lookup, CTY19NM == "Inner London" | CTY19NM == "Outer London") %>%
+    {inner_join(ltla, ., by = c("lad19cd" = "LAD19CD", "lad19nm" = "LAD19NM"))}
+
+## spatial gif of deaths
+p1 <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, areaName, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>%
+    complete(areaCode, week) %>%
+    {inner_join(ltla, ., by = c("lad19cd" = "areaCode"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = deaths), colour = NA) +
+        scale_fill_viridis_c(limits = c(0, 200)) +
+        theme_bw() +
+        xlim(-116.1928, 1000000) +
+        labs(fill = "Deaths within 28 days\nof a positive test")
+
+## spatial gif for London
+p2 <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, areaName, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>%
+    complete(areaCode, week) %>%
+    {inner_join(london, ., by = c("lad19cd" = "areaCode"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = deaths), colour = NA) +
+        scale_fill_viridis_c(limits = c(0, 200)) +
+        labs(fill = "Deaths within 28 days\nof a positive test") +
+        theme_bw() +
+        theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            legend.position = "none",
+            panel.border = element_rect(colour = "black", fill = NA, size = 2)
+        )
+
+## add animations
+p1 <- p1 + transition_time(week)
+p2 <- p2 + transition_time(week)
+spatial_gif1 <- animate(p1)
+spatial_gif2 <- animate(p2)
+
+## read in gif frames
+spatial_gif1_img <- image_read(spatial_gif1)
+spatial_gif2_img <- image_read(spatial_gif2)
+
+## rescale inset and combine images
+spatial_gif2_img[1] <- image_scale(spatial_gif2_img[1], "125")
+spatial_gif <- image_composite(spatial_gif1_img[1], spatial_gif2_img[1], offset = "+200+100")
+for(i in 2:length(spatial_gif1_img)) {
+    spatial_gif2_img[i] <- image_scale(spatial_gif2_img[i], "125")
+    spatial_gif <- c(spatial_gif, image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
+}
+
+## remove old objects and garbage collect to reclaim memory
+## which hopefully should alleviate crashes - at least on my machine
+## it did
+rm(spatial_gif1, spatial_gif2, spatial_gif1_img, spatial_gif2_img)
+gc()
+
+## time-series gif of deaths
+p <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>% 
+    complete(areaCode, week) %>%
+    group_by(week) %>%
+    summarise(
+        deaths = sum(deaths, na.rm = TRUE),
+        .groups = "drop"
+    ) %>%
+    ggplot() +
+        geom_line(aes(x = week, y = deaths)) +
+        ylab("Deaths within 28 days of a positive test") +
+        xlab("Date") +
+        theme_bw()
+
+## create time-series gif
+p <- p + transition_reveal(week) +
+    ggtitle("{frame_along}")
+time_gif <- animate(p)
+
+## bind gifs together
+time_gif_img <- image_read(time_gif)
+comb_gif <- image_append(c(time_gif_img[1], spatial_gif[1]))
+for(i in 2:length(spatial_gif)) {
+    comb_gif <- c(comb_gif, image_append(c(time_gif_img[i], spatial_gif[i])))
+}
+
+## clean and garbage collect
+rm(time_gif, spatial_gif, time_gif_img)
+gc()
+
+## create animation
+comb_gif_an <- image_animate(comb_gif, fps = 4, optimize = TRUE)
+
+## save animation
+image_write(comb_gif_an, "deaths.gif")
+``
+
+```
+
+```{r, eval = FALSE, echo = FALSE}
+## this needs to be run manually if required
+
+## load library
+library(tidyverse)
+library(sf)
+library(gganimate)
+library(magick)
+library(lubridate)
+
+## read in data
+covid <- readRDS("covid.rds")
+ltla <- readRDS("ltla.rds")
+lookup <- readRDS("lookup.rds")
+
+## extract London LTLAs
+london <- filter(lookup, CTY19NM == "Inner London" | CTY19NM == "Outer London") %>%
+    {inner_join(ltla, ., by = c("lad19cd" = "LAD19CD", "lad19nm" = "LAD19NM"))}
+
+## spatial gif of deaths
+p1 <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, areaName, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>%
+    complete(areaCode, week) %>%
+    {inner_join(ltla, ., by = c("lad19cd" = "areaCode"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = deaths), colour = NA) +
+        scale_fill_viridis_c(limits = c(0, 200)) +
+        theme_bw() +
+        xlim(-116.1928, 1000000) +
+        labs(fill = "Deaths within 28 days\nof a positive test")
+p2 <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, areaName, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>%
+    complete(areaCode, week) %>%
+    {inner_join(london, ., by = c("lad19cd" = "areaCode"))} %>%
+    ggplot() +
+        geom_sf(aes(fill = deaths), colour = NA) +
+        scale_fill_viridis_c(limits = c(0, 200)) +
+        labs(fill = "Deaths within 28 days\nof a positive test") +
+        theme_bw() +
+        theme(
+            axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            legend.position = "none",
+            panel.border = element_rect(colour = "black", fill = NA, size = 2)
+        )
+
+## add animations
+p1 <- p1 + transition_time(week)
+p2 <- p2 + transition_time(week)
+spatial_gif1 <- animate(p1)
+spatial_gif2 <- animate(p2)
+
+## bind gifs together
+spatial_gif1_img <- image_read(spatial_gif1)
+spatial_gif2_img <- image_read(spatial_gif2)
+
+## rescale inset and combine images
+spatial_gif2_img[1] <- image_scale(spatial_gif2_img[1], "125")
+spatial_gif <- image_composite(spatial_gif1_img[1], spatial_gif2_img[1], offset = "+200+100")
+for(i in 2:length(spatial_gif1_img)) {
+    spatial_gif2_img[i] <- image_scale(spatial_gif2_img[i], "125")
+    spatial_gif <- c(spatial_gif, image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
+}
+rm(spatial_gif1, spatial_gif2, spatial_gif1_img, spatial_gif2_img)
+gc()
+
+## time-series gif of deaths
+p <- mutate(covid, week = ceiling_date(date, unit = "week")) %>%
+    group_by(areaCode, week) %>%
+    summarise(deaths = sum(deaths, na.rm = TRUE), .groups = "drop") %>%
+    filter(week >= "2020-10-01" & week <= "2021-10-01") %>% 
+    complete(areaCode, week) %>%
+    group_by(week) %>%
+    summarise(
+        deaths = sum(deaths, na.rm = TRUE),
+        .groups = "drop"
+    ) %>%
+    ggplot() +
+        geom_line(aes(x = week, y = deaths)) +
+        ylab("Deaths within 28 days of a positive test") +
+        xlab("Date") +
+        theme_bw()
+
+## create time-series gif
+p <- p + transition_reveal(week) +
+    ggtitle("{frame_along}")
+time_gif <- animate(p)
+
+## bind gifs together
+time_gif_img <- image_read(time_gif)
+comb_gif <- image_append(c(time_gif_img[1], spatial_gif[1]))
+for(i in 2:length(spatial_gif)) {
+    comb_gif <- c(comb_gif, image_append(c(time_gif_img[i], spatial_gif[i])))
+}
+rm(time_gif, spatial_gif, time_gif_img)
+gc()
+comb_gif_an <- image_animate(comb_gif, fps = 4, optimize = TRUE)
+image_write(comb_gif[30], "deaths_gif.png", format = "png")
+image_write(comb_gif_an, "deaths.gif")
+file.copy("deaths.gif", "covid/images/deaths.gif")
+file.copy("deaths_gif.png", "covid/images/deaths_gif.png", overwrite = TRUE)
+file.remove("deaths.gif")
+file.remove("deaths_gif.png")
+
+## remove interim files
+file.remove("covid.rds")
+file.remove("ltla.rds")
+file.remove("lookup.rds")
+```
+
+I hope that you can begin to see the power of these packages for summarising and visualising complex data sets. These skills should give you the ability to manipulate complex data sets, join information stored in different places, and create bespoke plots and summaries as required. This should also help facilitate any further statistical analyses.

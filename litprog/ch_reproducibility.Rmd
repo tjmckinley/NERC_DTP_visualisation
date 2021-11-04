@@ -1,44 +1,121 @@
-# Reproducibility {#reproducibility}
+# (PART) Literate Programming and reproducible research in R {-}
 
-We have seen how we can use R as both a high-level programming language, and a highly functional statistical package. In this practical we focus on the subject of **reproducibility**. Reproducibility is a key component in providing a strong [evidence base](https://en.wikipedia.org/wiki/Reproducibility) for scientific findings. It is a controversial topic, particularly in areas such as [experimental biology](http://www.nature.com/news/1-500-scientists-lift-the-lid-on-reproducibility-1.19970). 
+# Reproducible research
 
-The same issues are also true of statistical analyses, and although scientific papers often include a "Materials and Methods" section, where the statistical methods are described, these are often not entirely **reproducible**. Often these sections are the equivalent of [pseudo-code](https://en.wikipedia.org/wiki/Pseudocode)---mapping out a process for the analysis. In this sense they provide a high-level overview of the general approach, but without all of the details, which can often matter in ways that we do not envisage. 
+In this practical we will focus on the important concepts of **reproducibility** , **literate programming** and **version control**. We have already seen the fundamental tool for reproducibility: the humble **script file**! This keeps a full record of everything you have done, and along with informative **commenting**, should allow for an analysis to be reproduced at a later time point. Furthermore, since a script file is simply a **text file**, it can be easily shared with other people.
+
+```{info, title = "Important", collapsible = FALSE}
+Making an analysis or piece of research **reproducible** is a fundamental part of modern scientific research. This challenge is wider than just reproducing computer code, and much has been written about the consequences of an ongoing [reproducibility crisis](https://en.wikipedia.org/wiki/Replication_crisis). 
+
+Whilst we can't solve every replication challenge here, we can tackle one of the key ones, which is the **replication of computational (and statistical) analysis**. In short, this means that we should be working towards a situation where all code used in a given analysis is fully documented and replicable.
+
+It is worth noting that although scientific papers often include a "Materials and Methods" section, where the statistical methods are described, these are not always entirely **reproducible**. Often these sections are the equivalent of [pseudo-code](https://en.wikipedia.org/wiki/Pseudocode)---mapping out a process for the analysis rather than allowing one to replicate the analysis exactly. In this sense they provide a high-level overview of the general approach, but without all of the details, which can often matter in ways that we do not envisage. 
+```
+
+Script files are key components of reproducible research, but there are also other recently developed tools that build on these ideas that can help make various aspects of the analysis process much easier. In particular we will explore **literate programming** tools such as `rmarkdown`, that allow us to produce documents that intertwine code and outputs, and that can be exported in various formats, including HTML documents, PDF documents, and even Word documents.
+
+Finally, we will also introduce the concept of **version control**, which, in my opinion, is one of ***the most important*** tools that I lean on in everyday research. This is a way of tracking and documenting **code development**, as opposed to just a final piece of code. You can think about it a bit like **tracked changes**, but for code (though it is far, far more useful than just that)!
+
+## Packages
+
+Key packages we will be using include [`knitr`](https://yihui.org/knitr/), [`rmarkdown`](https://rmarkdown.rstudio.com/) and [`tinytex`](https://yihui.org/tinytex/), though these are installed automatically with RStudio. In addition, RStudio makes it very easy to utilise these packages, and has built-in support for various key functions that we will use.
+
+## Script files
 
 We have already seen that R allows us to write **script files**, that details our exact analysis, and that can be used to make our code **reproducible**. I would argue that the transition from a **basic** script file (i.e. a text file that contains some code), to a **reproducible** script file hinges on the **purpose** of the script. Allow me to elaborate...
 
-One way in which script files can be used is simply as a means to record a series of commands that run some functions. Taken to its extreme, an [.Rhistory](http://stat.ethz.ch/R-manual/R-devel/library/utils/html/savehistory.html) file can be generated, which saves every command entered into the console window during a given R session. Whilst this is better than no record at all, it is difficult to discern exactly what is going on. The file contains **no commenting**, **no formatting**, and will often include many entries that are simply **not relevant** to the end result (such as when we are testing code out or trying to fix errors). In this sense, the .Rhistory file enables us to **reproduce** all the steps we have taken in a given R session, but it is not a **reproducible** document in the sense of helping us to make sense of what our goals were and **why** we did the analysis in the way we did.
+One way in which script files can be used is simply as a means to record a series of commands that run some functions. Taken to its extreme, an [.Rhistory](http://stat.ethz.ch/R-manual/R-devel/library/utils/html/savehistory.html) file can be generated, which saves **every command** entered into the console window during a given R session. Whilst this is better than no record at all, it is difficult to discern exactly what is going on. The file contains **no commenting**, **no formatting**, and will often include many entries that are simply **not relevant** to the end result (such as when we are testing code out or trying to fix errors). In this sense, the `.Rhistory` file enables us to **reproduce** all the steps we have taken in a given R session, but it is not a **reproducible** document in the sense of helping us to make sense of what our goals were and **why** we did the analysis in the way we did.
 
-> I am defining **reproducibility** here, not only to mean that the steps of an analysis can be repeated, but also to mean that the steps of an analysis can be **understood**. Scripts should help us understand both **how** and **why** we did things. A key focus is therefore on **clarity**!
-
-Here is a simple example of a *reproducible script*: 
-<a id="wormscript"></a>
-```{r code = readLines("litprog/uploadFiles/worms.R"), eval = F}
+```{info, title = "Note", collapsible = FALSE}
+I am defining **reproducibility** here, not only to mean that the steps of an analysis can be repeated, but also to mean that the steps of an analysis can be **understood**. Scripts should help us understand both **how** and **why** we did things. A key focus is therefore on **clarity**!
 ```
 
-The **purpose** of this script was to import some data from a *.csv* file, summarise the data and produce some histograms of key variables, before visually exploring the relationship between worm density and area (note that in practice we could do this more succinctly using `tidyverse`). This script has several key features:
+Here is a simple example of a **reproducible script**: 
+
+```{hypertarget, label = "ffscript"}
+```
+
+```{r code = readLines("litprog/ff.R"), eval = FALSE}
+```
+
+```{info, title = "Important", collapsible = FALSE}
+The **purpose** of this script was to import and clean-up some data from a `.csv` file, before visually exploring the relationship between longevity and the other variables. This script has several key features:
 
 * It is **commented**.
 * It is formatted neatly (spaces / indentation etc. used sensibly).
-* No **extraneous** code (only **final** versions of plots included).
-* In this case the script can be run directly, with no errors or further user input required to produce the final plots / summaries. (We can use the `source()` function in R to run all entries in a script file.)
+* No **extraneous** code (e.g. only **final** versions of plots included).
+* Where possible, the script file should be able to be run directly, with no errors or interactive user input required to produce the final plots / summaries. (We can use the `source()` function in R to run a script file from start-to-finish if we like.)
 
-Although there are not hard and fast rules for writing these scripts, I think these are sensible aspects to consider when writing your own scripts. 
-
-> Please note that often I will have different script files for different aspects of an analysis, or for testing and trialling different pieces of code. More recently, I have started to use [Git](https://git-scm.com/) to manage versions of my code, allowing me to roll-back to earlier versions, or even create trial versions of my code without compromising the final **"clean"** script file. You choose whatever way suits you best, but be warned, if submitting code for assessment by me I **expect** it to follow the above rules where possible!
-
-Recently, the advent of electronic supplementary information for journal articles enables us to potentially overcome reproducibility issues by providing all the code required to reproduce an analysis exactly as part of the paper. 
-
-```{task}
-The data file ('worms.csv') and script file ('worms.R') can be found on the workshop website. Download these and run the full script using: `source("worms.R")`. Run the commands in the script file line-by-line and understand what they are doing.
+Although there are not hard and fast rules for writing these scripts, I think these are sensible aspects to consider when writing your own scripts.
 ```
 
-```{task}
-The file "ff.rds" contains data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies. Download this data set to your working directory, and create a script file that loads in the data, summarises the data set, and produces plots of `thorax` against `group`, `longevity` against `group`, and `longevity` against `thorax`. 
-
-Make sure the code adheres to all the rules described above. Once written, save as an R script file and try to run the entire script using `source()` (or by hitting the **Source** button along the top of the **Script** pane in RStudio).
-
-**Note**: I've done this in base R, but if you use `tidyverse` then all the better!
+```{info, title = "Note", collapsible = FALSE}
+Please note that often I will have different script files for different aspects of an analysis, or for testing and trialling different pieces of code. More recently, I have started to use [Git](https://git-scm.com/) to manage versions of my code, allowing me to roll-back to earlier versions, or even create trial versions of my code without compromising the final **"clean"** script file. You choose whatever way suits you best, but be warned, if submitting code for assessment I **expect** it to follow the above rules where possible!
 ```
 
-```{solution, code = readLines("litprog/ff.R"), eval = F}
+Recently, the advent of electronic supplementary information for journal articles enables us to potentially overcome reproducibility issues by providing all necessary code as part of the paper.
+
+## A note on folder structures
+
+```{info, title = "Important", collapsible = FALSE}
+This is useful advice, so I'm going to stick it all in a shiny box!
+
+I've found it is really important to keep code for projects or analyses neatly structured within folders. For example, I will often create a new folder for a specific project, and if possible, I put all code and data sets required into that folder. This means that:
+    
+* this main folder can be set as the **working directory** in R, meaning that within your scripts files all paths to input or output files can be made **relative** to the working directory (e.g. `read_csv("ff.csv")` as opposed to\newline`read_csv("/home/users/tj/Documents/analyses/fruitflies/ff.csv")`). This has the added advantage that if you share your folder with collaborators, then they do not have to update all the paths to match their own machines. I often find it useful to use sub-folders *within* your working directory however, just to keep things organised (e.g. `read_csv("dataFiles/ff.csv")`).
+* it keeps the analysis self-contained, and means that analyses can be easily **shared** by simply zipping up the main folder (or even better, it can be easily turned into and managed as a **Git repository**).
+* You can break up your code into multiple script files as required, and include a `README` file documenting how to reproduce the code (i.e. what order to run your files in etc.). You can even have an **uber-script** file, that runs all other script files in order as required.
+
 ```
+
+RStudio has a new feature called [**RStudio Projects**](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) which associates a directory with a specific project, and then has some useful features like keeping unsaved code and automatically setting the working directory path when the project is opened. We won't focus on this much here, but it can be useful (though not critical).
+
+## Literate programming {#litprog}
+
+Having a neat script file is the first step towards creating fully reproducible analyses. However, R offers more functionality than just the ability to write and comment scripts. There have been a series of key packages that have enabled R users to mix **input code** with **outputs** from the code, to produce fully reproducible **documents** (as opposed to *just* script files). This is otherwise known as [**literate programming**](https://cran.r-project.org/web/views/ReproducibleResearch.html).
+
+The first major package was `sweave`, written by Friedrich Leisch, which allowed R code to be integrated into [LaTeX](https://www.latex-project.org/) documents^[LaTeX is a piece of software designed to make beautifully typeset documents, and is the *de facto* software of choice for many mathematics journals]. The `sweave` functionality has now been integrated into the fantastic [`knitr`](https://yihui.name/knitr/) package by [Yihui Xie](https://yihui.name/en/). `knitr` works with a variation of [Markdown](https://en.wikipedia.org/wiki/Markdown), and allows code snippets (or **chunks**) to be integrated into a document, meaning that the code chunks are run as the document is typeset. This enables R coders to integrate input code and outputs within the same document. This has the additional benefit that there is a one-to-one relationship between the inputs and outputs; thus alleviating "cut-and-paste" errors^[within reason---there are ways to introduce errors, but in general it is more difficult].
+
+### Markdown
+
+Markdown is a lightweight mark-up language that was originally designed to allow users to write HTML documents without needing to know how to code in HTML. However, powerful converters such as [pandoc](http://pandoc.org/) have extended this so that documents written in Markdown can be converted into a variety of different outputs, such as PDF or Word.
+
+Markdown was created with the mandate that documents should be **easy to read**---in essence you trade flexibility in formatting for ease-of-coding and understanding. [LaTeX](https://www.latex-project.org/) for example, is a phenomenally powerful typesetting language, but has a steep learning curve. In contrast, R Markdown can be summarised on two sides of A4: through the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf). 
+
+There are various "flavours" of Markdown, for example [GitHub-flavoured Markdown](https://guides.github.com/features/mastering-markdown/) is used on GitHub to render code and equations. R uses a version called [R Markdown](http://rmarkdown.rstudio.com/), and the developers of RStudio have integrated this directly in the RStudio IDE as part of the [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/index.html) package. They even provide lots of functionality for writing and typesetting R Markdown documents.
+
+R Markdown is not limited solely to simple reproducible reports. A great place to start would be to browse the R Markdown website at [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/).
+
+```{info, title = "Note", collapsible = FALSE}
+R is a fast developing language, and RStudio a fast developing piece of software. Be aware that sometimes packages change, and so code that works using older versions of a package might not work with later versions. This is usually uncommon, and is often straightforward to sort out. Very occasionally packages become deprecated, or subsumed into other packages, and so you might have to update your code accordingly from time-to-time. (Another reason why [Git](https://git-scm.com/) is so useful---which we will come to later on!)
+```
+
+### Notepads and reports
+
+One option that RStudio allows is for the user to create a simple report directly from an R script. This functionality is called **Compile Report**, and can be triggered in my version of RStudio by the shortcut `Ctrl-Shift-K`. Firstly, download the R script file `ff.R` from the workshop website into your working directory, and then load it into RStudio. This is a copy of the script we wrote earlier, and should contain the code [here](#ffscript).
+
+The **Compile Report** option can also be triggered by hitting the report button shown in Figure \@ref(fig:comprep) (note that if you have a different version of RStudio, this button might be in a different place).
+
+```{r, comprep, fig.cap = "Compile Report button", echo = FALSE, out.width = "80%", out.height = "80%"}
+include_graphics("litprog/images/compilereport.png")
+```
+
+This then brings up a window asking what output format you would like to compile into Figure \@ref(fig:comprep1).
+
+```{r, comprep1, fig.cap = "Compile Report window", echo = FALSE, out.width = "50%", out.height = "50%"}
+include_graphics("litprog/images/compilereport1.png")
+```
+
+There are three main options:
+
+1. **PDF**: this requires that LaTeX is installed on your system. There are various options, but the easiest is to install the [`tinytex`](https://yihui.org/tinytex/) package in R. Once this is installed, RStudio should deal with all of the typesetting for you. 
+2. **HTML**: this should work out-of-the-box, and produces a standalone HTML page that can be viewed in a standard web browser. (RStudio also provides a lightweight browser to view these pages, which it usually loads automatically.)
+3. **Microsoft Word**: this should also work as long as a copy of Word is installed. 
+
+Feel free to play around with these options. To begin with, choose the HTML option, and RStudio should open the compiled document in the **Viewer** pane, as shown in Figure \@ref(fig:report).
+
+```{r, report, fig.cap = "HTML report", echo = FALSE, out.width = "60%", out.height = "60%"}
+include_graphics("litprog/images/htmlreport.png")
+```
+
+Notice that we have yet to write *any* markdown yet at all; R has simply run each command in the script, and produced an output document that weaves the input code and the corresponding outputs. This is really useful to visualise and check your code, but is not particularly beautiful or informative to look at!

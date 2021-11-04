@@ -1,23 +1,28 @@
 # R Markdown
 
-In the last section we saw that it is possible to generate quick reports directly from R script files. However, this lacks any ability to control the formatting of the output. To this end we can start to think about how to create a simple R Markdown script.
+```{info, title = "Note", collapsible = FALSE}
+An awesome reference for all things `rmarkdown` is the **R Markdown Cookbook**, which can be found\
+[https://bookdown.org/yihui/rmarkdown-cookbook/](https://bookdown.org/yihui/rmarkdown-cookbook/)
+```
 
-An R Markdown script is usually suffixed with ".Rmd", but is simply a text file in the same way that standard R scripts are. RStudio offers a useful default template that can be used to initialise a new document. Go to *File > New File > R Markdown*, and you get an option window that looks like Figure \@ref(fig:rmarkdown). In the first instance choose the **HTML** option and click `OK`.
+We have seen that it is possible to generate quick reports directly from R script files. However, this lacks any ability to control the formatting of the output. To this end we can start to think about creating a simple R Markdown script.
 
-```{r, rmarkdown, fig.cap = "R Markdown choices", echo = F, out.width = "50%", out.height = "50%"}
+An R Markdown script is usually suffixed with `.Rmd`, but is simply a text file in the same way that standard R scripts are. RStudio offers a useful default template that can be used to initialise a new document. Go to *File > New File > R Markdown*, and you get an option window that looks like Figure \@ref(fig:rmarkdown). In the first instance choose the **HTML** option and click `OK`.
+
+```{r, rmarkdown, fig.cap = "R Markdown choices", echo = FALSE, out.width = "50%", out.height = "50%"}
 include_graphics("litprog/images/rmarkdownchoices.png")
 ```
 
 This creates a new document which looks like Figure \@ref(fig:rmarkdowntmp):
 
-```{r, rmarkdowntmp, fig.cap = "R Markdown template", echo = F, out.width = "80%", out.height = "80%"}
+```{r, rmarkdowntmp, fig.cap = "R Markdown template", echo = FALSE, out.width = "80%", out.height = "80%"}
 include_graphics("litprog/images/rmarkdown.png")
 ```
 
 ```{task}
-To start with, click the 'Knit' button shown by the red circle in the figure above to typeset the document (you will have to save the R Markdown document in your working directory---I called it "test.Rmd"). You can see that it's produced a HTML document with the code and output weaved together. (As an aside, `cars` is a dataset provided in the `datasets` package loaded automatically by R---see `?cars`.) 
+To start with, click the 'Knit' button shown by the red circle in the figure above to typeset the document (you will have to save the R Markdown document in your working directory---I called it `test.Rmd`). You can see that it's produced a HTML document with the code and output weaved together. (As an aside, `cars` is a dataset provided in the `datasets` package loaded automatically by R---see `?cars`.) 
      
-Try compiling to a PDF (if LaTeX is installed), or a Word document by clicking on the arrow next to the 'Knit' button and choosing accordingly.
+Try compiling to a PDF, or a Word document by clicking on the arrow next to the 'Knit' button and choosing accordingly.
 ``` 
 
 Let's talk through the different components of the Markdown code.
@@ -26,7 +31,7 @@ Let's talk through the different components of the Markdown code.
 
 The top section is called the YAML. (This stands for "YAML Ain't Markup Language"---a [recursive acronym](https://en.wikipedia.org/wiki/Recursive_acronym) of the sort favoured by programmers worldwide.)
 
-```{r, echo = F}
+```{r, echo = FALSE}
 cat("---
 title: \"Untitled\"
 output: html_document
@@ -37,19 +42,17 @@ The YAML contains information about the **document**, and has various options, i
 
 ## Formatting
 
-Formatting in R Markdown is very simple: `#` denote **sections**, with subsections denoted by including more hashes (for example `##` denotes a second order sub-section and so on). *Italics* are typeset by enclosing a word or section in single `*` symbols, for example: `*this is in italics*` will typeset: *this is in italics*.
-
-**Bold** type is written by enclosing a word or section in double `*` symbols, for example: `**this is bold**` will typeset: **this is bold**.
+Formatting in R Markdown is very simple: `#` denote **sections**, with subsections denoted by including more hashes (for example `##` denotes a second order sub-section and so on). *Italics* are typeset by enclosing a word or section in single `*` symbols, for example: `*this is in italics*` will typeset: *this is in italics*. **Bold** type is written by enclosing a word or section in double `*` symbols, for example: `**this is bold**` will typeset: **this is bold**.
 
 ```{task}
-A full list of formatting options can be found in the [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf). Take a look at this document and familiarise yourself with the options.
+A full list of formatting options can be found in the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf). Take a look at this document and familiarise yourself with the options. We will cover some of them below.
 ```
 
 ## R code chunks
 
-R code chunks can be included by enclosing in backticks ```. For example,
+R code chunks can be included by enclosing with backticks ```. For example,
 
-```{r, comment = NA, echo = F}
+```{r, comment = NA, echo = FALSE}
 cat("```{r}
 summary(cars)
 ```")
@@ -61,106 +64,139 @@ will run the code inside the **chunk** i.e. `summary(cars)`. It will then insert
 summary(cars)
 ```
 
-The **chunk** can take various options. The first line `` ```{r} ``, says that we use the R engine to process the chunk (i.e. that the code inside the chunk should be run in R). The `knitr` package allows for other languages (such as Python) to be used inside code chunks. 
+The **chunk** can take various options, which must be included in the set of curly brackets. The first line `` ```{r} ``, says that we use the R engine to process the chunk (i.e. that the code inside the chunk should be run in R). The `knitr` package allows for other languages (such as Python) to also be used inside code chunks. 
 
-If we want to typeset the code chunk but not run it, we can use the `eval` option to turn code evaluation off e.g.
+For example, if we want to typeset the code chunk but **not run it**, we can use the `eval` option to turn code evaluation off e.g.
 
-```{r, comment = NA, echo = F}
-cat("```{r, eval = F}
+```{r, comment = NA, echo = FALSE}
+cat("```{r, eval = FALSE}
 summary(cars)
 ```")
 ```
 
 will produce
 
-```{r, eval = F}
+```{r, eval = FALSE}
 summary(cars)
 ```
 
 **(Note: no output chunk.)**
 
-Similarly, we can hide the source code but include the outputs by using the `echo` option e.g.
+Similarly, we can **hide the source code** by using the `echo` option e.g.
 
-```{r, comment = NA, echo = F}
-cat("```{r, echo = F}
+```{r, comment = NA, echo = FALSE}
+cat("```{r, echo = FALSE}
 summary(cars)
 ```")
 ```
 
 will produce
 
-```{r, echo = F}
+```{r, echo = FALSE}
 summary(cars)
 ```
 
 **(Note: no source code chunk.)**
 
-There are various options that can be passed to code chunks, perhaps the most useful being `echo` and `eval` (to decide whether source code should be run or not). A full list of options is given in the [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf).
+There are various options that can be passed to code chunks, perhaps the most useful being `echo` and `eval` (to decide whether source code should be run and/or displayed). A full list of options is given in the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf).
 
 ```{task}
-Have a play with different chunk options using this test document and the [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf). Familiarise yourselves with the `eval` and `echo` options in particular.
+Have a play with different chunk options using this test document and the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf). Familiarise yourselves with the `eval` and `echo` options in particular.
 ```
 
 ### Global options
 
 Notice in this template document that there is a chunk at the beginning that looks like
 
-```{r, comment = NA, echo = F}
+```{r, comment = NA, echo = FALSE}
 cat("```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```")
 ```
 
-The function `opts_chunk$set()` allows the user to set **global options**. In this case setting the `echo` option to be true by default. (Note that options added to individual code chunks override these global options, so I can still set `echo = F` for particular chunks if required.) Notice also the use of the option `include = FALSE` to this chunk. This means that the function is run, but neither the source code or outputs are included in the compiled document. This is useful here, since the contents of this chunk relate to the processing of the R Markdown document, and do not play any role in the "analysis".
+The function `opts_chunk$set()` allows the user to set **global options**. In this case setting the `echo` option to be `TRUE` by default. (Note that options added to individual code chunks override these global options, so I can still set `echo = FALSE` for specific chunks if required.) Notice also the use of the option `include = FALSE` to this chunk. This means that the function is run, but neither the source code or outputs are included in the compiled document. This is useful here, since the contents of this chunk relate to the processing of the R Markdown document, and do not play any role in the "analysis".
 
-> **Aside**: The `opts_chunk$set()` function is part of the `knitr` package, and the `knitr::` part is just making this explicit. As long as the `knitr` package is loaded (using `library(knitr)`), then you do not need to add the `knitr::` part. This format can be useful if you want to use specific functions from a package, but without loading the whole library. There are some technicalities around this (RStudio loads the `namespace` of `knitr` already---this is not true for all packages), so a more general option would be:
-> ```{r, comment = NA, echo = F}
-> cat("```{r setup, include = FALSE}
-> library(knitr)
-> opts_chunk$set(echo = TRUE)
-> ```")
-> ```
+```{info, title = "Aside", collapsible = FALSE}
+The `opts_chunk$set()` function is part of the `knitr` package, and the `knitr::` part is just making this explicit. As long as the `knitr` package is loaded (using `library(knitr)`), then you do not need to add the `knitr::` part. This format can be useful if you want to use specific functions from a package, but without loading the whole library. There are some technicalities around this (RStudio loads the `namespace` of `knitr` already---this is not true for all packages), so a more general option would be:
+    
+``{r, comment = NA, echo = FALSE}
+cat("``{r setup, include = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+``")
+``
 
-This is a useful feature, for example, I often use global options to set figure dimensions (and other useful features, like the `tidy` option, that tidies code and prevents long lines from overrunning the edge of the code boxes) e.g.
+```
 
-```{r, comment = NA, echo = F}
+This is a useful feature, for example, I often use global options to set figure dimensions (and other useful features, like the `tidy` option, that tidies code and prevents long lines from over-running the edge of the code boxes) e.g.
+
+```{r, comment = NA, echo = FALSE}
 cat("```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = T, eval = T, fig.width = 6, fig.height = 6, 
-    tidy.opts = list(width.cutoff = 60), tidy = T)
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = \"center\", fig.width = 6, fig.height = 6, 
+    tidy.opts = list(width.cutoff = 60), tidy = TRUE)
 ```")
+```
+
+```{info, title = "Note", collapsible = FALSE}
+If you are loading `tidyverse` as part of an R Markdown document, and you want to knit to a PDF document using LaTeX, then it sometimes throws an error when loading because LaTeX can't process the correct fonts for the loading message. Hence in R Markdown documents I always suppress the load messages through the chunk option `message = FALSE` e.g.
+
+``{r, comment = NA, echo = FALSE}
+cat("``{r, message = FALSE}
+library(tidyverse)
+``")
+``
+
 ```
 
 ### Named chunks
 
 Chunks can also be **named**. In the example, one chunk looks like:
     
-```{r, comment = NA, echo = F}
+```{r, comment = NA, echo = FALSE}
 cat("```{r cars}
 summary(cars)
 ```")
 ```
 
-Here they have **named** the chunk `cars` (the name is the first argument after the `r` engine indicator, unless we pass named arguments). Naming is useful if we wish to reuse chunks later on, without rewriting all the code. Personally I only name chunks if I wish to reuse them. **Chunks must have unique names else `knitr` will throw an error**. If names are not provided, then `knitr` generates them for you. To reuse earlier named code chunks, one can enclose the name of the required chunk in `<< >>` operators. In the example above, the chunk is named `cars`, and hence a second chunk
+Here they have **named** the chunk `cars` (the name is the first argument after the `r` engine indicator, unless we pass named arguments). Naming is useful if we wish to reuse chunks later on, without rewriting all the code. Personally I only name chunks if I wish to reuse them, although naming chunks can also be useful for tracking down compilation errors.
 
-<pre><code>```{r}
-&lt;&lt;cars&gt;&gt;
-```</code></pre>
+A key thing to note is that **chunks must have unique names**, else `knitr` will throw an error. If names are not provided, then `knitr` generates them for you. To reuse earlier named code chunks, one can create a chunk with the `ref.label` argument set to be the name of the chunk that you wish to re-run. In the example above, the chunk is named `cars`, and hence a *second chunk*:
 
-will typeset
+```{r, comment = NA, echo = FALSE}
+cat("```{r, ref.label = \"cars\"}
+```")
+```
 
-```{r}
+will produce
+
+```{r, cars, include = FALSE}
 summary(cars)
 ```
 
-> There is also a facility for including chunks specified in **external files**, using the `read_chunk()` function. We will not explore this here, but if you're interested, a nice example can be found in a [ZevRoss blog](http://zevross.com/blog/2014/07/09/making-use-of-external-r-code-in-knitr-and-r-markdown/).
+```{r, ref.label= "cars"}
+```
+
+You can also use the `<< >>` operators within a chunk to do the same thing e.g.
+
+`` ```{r} ``
+`r ifelse(is_latex_output(), "\\newline", "<br>")`
+`<<cars>>`
+`r ifelse(is_latex_output(), "\\newline", "<br>")`
+`` ``` ``
+
+is equivalent to using `ref.label` above. (This latter approach has the additional advantage that you can add more R code around the `<<cars>>` statement if required.)
+
+```{info, title = "Aside", collapsible = FALSE}
+There is also a facility for including chunks specified in **external files**, using the `read_chunk()` function. We will not explore this here, but if you're interested, a nice example can be found in a [ZevRoss blog](http://zevross.com/blog/2014/07/09/making-use-of-external-r-code-in-knitr-and-r-markdown/).
+```
 
 ### Inline chunks
 
-R Markdown also allows for **inline chunks**. These are code chunks enclosed in single backtick characters. For example, a line written in R Markdown as, 
+R Markdown also allows for **inline chunks**. These are code chunks enclosed in **single backtick** characters. For example, a line written in R Markdown as, 
 
 > The mean speed of cars is `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "<code> &#96;r mean(cars$speed)&#96;</code>", "\\texttt{\\textasciigrave r mean(cars\\$speed)\\textasciigrave}")`
 
-then this will typeset as, 
+will typeset as, 
 
 > The mean speed of cars is `r mean(cars$speed)`. 
 
@@ -168,98 +204,246 @@ Removing the `r` from the inline chunk will simply typeset the command as a piec
 
 > `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "<code> &#96;mean(cars$speed)&#96;</code>", "\\texttt{\\textasciigrave mean(cars\\$speed)\\textasciigrave}")`
 
-(note this is enclosed in single backticks `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "&#96;</code>", "\\texttt{\\textasciigrave}")`, typesets as 
+(note this is enclosed in single backticks `r ifelse(opts_knit$get("rmarkdown.pandoc.to") == "html", "&#96;</code>", "\\texttt{\\textasciigrave}")`), typesets as 
 
 > `mean(cars$speed)`.
 
 ```{task}
-Have a play with including inline code and typesetting commands using this test document and the [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2016/03/rmarkdown-cheatsheet-2.0.pdf).
+Have a play with including inline code and typesetting commands using this test document and the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf).
 ```
 
-> RStudio has options that allow you to run code chunks *in situ*. Note the little green arrow marked in the blue box in Figure \@ref(fig:rmarkdowntmp). Clicking this runs each code chunk and returns the output interspersed with the code, allowing for an even more interactive coding environment.
+```{info, title = "Aside", collapsible = FALSE}
+RStudio has options that allow you to run code chunks *in situ*. Note the little green arrow marked in the blue box in Figure \@ref(fig:rmarkdowntmp). Clicking this runs each code chunk and returns the output interspersed with the code, allowing for an even more interactive coding environment.
+```
 
 ```{task}
-Take the R script you created in the first task of the [Reproducibility](#reproducibility) section. Make a **copy** of this and save it as an R Markdown file (e.g. if you script was called "ff.R", copy it to a file called "ff.Rmd". Edit this file and turn it into a working R Markdown document, with explanations of the analysis interspersed with the code and the output. Make sure you add a title and author to the YAML.
+Make a **copy** of the `ff.R` script file we used earlier, and save it as an R Markdown file (e.g. copy it to a file called `ff.Rmd`. Edit this file and turn it into a working R Markdown document, with explanations of the analysis interspersed with the code and the output. Make sure you add a **title** and **author** to the YAML.
 
-**Note**: in the solution below I've added some further information about the study---for interest's sake. A separate code file can be found on the workshop website.
+**Note**: in the solution below I've added some further information about the study---taken from the earlier lecture notes, to illustrate some of the formatting options such as bullet point lists, **bold** and *italic* fonts, inline code and hyperlinks.
 ```
 
 ```{solution, code = readLines("litprog/ff.Rmd")}
 ```
 
-## Purling
+## Figures and tables
 
-> **Note**: before you do the next part, make sure you have a backup of your "ff.R" script file; make a copy, use Git or whatever! Just make sure you back it up.
+### Figures
 
-A final point to note is that although it takes a bit of effort to turn an R script file into an R Markdown document, it takes no time to do the reverse. This is because `knitr` includes a very useful function called `purl`, that takes the name of an R Markdown file as an argument, extracts all of the code, and creates a new R script file containing *just* the source code. If your R Markdown file is called "FILE.Rmd", then by default, `purl` will create a file called "FILE.R". There is an `output` argument to `purl` that enables you to specify a different file name. (Hence why I said to be careful to make a backup of "ff.R" above).
+When creating plots from R, useful chunk options are `fig.width` and `fig.height`, which allow you to set the plot dimensions in inches. Alternatively, `out.width` and `out.height` can be used to scale figures in different ways, I mostly use e.g. `out.width = "50%"` to scale the width and height by 50% to make a smaller plot (`out.width` respects aspect ratios unless you specifically set `out.height` as well). Figure captions can be added using the `fig.cap` option. Alignment of the output figure can be controlled with `fig.align`, which takes the values `"left"`, `"riught"` or `"center"`.
 
-> **Note** make sure `knitr` is explicitly loaded using `library(knitr)` for the next component, or use `knitr::purl()`.
+We can include images that are not generated in R by using the `include_graphics()` function in an R chunk (as long as `knitr` has been loaded in an earlier chunk). We simply pass the relative path to an image into this function. For example:
 
-For example, the test document we were playing around with I called "test.Rmd". Hence,
+```{r, comment = NA, echo = FALSE}
+cat("```{r, echo = FALSE}
+include_graphics(\"Homer_Simpson_2006.png\")
+```")
+```
 
-```{r, eval = F}
+will typeset as:
+
+```{r, echo = FALSE}
+include_graphics("litprog/images/Homer_Simpson_2006.png")
+```
+
+(This is a key case where `echo = FALSE` is useful, because the code is not doing anything except displaying a figure.)
+
+**Note that you must use `out.width` and `out.height` to scale external images (`fig.height` and `fig.width` won't work)** e.g.
+
+```{r, comment = NA, echo = FALSE}
+cat("```{r, echo = FALSE, out.width = \"20%\"}
+include_graphics(\"Homer_Simpson_2006.png\")
+```")
+```
+
+```{r, echo = FALSE, out.width = "20%"}
+include_graphics("litprog/images/Homer_Simpson_2006.png")
+```
+
+```{task}
+You should have access to a `fruitfly.jpg` file, which was downloaded from Wikipedia and shared under a CC 4.0 Licence---see  [https://commons.wikimedia.org/wiki/File:Drosophila_melanogaster_Proboscis.jpg](https://commons.wikimedia.org/wiki/File:Drosophila_melanogaster_Proboscis.jpg) for details.
+
+Display this as an image in your `ff.Rmd` file and compile. Have a play with setting the figure size and caption.
+```
+
+### Tables
+
+Tables can also be produced directly from R code, and typeset neatly. The tricky thing is of course converting the table into different formats depending on the output file (e.g. HTML/PDF/Word) that you want to use. A helper function provided in the `knitr` package is called `kable()`. Here you can simply pass a `data.frame` object to the `kable()` function and it will convert to the correct output format automatically. For example:
+
+```{r, comment = NA, echo = FALSE}
+cat("```{r, echo = FALSE}
+kable(cars[1:6, ])
+```")
+```
+
+will typeset as:
+
+```{r, echo = FALSE}
+kable(cars[1:6, ])
+```
+
+(You can see how the formatting differs in the HTML notes compared to the PDF notes.)
+
+This is not particularly neat yet, but there are some additional options that can help, such as `align` to set the column alignments, and `col.names` that allows you to update the column names on-the-fly. For example:
+
+```{r, comment = NA, echo = FALSE}
+cat("```{r, echo = FALSE}
+kable(
+    cars[1:6, ], 
+    align = \"c\", 
+    col.names = c(\"Speed (mph)\", \"Stopping distance (ft)\"), 
+    format = ifelse(is_html_output(), \"html\", \"pipe\"))
+```")
+```
+
+produces
+
+```{r, echo = FALSE}
+kable(cars[1:6, ], align = "c", col.names = c("Speed (mph)", "Stopping distance (ft)"), format = ifelse(is_html_output(), "html", "pipe"))
+```
+
+(Note that the `format = ifelse(is_html_output(), "html", "pipe")` is a useful thing to add, which switches the output table type depending on whether the markdown is to be rendered into a HTML document or something else. This shouldn't be necessary, but there seems to be an issue with column header alignments in HTML documents if you don't include it.)
+
+```{info, title = "kableExtra", collapsible = FALSE}
+`kable()` itself is relatively lightweight, and doesn't allow for sophisticated table formatting. There is however another great package called `kableExtra`, which can be installed in the usual way and gives much more flexibility around formatting. If you're interested, then more information can be found in the online vignette [here](https://haozhu233.github.io/kableExtra/awesome_table_in_html.html#Overview).
+```
+
+Note that sometimes, you might want to format the cells of the different columns separately. For example, there is a `digits` argument to `kable()`, that can be used to round decimal numbers to a certain number of significant figures. Alternatively, another option is to round and format numbers in the `data.frame` object itself before you use it in `kable()`. This can be easily done using **pipes**, which avoids changing the original data set at all but gives you more control over how the table is presented.
+
+As an example, consider a made-up data frame:
+
+```{r, include = FALSE}
+set.seed(555)
+```
+
+```{r}
+test <- data.frame(x = c(rnorm(2, 0, 1), rnorm(2, 1000000, 5000)))
+test
+```
+
+Here is some code that uses the function `format()` to format these numbers in different ways. We will do this by copying the column multiple times and reformatting each time. The first column is the default, and other choices are described in the code below. Note that I've done this without pipes just to make commenting easier to understand.
+
+```{r}
+## create column with scientific notation turned off
+test$x1 <- format(test$x, scientific = FALSE)
+
+## create column that rounds to 2 decimal places
+test$x2 <- format(test$x, scientific = FALSE, digits = 2)
+
+## create column that drops trailing zeros
+test$x3 <- format(test$x, scientific = FALSE, digits = 2, drop0trailing = TRUE)
+
+## create column that rounds big numbers to the nearest integer
+## and small numbers to 2dp
+test$x4 <- format(
+    ifelse(test$x > 100, round(test$x, 0), round(test$x, 2)), 
+    scientific = FALSE, digits = 2, drop0trailing = TRUE)
+
+## create column that uses commas to separate large multiples of 10
+test$x5 <- format(
+    ifelse(test$x > 100, round(test$x, 0), round(test$x, 2)), 
+    scientific = FALSE, digits = 2, drop0trailing = TRUE,
+    big.mark = ",")
+
+## format table
+kable(test, align = "c", format = ifelse(is_html_output(), "html", "pipe"))
+```
+
+Hopefully this begins to give you an idea of what is possible here, rather than just printing a `data.frame` object to the screen.
+
+## Mathematical equations
+
+R Markdown also allows for the use of mathematical equations through the use of LaTeX commands. For example, the inline code `$\int_0^5 x^2 dx$` will typeset as: $\int_0^5 x^2 dx$. Similarly, **display style** equations can be included by enclosing in double `$` statements, so the code `$$\int_0^5 x^2 dx$$` will typeset as: $$\int_0^5 x^2 dx.$$
+
+You may not need to use mathematical notation very often, but being able to typeset equations is a necessary part of data science, particularly when it comes to presenting statistical models. As such, you do not need to know all the ins-and-outs of how to write formal LaTeX documents (`rmarkdown` will do the heavy-lifting here). If you ever do want to learn LaTeX, then please see a great tutorial by Andy Roberts at [https://www.andy-roberts.net/writing/latex](https://www.andy-roberts.net/writing/latex). 
+
+Even if you don't want to learn LaTeX, there is some useful guidance on how to write mathematics that can be used in `rmarkdown` documents, which can be found here [https://www.andy-roberts.net/writing/latex/mathematics_1](https://www.andy-roberts.net/writing/latex/mathematics_1). Another useful site is [DeTeXify](http://detexify.kirelabs.org/classify.html), which allows you to hand-draw a symbol and it will find the correct LaTeX term for you! A useful list of common LaTeX symbols can be found at [https://www.caam.rice.edu/~heinken/latex/symbols.pdf](https://www.caam.rice.edu/~heinken/latex/symbols.pdf).
+
+```{task}
+Add a linear regression equation: $y_i = \beta_0 + \beta_1 x_i$ to one of your `.Rmd` files and see how it typesets.
+```
+
+```{solution}
+Here an underscore `_` allows for **subscripts**, a hat symbol `^` allows for **superscripts**. Greek symbols can be denoted using their names prefixed by a backslash e.g. `\beta`. 
+
+`$y_i = \beta_0 + \beta_1 x_i$`
+
+```
+
+Even though this uses LaTeX notation, it will compile using the MathJax Javascript library for HTML files, and automatically convert to Equation format in Word.
+
+## Additional features
+
+### Purling
+
+```{info, title = "Warning", collapsible = FALSE}
+Before you do the next part, make sure you have a backup of your `ff.R` script file!
+```
+
+A final point to note is that although it takes a bit of effort to turn an R script file into an R Markdown document, it takes no time at all to do the reverse. This is because `knitr` includes a very useful function called `purl()`, that takes the name of an R Markdown file as an argument, extracts all of the code, and creates a new R script file containing *just* the source code. If your R Markdown file is called `FILE.Rmd`, then by default, `purl` will create a file called `FILE.R`. There is an `output` argument to `purl()` that enables you to specify a different file name. (Hence why I said to be careful to make a backup of `ff.R` above).
+
+```{info, title = "Note", collapsible = FALSE}
+Make sure `knitr` is explicitly loaded using `library(knitr)` for the next component, or use `knitr::purl()`.
+```
+
+For example, the test document we were playing around with I called `test.Rmd`. Hence,
+
+```{r, eval = FALSE}
 purl("test.Rmd")
 ```
 
 creates a new document in the working directory called "test.R", which looks like:
 
-```{r code = readLines("litprog/test.R"), eval = F}
+```{r code = readLines("litprog/test.R"), eval = FALSE}
 ```
 
 If you want a different output file name, try something like:
 
-```{r, eval = F}
+```{r, eval = FALSE}
 purl("test.Rmd", output = "testscript.R")
 ```
 
-Note that R overwrites files by default, so if you run `purl` multiple times you will overwrite previous versions of the script. So be careful! (Use Git etc.)
+Note that R overwrites files by default, so if you run `purl` multiple times you will overwrite previous versions of the script. So be careful!
 
-Notice that the first chunk is not necessary to include in the R script (it sets `knitr` options). We can set a `purl = F` option to an R chunk to tell `knitr` to **exclude** the chunk when calling `purl`. Amending the first chunk in "test.Rmd" to be:
+Notice that the first chunk is not necessary to include in the R script (it sets `knitr` options). We can set a `purl = FALSE` option to an R chunk to tell `knitr` to **exclude** the chunk when calling `purl`. Amending the first chunk in "test.Rmd" to be:
 
-```{r, comment = NA, echo = F}
-cat("```{r setup, include = FALSE, purl = F}
-knitr::opts_chunk$set(echo = T)
+```{r, comment = NA, echo = FALSE}
+cat("```{r setup, include = FALSE, purl = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```")
 ```
 
-and then calling `purl` again, will remove this code chunk from "test.R".
+and then calling `purl` again, will remove this code chunk from `test.R`.
 
 ```{task}
-Take your R Markdown document created in the previous task, and `purl` it to create a script file (be careful to have a backup of your original script in case you overwrite it).
+Take your R Markdown document created in the previous task (`ff.Rmd`), and `purl` it to create a script file (be careful to have a backup of your original `ff.R` script in case you overwrite it).
 ```
 
-This makes it easy to share code amongst collaborators. It also means you can write documents with outputs in mind, and work with markdown scripts directly, rather than writing source code and then converting to outputs when finalising analyses. It also forces you to think **succinctly**, and to write analyses that are **readable**. Nothing highlights verbose practices more than seeing all the inputs and outputs interspersed.
+This makes it easy to share code amongst collaborators. It also means you can write documents with outputs in mind, and work with markdown scripts directly, rather than writing source code and then converting to outputs when finalising analyses. It also forces you to think **succinctly**, and to write analyses that are **readable**. **Nothing highlights verbose practices more than seeing all the inputs and outputs interspersed!**
 
-## Caching
+### Caching
 
-Another feature of R Markdown is the ability to **cache** results. This means that outputs for chunks that have not changed are stored, and do not have to be rerun every time the document is recompiled. This is really useful if you have several sections of code that take a long time to run. Setting the `knitr::opts_chunk$set(cache = T)` option will turn caching on. You can turn it on or off from specific chunks by setting a `cache = T` or `cache = F` option in the chunk settings. As usual, local chunk options overwrite global ones. The cached files are stored in two folders in the working directory called "FILENAME_cache" and "FILENAME_files", where FILENAME is the name of your .Rmd file. To remove the cached files, simply delete these two folders.
+Another feature of R Markdown is the ability to **cache** results. This means that outputs for chunks that have not changed are stored, and do not have to be rerun every time the document is recompiled. This is really useful if you have several sections of code that take a long time to run. Setting the `knitr::opts_chunk$set(cache = TRUE)` option will turn caching on. You can turn it on or off from specific chunks by setting a `cache = TRUE` or `cache = FALSE` option in the chunk settings. As usual, local chunk options overwrite global ones. The cached files are stored in two folders in the working directory called `FILENAME_cache` and `FILENAME_files`, where `FILENAME` is the name of your `.Rmd` file. **To remove the cached files, simply delete these two folders.**
 
 I generally only do this if some of the code will take a while to run, and I generally delete the cache and rerun from scratch before submitting my final document / code, to ensure reproducibility.
 
-> **Be warned**: If you use un-named chunks, then `knitr` automatically generates names, hence adding new chunks in will cause the later chunks to be re-run (since the chunk names will change). Also (I think), chunks are only re-run if something changes about the chunk code. Hence if earlier chunks re-create objects used in later chunks, these later chunks will only be re-run if the code changes, not if the object used in the chunk changes. Hence we must be a bit wary when using caching.
-
-## Mathematical equations
-
-R Markdown also allows for the use of mathematical equations through the use of LaTeX commands. For example, the inline code `$\int_0^5 x^2 dx$` will typeset as: $\int_0^5 x^2 dx$. Similarly, display style code can be included by enclosing in double `$` statements, so the code `$$\int_0^5 x^2 dx$$` will typeset as: $$\int_0^5 x^2 dx$$.
-
-For guidance, please see a great LaTeX tutorial by Andy Roberts at [http://www.andy-roberts.net/writing/latex](http://www.andy-roberts.net/writing/latex). Another useful site is [DeTeXify](http://detexify.kirelabs.org/classify.html), which allows you to hand-draw a symbol and it will find the correct LaTeX term for you!
-
-```{task}
-Write a function that calculates the **cumulative distribution function**, $P(X \leq x)$, for a Poisson random variable evaluated at some value $x$. Write a short R Markdown document that explains the function, including the mathematical detail using LaTeX equations. Include a plot of the CDF for a Poisson random variable with rate $\lambda = 10$ (for $x \leq 20$).
-
-A solution file is given on the workshop website, or the code can be found below.
+```{info, title = "Warning", collapsible = FALSE}
+If you use un-named chunks, then `knitr` automatically generates names, hence adding new chunks in will cause the later chunks to be re-run (since the chunk names will change). Also (I think), chunks are only re-run if something changes about the chunk code. Hence if earlier chunks re-create objects used in later chunks, these later chunks will only be re-run if the **code** changes, not if the object used in the chunk changes. Hence we must be a bit wary when using caching.
 ```
 
-```{solution, code = readLines("litprog/poisson.Rmd")}
-```
+## Further extensions
 
-## Presentations
+### Presentations
 
 You can even write presentations in R Markdown. For example, to write a simple presentation based on [Google's IO theme](https://code.google.com/archive/p/io-2012-slides/), you can follow a tutorial [here](http://rmarkdown.rstudio.com/ioslides_presentation_format.html). A Javascipt library I particularly like is [reveal.js](http://lab.hakim.se/reveal-js/#/), which can be implemented in R Markdown easily [here](http://rmarkdown.rstudio.com/revealjs_presentation_format.html). These produce HTML presentations that can be viewed in a web browser. If you want a more traditional approach, you can even use LaTeX's [beamer](https://en.wikipedia.org/wiki/Beamer_(LaTeX)) class to produce PDF slides, as done [here](http://rmarkdown.rstudio.com/beamer_presentation_format.html).
 
 ```{task}
-Write a simple presentation that highlights the key points from your fruitfly analysis you conducted earlier.
+Write a simple presentation with a couple of slides that highlights the key points from your fruitfly analysis you conducted earlier.
 ```
 
+### Bookdown
 
+An absolutely brilliant package, written again by [Yihui Xie](https://yihui.org/en/), is `bookdown`, which enables you to write print-ready books using R Markdown. This includes a load of additional features, like better cross-referencing and bibliographic features. Bookdown can also be used to create simpler documents such as those produced as standard by `rmarkdown`, but that enable you to implement some of the `bookdown` features.
 
+All of the lecture notes for this module have been written using `bookdown`. However, I have also developed customised code and templates to build in additional features, such as the `task` and `solution` boxes and suchlike, and to ensure they work when compiled to either HTML or PDF format. This is the beauty of **open-source** software---you are free to develop code further and build on the amazing work done by other developers. As such I make various pieces of software and R packages publicly available through e.g. GitHub, so that others can use them if they wish. This way the open-source software ecosystem continues to thrive through a shared sense of altruism. 
+
+[https://github.com/tjmckinley/RtutorialSkeleton](https://github.com/tjmckinley/RtutorialSkeleton)

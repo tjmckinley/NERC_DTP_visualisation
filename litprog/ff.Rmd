@@ -1,4 +1,4 @@
-``{r, echo = F, results = "asis"}
+``{r, echo = FALSE, results = "asis"}
 x <- paste("
 ---
 title: \"Sexual activity in fruitflies\"
@@ -6,7 +6,7 @@ author: TJ McKinley
 output: html_document
 ---
 
-`{r, include = F, purl = F}
+`{r, include = FALSE, purl = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 `{e}
 
@@ -18,57 +18,48 @@ The flies used were an outbred stock. Sexual activity was manipulated by supplyi
 
 The data should have the following columns:
 
-* **id**: a ID for each fly in each group (1--25).
-* **partners**: number of companions (0, 1 or 8).
-* **type**: type of companion (0: newly pregnant female; 1: virgin female; 9: not applicable (when 'partners = 0')).
-* **longevity**: lifespan, in days.
+* **partners**: number of companions (0, 1 or 8);
+* **partner type**: type of companion (`Control`, `Inseminated`, `Virgin`);
+* **longevity**: lifespan, in days;
 * **thorax**: length of thorax, in mm.
-* **sleep**: percentage of each day spent sleeping.
-* **group**: experimental group (1: control; 2: 1 newly pregnant partner; 3: 8 newly pregnant partners; 4: 1 virgin partner; 5: 8 virgin partners).
 
 Source: [Partridge and Farquhar (1981)](http://www.annualreviews.org/doi/pdf/10.1146/annurev.pu.04.050183.001103)
 
 # Analysis
 
-First we load and summarise the data set:
+First we load and reformat the data set:
 
-`{r}
-## load the data
-ff <- readRDS(\"ff.rds\")
+`{r, message = FALSE}
+## load libraries
+library(tidyverse)
 
-## summarise data
-summary(ff)
+## load data
+ff <- read_csv(\"ff.csv\")
+
+## convert columns to correct format
+## and simplify column names
+ff <- mutate(ff, partners = as.character(partners)) %>%
+    rename(partner_type = `partner type`)
 `{e}
 
-Now plot `thorax` against `group`: 
+Now we plot `longevity` against `thorax`, stratified by the different experimental conditions. We use a simple linear regression model to capture the trends within each experimental group.
 
 `{r}
-## plot thorax against group
-plot(thorax ~ group, data = ff, 
-     ylab = \"Length of thorax (mm)\", 
-     xlab = \"Experimental group\")
+## produce summary plot
+ggplot(ff, aes(y = longevity, x = thorax, 
+               linetype = partner_type, 
+               shape = partner_type)) +
+    geom_point() +
+    stat_smooth(method = \"lm\", se = FALSE) +
+    facet_wrap(~partners) +
+    labs(linetype = \"Partner Type\", 
+         shape = \"Partner Type\") +
+    ylab(\"Longevity (days)\") +
+    xlab(\"Thorax length (mm)\") +
+    theme_bw()
 `{e}
 
-The plot suggests that thorax length does not seem to vary very much between the experimental groups. Now we plot `longevity` against `group`:
-
-`{r}
-## plot longevity against group
-plot(longevity ~ group, data = ff,
-     ylab = \"Longevity (days)\", 
-     xlab = \"Experimental group\")
-`{e}
-
-The plot suggests that longevity does not seem to vary very much between the experimental groups, with the exception of group 5 (and possibly group 4), which exhibits lower longevity. This is the group where males have 8 virgin sexual partners (i.e. the group that corresponds to a higher degree of sexual reproduction). Finally we plot `longevity` against `thorax`:
-
-`{r}
-## plot longevity against thorax
-plot(longevity ~ thorax, data = ff, 
-     pch = 20, 
-     xlab = \"Length of thorax (mm)\",
-     ylab = \"Longevity (days)\")
-`{e}
-
-We can see that there is a strong linear relationship between `thorax` and `longevity`, such that larger flies tend to live longer. On top of this there may be some additional impact of the experimental group, but we will need to investigate further to fully quantify these effects.")
+We can see that there is a strong linear relationship between `thorax` and `longevity`, such that larger flies tend to live longer. On top of this the data suggest that males housed with virgin partners show decreased longevity compared to the control group, where as males housed with inseminated partners exhibited similar longevity trends to the control group. We also note that males housed with multiple virgin partners exhibit a larger decrease in longevity on average than those housed with a single virgin partner. This suggests that increased reproductive effort may result in decreased longevity in fruit flies. A more formal statistical analysis should be undertaken to quantify these effects more rigorously.")
 
 x <- gsub("`\\{r", "``\\{r", x)
 x <- gsub("`\\{e\\}", "``", x)

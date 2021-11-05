@@ -1,0 +1,301 @@
+---
+title: Population fatality risks for COVID-19 in England and Wales from 7th March
+  to 26th June 2020
+author: "TJ McKinley"
+date: "05/11/2021"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# COVID-19 mortality risk by age and sex
+
+In an influential early paper on COVID-19 mortality risk, [Professor David Spiegelhalter](http://www.statslab.cam.ac.uk/~david/) compared COVID-19 mortality rates to the "normal" risk of dying from other causes, in order to find a suitable analogue to aid understanding about the risk of mortality following COVID-19 infection.
+
+[Spiegelhalter D. Use of "normal" risk to improve understanding of dangers of covid-19, *BMJ*, 2020; 370 :m3259](https://www.bmj.com/content/370/bmj.m3259).
+
+```{r, message = FALSE}
+## load libraries
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(patchwork)
+
+## read in males
+males <- read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+        sheet = "2016-2018", range = "A7:F108") %>%
+    mutate(sex = "male")
+
+## read in females
+females <- read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+        sheet = "2016-2018", range = "A7:A108") %>%
+    cbind(
+        read_excel("covid/uploadFiles/nationallifetables3yearew.xlsx", 
+            sheet = "2016-2018", range = "H7:L108")
+    ) %>%
+    mutate(sex = "female")
+
+## bind together and cleanup
+lifetables <- rbind(males, females) %>%
+    rename(age = x) %>%
+    mutate(qx = qx * 100000 * 16 / 52)
+
+## read in the correct worksheet from the .xlsx
+deaths <- read_excel("covid/uploadFiles/publishedweek262020.xlsx", 
+        sheet = "Covid-19 - Weekly registrations", range = "B33:AB53") %>%
+    mutate(sex = "male") %>%
+    rbind(
+        read_excel("covid/uploadFiles/publishedweek262020.xlsx", 
+            sheet = "Covid-19 - Weekly registrations", range = "B55:AB75") %>%
+        mutate(sex = "female")
+    )
+
+## create vector of column names
+dates <- read_excel("covid/uploadFiles/publishedweek262020.xlsx", 
+        sheet = "Covid-19 - Weekly registrations", range = "C6:AB6") %>%
+    colnames() %>%
+    as.numeric() %>%
+    as.Date(origin = "1899-12-30")
+
+## set the column names
+colnames(deaths) <- c("age", as.character(dates), "sex")
+deaths <- pivot_longer(deaths, !c(age, sex), names_to = "date", values_to = "deaths") %>%
+    mutate(date = as.Date(date))
+
+## read in the correct worksheet from the .xlsx
+pop_males <- read_excel("covid/uploadFiles/ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Males", range = "A5:CQ435")
+pop_females <- read_excel("covid/uploadFiles/ukmidyearestimates20182019ladcodes.xls", 
+        sheet = "MYE2 - Females", range = "A5:CQ435")
+
+## add sex column
+pop_males <- mutate(pop_males, sex = "male") %>%
+    rename(Geography = Geography1)
+pop_females <- mutate(pop_females, sex = "female")
+
+## bind together and convert to tidy format
+pop <- rbind(pop_males, pop_females) %>%
+    select(!`All ages`) %>%
+    pivot_longer(!c(Code, Name, Geography, sex), names_to = "age", values_to = "population") %>%
+    mutate(age = as.numeric(age))
+
+## extract relevant data
+deaths_sub <- filter(deaths, date >= "2020-03-07" & date <= "2020-06-26") %>%
+    group_by(age, sex) %>%
+    summarise(deaths = sum(deaths), .groups = "drop")
+
+## extract relevant data
+pop_sub <- filter(pop, Name == "ENGLAND AND WALES") %>%
+    select(!c(Name, Geography, Code))
+
+## create break points and labels for the cut function
+age_breaks <- seq(4, 89, by = 5)
+age_labels <- paste0(c(1, age_breaks[-length(age_breaks)] + 1), "-", age_breaks)
+
+age_breaks <- c(-1, 0, age_breaks, max(pop_sub$age) + 1)
+age_labels <- c("<1", age_labels, "90+")
+
+## create grouped data
+pop_sub <- mutate(pop_sub, age_grp = cut(age, age_breaks, age_labels)) %>%
+    group_by(age_grp, sex) %>%
+    summarise(population = sum(population), .groups = "drop") %>%
+    rename(age = age_grp)
+
+## join tables together and calculate population fatality rates
+PFR <- inner_join(deaths_sub, pop_sub, by = c("age", "sex")) %>%
+    mutate(PFR = deaths / population) %>%
+    mutate(PFR = PFR * 100000)
+
+## create new data frame
+PFR_combined <- mutate(lifetables, age_grp = cut(age, age_breaks, age_labels)) %>%
+    group_by(age_grp, sex) %>%
+    summarise(Normal = mean(qx), .groups = "drop") %>%
+    rename(age = age_grp) %>%
+    inner_join(
+        select(PFR, age, sex, PFR),
+        by = c("age", "sex")
+    ) %>%
+    rename(COVID = PFR) %>%
+    pivot_longer(!c(age, sex), names_to = "estimate", values_to = "PFR")
+```
+
+The figure below shows the actuarial ("normal") risk of dying against the risk of dying from COVID-19, stratified by age and sex. This is a replication of Figure 1 in Spiegelhalter (2020). 
+
+The actuarial risk is defined as the probability that an individual of a given age/sex will not survive to their next birthday, and the figure below shows a scaled version of this measure. If you first look at the actuarial risk of dying, you can see that there is an early peak, which is related to congenital diseases and birth trauma. The risk of dying then decreases during childhood, followed by a steady increase from ages 9--10 onwards. There is an elevated risk in the late teens and early 20s which is caused by additional deaths from non-natural causes. You can also see that on average males have a higher risk of dying than females across all age-classes. A **linear** line on the **log-scale** with respect to age, relates to an **exponential** curve on the original risk scale, which is shown on the bottom plot.
+
+The analogous COVID-19 mortality risk with age is also shown. Here you can see that the relationship with age is linear once again on the log-scale, and the gradient on the line is slightly larger than for the actuarial risk, although for ages over 45 the lines are roughly parallel, meaning that the risk of dying from COVID-19 is roughly proportional to the normal risk.
+
+```{r, out.width = "60%", fig.align = "center", fig.cap = "Age- and sex-specific population fatality risk of COVID-19", message = FALSE, warning = FALSE}
+## generate temporary data set with age-classes
+## converted to midpoints
+temp <- PFR_combined %>%
+    mutate(age = ifelse(age == "<1", "0-1", age)) %>%
+    mutate(age = ifelse(age == "90+", "90-100", age)) %>%
+    separate(age, c("LB", "UB"), sep = "-") %>%
+    mutate(across(c(LB, UB), as.numeric)) %>%
+    mutate(age = (LB + UB) / 2)
+
+## plot on log-scale
+p1 <- ggplot(temp, aes(x = age, y = PFR)) +
+        geom_line(aes(colour = sex, linetype = sex),
+            data = filter(temp, estimate == "Normal")) +
+        geom_line(aes(group = sex), data = filter(temp, estimate == "COVID")) +
+        geom_point(aes(colour = sex), data = filter(temp, estimate == "COVID")) +
+        scale_y_continuous(trans = "log", breaks = c(0.05, 0.2, 1, 5, 20, 100, 500, 2000),
+            labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE)) +
+        scale_colour_manual(values = c("blue", "red")) +
+        scale_linetype_manual(values = c("longdash", "dashed")) +
+        xlab("Age (years)") + ylab("Deaths per 100,000 people") +
+        ggtitle("Log scale") +
+        theme_bw() +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+        coord_cartesian(ylim = c(0.05, 2000)) +
+        labs(colour = "COVID-19", linetype = "Normal") +
+        guides(
+            linetype = guide_legend(override.aes = list(colour = c("blue", "red"))),
+            colour = guide_legend(override.aes = list(linetype = NA))
+        )
+
+## plot on linear scale by just changing scales
+p2 <- p1 +
+    ggtitle("Linear scale") +
+    scale_y_continuous(breaks = c(400, 800, 1200, 1600, 2000),
+        labels = function(x) format(x, scientific = FALSE, drop0trailing = TRUE))
+
+## combine plots using patchwork
+p <- p1 / p2 + plot_layout(guides = "collect")
+p
+```
+
+## Expressing the population fatality risks of COVID in different ways
+
+The table below is a replication of Table 2 in Spiegelhalter (2020), and expresses the age-specific population fatality risks of COVID-19 in different ways.
+
+```{r, message = FALSE}
+## join deaths with population sizes
+table2 <- group_by(pop_sub, age) %>%
+    summarise(population = sum(population), .groups = "drop")
+
+table2 <- group_by(deaths_sub, age) %>%
+    summarise(deaths = sum(deaths), .groups = "drop") %>%
+    inner_join(table2, by = "age")
+
+## change age groupings and amalgamate counts accordingly
+## add different columns denoting risk estimates
+table2 <- mutate(table2, age = ifelse(age == "<1" | age == "1-4", "0-4", age)) %>%
+    mutate(age = ifelse(age == "5-9" | age == "10-14", "5-14", age)) %>%
+    mutate(age = ifelse(age == "15-19" | age == "20-24", "15-24", age)) %>%
+    mutate(age = ifelse(age == "25-29" | age == "30-34", "25-34", age)) %>%
+    mutate(age = ifelse(age == "35-39" | age == "40-44", "35-44", age)) %>%
+    mutate(age = ifelse(age == "45-49" | age == "50-54", "45-54", age)) %>%
+    mutate(age = ifelse(age == "55-59" | age == "60-64", "55-64", age)) %>%
+    mutate(age = ifelse(age == "65-69" | age == "70-74", "65-74", age)) %>%
+    mutate(age = ifelse(age == "75-79" | age == "80-84", "75-84", age)) %>%
+    group_by(age) %>%
+    summarise(deaths = sum(deaths), population = sum(population), .groups = "drop") %>%
+    mutate(PFR = 100000 * deaths / population) %>%
+    mutate(percentage = 100 * deaths / population) %>%
+    mutate(PFR1 = population / deaths)
+
+## read in non-covid death data
+nonCovidDeaths <- read_excel("covid/uploadFiles/publishedweek262020.xlsx",
+        sheet = "Weekly figures 2020", range = "B21:AB41")
+colnames(nonCovidDeaths) <- c("age", as.character(dates))
+
+## tidy data and amend age classes
+nonCovidDeaths <- pivot_longer(nonCovidDeaths, !age, names_to = "date", values_to = "deaths") %>%
+    mutate(date = as.Date(date)) %>%
+    filter(date >= "2020-03-07" & date <= "2020-06-26") %>%
+    mutate(age = ifelse(age == "<1" | age == "1-4", "0-4", age)) %>%
+    mutate(age = ifelse(age == "5-9" | age == "10-14", "5-14", age)) %>%
+    mutate(age = ifelse(age == "15-19" | age == "20-24", "15-24", age)) %>%
+    mutate(age = ifelse(age == "25-29" | age == "30-34", "25-34", age)) %>%
+    mutate(age = ifelse(age == "35-39" | age == "40-44", "35-44", age)) %>%
+    mutate(age = ifelse(age == "45-49" | age == "50-54", "45-54", age)) %>%
+    mutate(age = ifelse(age == "55-59" | age == "60-64", "55-64", age)) %>%
+    mutate(age = ifelse(age == "65-69" | age == "70-74", "65-74", age)) %>%
+    mutate(age = ifelse(age == "75-79" | age == "80-84", "75-84", age)) %>%
+    group_by(age) %>%
+    summarise(nonCovidDeaths = sum(deaths), .groups = "drop")
+
+## join with table2 and remove COVID deaths
+table2 <- inner_join(table2, nonCovidDeaths, by = "age") %>%
+    mutate(nonCovidDeaths = nonCovidDeaths - deaths)
+
+## read in the correct worksheet for weekly deaths
+weekly <- read_excel("covid/uploadFiles/weeklydeaths2015to20195yearaveragegenderagebands.xlsx", 
+        sheet = "Figures", range = "A7:BA27")
+
+## extract "weeks" in time period of interest
+weeksOfInterest <- week(as.Date("2020-03-08", format = "%Y-%m-%d"))
+weeksOfInterest <- weeksOfInterest:week(as.Date("2020-06-26", format = "%Y-%m-%d"))
+weeksOfInterest <- weeksOfInterest[-1]
+
+## pivot data into longer format and remove unwanted weeks
+colnames(weekly) <- c("age", as.character(1:(ncol(weekly) - 1)))
+weekly <- pivot_longer(weekly, !age, names_to = "week", values_to = "deaths") %>%
+    filter(week %in% weeksOfInterest) %>%
+    mutate(age = ifelse(age == "<1" | age == "1-4", "0-4", age)) %>%
+    mutate(age = ifelse(age == "5-9" | age == "10-14", "5-14", age)) %>%
+    mutate(age = ifelse(age == "15-19" | age == "20-24", "15-24", age)) %>%
+    mutate(age = ifelse(age == "25-29" | age == "30-34", "25-34", age)) %>%
+    mutate(age = ifelse(age == "35-39" | age == "40-44", "35-44", age)) %>%
+    mutate(age = ifelse(age == "45-49" | age == "50-54", "45-54", age)) %>%
+    mutate(age = ifelse(age == "55-59" | age == "60-64", "55-64", age)) %>%
+    mutate(age = ifelse(age == "65-69" | age == "70-74", "65-74", age)) %>%
+    mutate(age = ifelse(age == "75-79" | age == "80-84", "75-84", age)) %>%
+    group_by(age) %>%
+    summarise(weeklyDeaths = sum(deaths), .groups = "drop")
+
+## join with table 2 and add remaining columns
+table2 <- inner_join(table2, weekly, by = "age") %>%
+    mutate(perc5yearRisk = 100 * deaths / weeklyDeaths) %>%
+    mutate(addDaysRisk = 112 * deaths / weeklyDeaths)
+
+## add total column
+table2 <- table2 %>%
+    summarise(
+        deaths = sum(deaths),
+        population = sum(population),
+        nonCovidDeaths = sum(nonCovidDeaths),
+        weeklyDeaths = sum(weeklyDeaths),
+        .groups = "drop"
+    ) %>%
+    mutate(PFR = 100000 * deaths / population) %>%
+    mutate(percentage = 100 * deaths / population ) %>%
+    mutate(PFR1 = population / deaths) %>%
+    mutate(perc5yearRisk = 100 * deaths / weeklyDeaths) %>%
+    mutate(addDaysRisk = 112 * deaths / weeklyDeaths) %>%
+    mutate(age = "All ages") %>%
+    rbind(table2) %>%
+    arrange(age)
+```
+
+```{r}
+## extract columns for table and rearrange to get correct age-classes
+## in correct place (there are various ways to do this)
+select(table2, age, deaths, population, PFR, percentage, PFR1, nonCovidDeaths, weeklyDeaths, perc5yearRisk, addDaysRisk) %>%
+    mutate(age = gsub("5-14", "05-14", age)) %>%
+    arrange(age) %>%
+    mutate(age = gsub("05-14", "5-14", age)) %>%
+    mutate(age = gsub("-", "--", age)) %>%
+    mutate(population = format(population, big.mark = ",", scientific = FALSE)) %>%
+    mutate(deaths = format(deaths, big.mark = ",", scientific = FALSE)) %>%
+    mutate(PFR = ifelse(PFR > 100, format(round(PFR), scientific = FALSE), format(round(PFR, digits = 1), scientific = FALSE, drop0trailing = TRUE))) %>%
+    mutate(percentage = ifelse(percentage < 0.01, format(round(percentage), scientific = FALSE), format(signif(percentage, digits = 2), drop0trailing = TRUE, scientific = FALSE))) %>%
+    mutate(PFR1 = paste0("1 in ", format(PFR1, digits = 0, big.mark = ",", scientific = FALSE))) %>%
+    mutate(nonCovidDeaths = format(nonCovidDeaths, big.mark = ",", scientific = FALSE)) %>%
+    mutate(weeklyDeaths = format(weeklyDeaths, big.mark = ",", scientific = FALSE)) %>%
+    mutate(perc5yearRisk = format(perc5yearRisk, digits = 0)) %>%
+    mutate(addDaysRisk = format(addDaysRisk, digits = 0)) %>%
+    kable(
+        col.names = c("Age (years)", "No. of COVID-19 deaths", "Population", "COVID-19 rate / 100,000", "COVID-19 rate (%)", "COVID-19 rate (1 in ...)", "No. of non-COVID-19 deaths", "5 year average", "COVID-19 as % of 5 year average", "Equivalent days of normal risk"),
+        align = "c",
+        caption = "Mortality rates expressed in different ways",
+        format = ifelse(is_html_output(), "html", "pipe")) %>%
+    kable_styling(bootstrap_options = "striped") %>%
+    row_spec(0, bold = TRUE) %>%
+    row_spec(12, bold = TRUE)
+```

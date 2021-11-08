@@ -1,6 +1,6 @@
 # (PART) Consolidation: COVID-19 in England and Wales  {-}
 
-# COVID-19 mortality risk by age and sex
+# COVID-19 mortality risk by age and sex {#spiegelhalter}
 
 Now that you are familiar with R and some key `tidyverse` packages, let's use some of these skills to explore and visualise some real-world data on COVID-19 risk in the UK.
 

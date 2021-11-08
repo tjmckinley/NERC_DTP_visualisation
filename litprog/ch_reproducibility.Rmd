@@ -2,6 +2,12 @@
 
 # Reproducible research
 
+```{info, title = "Note", collapsible = FALSE}
+A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](litprog/uploadFiles/litprogHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](litprog/uploadFiles/litprogSLIDES.pdf) and [here](litprog/uploadFiles/litprogSLIDES.html)", "")`.
+
+All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](litprog/uploadFiles/datasets_litprog.zip)", "")`.
+```
+
 In this practical we will focus on the important concepts of **reproducibility** , **literate programming** and **version control**. We have already seen the fundamental tool for reproducibility: the humble **script file**! This keeps a full record of everything you have done, and along with informative **commenting**, should allow for an analysis to be reproduced at a later time point. Furthermore, since a script file is simply a **text file**, it can be easily shared with other people.
 
 ```{info, title = "Important", collapsible = FALSE}

@@ -42,15 +42,24 @@ The YAML contains information about the **document**, and has various options, i
 
 ## Formatting
 
-Formatting in R Markdown is very simple: `#` denote **sections**, with subsections denoted by including more hashes (for example `##` denotes a second order sub-section and so on). *Italics* are typeset by enclosing a word or section in single `*` symbols, for example: `*this is in italics*` will typeset: *this is in italics*. **Bold** type is written by enclosing a word or section in double `*` symbols, for example: `**this is bold**` will typeset: **this is bold**.
+Formatting in R Markdown is very simple. For example:
+
+* `#` denote **sections**, with subsections denoted by including more hashes (for example `##` denotes a second-level sub-section and so on).
+* *Italics* are typeset by enclosing a word or section in single `*` symbols, for example: `*this is in italics*` will typeset: *this is in italics*. 
+* **Bold** type is written by enclosing a word or section in double `*` symbols, for example: `**this is bold**` will typeset: **this is bold**.
+* Hyperlinks are implemented using the notation `[TEXT](LINK)`, so `[R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)` typesets as [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
+
+There are many more options, far too many to list here. However, a more complete list of formatting options can be found in the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf). 
+
+A more detailed book covering all sorts of options is the [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/).
 
 ```{task}
-A full list of formatting options can be found in the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf). Take a look at this document and familiarise yourself with the options. We will cover some of them below.
+Take a look at the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf) and familiarise yourself with the options. We will cover some of them below.
 ```
 
 ## R code chunks
 
-R code chunks can be included by enclosing with backticks ```. For example,
+R code chunks can be included by enclosing with backticks `` ``` ``. For example,
 
 ```{r, comment = NA, echo = FALSE}
 cat("```{r}
@@ -222,14 +231,14 @@ Make a **copy** of the `ff.R` script file we used earlier, and save it as an R M
 **Note**: in the solution below I've added some further information about the study---taken from the earlier lecture notes, to illustrate some of the formatting options such as bullet point lists, **bold** and *italic* fonts, inline code and hyperlinks.
 ```
 
-```{solution, code = readLines("litprog/ff.Rmd")}
+```{solution, code = readLines("litprog/ff.Rmd"), eval = FALSE}
 ```
 
 ## Figures and tables
 
 ### Figures
 
-When creating plots from R, useful chunk options are `fig.width` and `fig.height`, which allow you to set the plot dimensions in inches. Alternatively, `out.width` and `out.height` can be used to scale figures in different ways, I mostly use e.g. `out.width = "50%"` to scale the width and height by 50% to make a smaller plot (`out.width` respects aspect ratios unless you specifically set `out.height` as well). Figure captions can be added using the `fig.cap` option. Alignment of the output figure can be controlled with `fig.align`, which takes the values `"left"`, `"riught"` or `"center"`.
+When creating plots from R, useful chunk options are `fig.width` and `fig.height`, which allow you to set the plot dimensions in inches. Alternatively, `out.width` and `out.height` can be used to scale figures in different ways, I mostly use e.g. `out.width = "50%"` to scale the width and height by 50% to make a smaller plot (`out.width` respects aspect ratios unless you specifically set `out.height` as well). Figure captions can be added using the `fig.cap` option. Alignment of the output figure can be controlled with `fig.align`, which takes the values `"left"`, `"right"` or `"center"`.
 
 We can include images that are not generated in R by using the `include_graphics()` function in an R chunk (as long as `knitr` has been loaded in an earlier chunk). We simply pass the relative path to an image into this function. For example:
 
@@ -354,9 +363,7 @@ Hopefully this begins to give you an idea of what is possible here, rather than 
 
 R Markdown also allows for the use of mathematical equations through the use of LaTeX commands. For example, the inline code `$\int_0^5 x^2 dx$` will typeset as: $\int_0^5 x^2 dx$. Similarly, **display style** equations can be included by enclosing in double `$` statements, so the code `$$\int_0^5 x^2 dx$$` will typeset as: $$\int_0^5 x^2 dx.$$
 
-You may not need to use mathematical notation very often, but being able to typeset equations is a necessary part of data science, particularly when it comes to presenting statistical models. As such, you do not need to know all the ins-and-outs of how to write formal LaTeX documents (`rmarkdown` will do the heavy-lifting here). If you ever do want to learn LaTeX, then please see a great tutorial by Andy Roberts at [https://www.andy-roberts.net/writing/latex](https://www.andy-roberts.net/writing/latex). 
-
-Even if you don't want to learn LaTeX, there is some useful guidance on how to write mathematics that can be used in `rmarkdown` documents, which can be found here [https://www.andy-roberts.net/writing/latex/mathematics_1](https://www.andy-roberts.net/writing/latex/mathematics_1). Another useful site is [DeTeXify](http://detexify.kirelabs.org/classify.html), which allows you to hand-draw a symbol and it will find the correct LaTeX term for you! A useful list of common LaTeX symbols can be found at [https://www.caam.rice.edu/~heinken/latex/symbols.pdf](https://www.caam.rice.edu/~heinken/latex/symbols.pdf).
+You may not need to use mathematical notation very often, but being able to typeset equations is a necessary part of data science, particularly when it comes to presenting statistical models. As such, you do not need to know all the ins-and-outs of how to write formal LaTeX documents (`rmarkdown` will do the heavy-lifting here), but there is some useful guidance on how to write mathematics that can be used in `rmarkdown` documents, which can be found here [https://www.andy-roberts.net/writing/latex/mathematics_1](https://www.andy-roberts.net/writing/latex/mathematics_1). Another useful site is [DeTeXify](http://detexify.kirelabs.org/classify.html), which allows you to hand-draw a symbol and it will find the correct LaTeX term for you! A useful list of common LaTeX symbols can be found at [https://www.caam.rice.edu/~heinken/latex/symbols.pdf](https://www.caam.rice.edu/~heinken/latex/symbols.pdf).
 
 ```{task}
 Add a linear regression equation: $y_i = \beta_0 + \beta_1 x_i$ to one of your `.Rmd` files and see how it typesets.
@@ -370,6 +377,64 @@ Here an underscore `_` allows for **subscripts**, a hat symbol `^` allows for **
 ```
 
 Even though this uses LaTeX notation, it will compile using the MathJax Javascript library for HTML files, and automatically convert to Equation format in Word.
+
+```{info, title = "Note", collapsible = FALSE}
+If you ever do want to learn LaTeX, then please see a great tutorial by Andy Roberts at [https://www.andy-roberts.net/writing/latex](https://www.andy-roberts.net/writing/latex).
+```
+
+## Referencing
+
+R Markdown also supports bibliographic referencing using a BibTeX-style bibliographic manager. This is a format used in LaTeX documents, but in essence simply means that rather than use a manager such as EndNote, Zotero or Mendeley, instead you record your references in a simple text file with the suffix `.bib`. The references must be written in a specific format, but these can easily be downloaded through the **citation download** button on most journal papers. For the format of different types of reference, such as articles, books or technical reports, please see [https://en.wikipedia.org/wiki/BibTeX](https://en.wikipedia.org/wiki/BibTeX). Note that you can usually convert bibliographies stored in other formats, e.g. Zotero, to BibTeX if required.
+
+An example BibTeX entry for [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) is:
+
+```{r, fig.cap = "Partridge and Farquhar (1981) BibTeX entry", eval = FALSE, echo = TRUE}
+@article{partridge_farquhar:1981,
+	author = {Linda Partridge and Marion Farquhar},
+	title = {Sexual activity reduces lifespan of male fruitflies},
+	volume = {294},
+	pages = {580--582},
+	year = {1981},
+	doi = {10.1038/294580a0},
+	journal = {Nature}
+}
+```
+
+I wrote this by hand. Conversely, Figure \@ref(fig:citation) shows an example where the BibTeX entry can be downloaded directly, for [Spiegelhalter (2020)](https://www.bmj.com/content/370/bmj.m3259).
+
+```{r, citation, fig.cap = "BMJ Citation Download", echo = FALSE, out.width = "60%", out.height = "60%"}
+include_graphics("litprog/images/citation.png")
+```
+
+If we save all the references we need into a file called e.g. `references.bib` (stored in the working directory), then we can add this file to the YAML as follows:
+
+```{r, echo = FALSE}
+cat("---
+title: \"Untitled\"
+output: html_document
+bibliography: references.bib
+---")
+```
+
+The first part of the BibteX entry, `partridge_farquhar:1981` is a unique identifier for the reference, and can be changed to anything you like. This identifier can then be used in the code as e.g. `@partridge_farquhar:1981`, which will then typeset as Partridge and Farquhar (1981), and `[@partridge_farquhar:1981]` will typeset as (Partridge and Farquhar, 1981). This will then add the references to the end of the document. It's usually worthwhile adding an empty section to the end of your R Markdown code with the title **References** e.g.
+
+```
+# References
+```
+
+```{info, title = "Note", collapsible = FALSE}
+Only entries that are cited in the document will appear in the reference list, so you are free to use a single `.bib` file for all your references if you like, and pick-and-choose the ones you need as and when you need them.
+```
+
+```{info, title = "Note", collapsible = FALSE}
+By default this uses a Chicago referencing style, which is an author-year style. Other formats (e.g. Vancouver, Harvard etc.) can be specified using Citation Style Language (CSL) files. A good resource for these is the [Zotero Style Guide](https://www.zotero.org/styles), and once downloaded they can be added to the YAML and then update the document accordingly.
+
+For more details please see the [R Markdown Cookbook section on bibliographies](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html).
+```
+
+```{task}
+Add a reference to [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) to your `ff.Rmd` using the approach described above.
+```
 
 ## Additional features
 
@@ -404,7 +469,7 @@ purl("test.Rmd", output = "testscript.R")
 
 Note that R overwrites files by default, so if you run `purl` multiple times you will overwrite previous versions of the script. So be careful!
 
-Notice that the first chunk is not necessary to include in the R script (it sets `knitr` options). We can set a `purl = FALSE` option to an R chunk to tell `knitr` to **exclude** the chunk when calling `purl`. Amending the first chunk in "test.Rmd" to be:
+Notice that the first chunk is not necessary to include in the R script (it sets `knitr` options). We can set a `purl = FALSE` option to an R chunk to tell `knitr` to **exclude** the chunk when calling `purl`. Amending the first chunk in `test.Rmd` to be:
 
 ```{r, comment = NA, echo = FALSE}
 cat("```{r setup, include = FALSE, purl = FALSE}
@@ -413,6 +478,19 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 and then calling `purl` again, will remove this code chunk from `test.R`.
+
+I also find that adding the `documentation = 0` option to `purl()` will remove the chunk options that are included as comments in the extracted code. **This will retain comments that are included in each chunk however, so all is good there.**
+
+```{r, eval = FALSE}
+purl("test.Rmd", documentation = 0)
+```
+
+```{r, code = readLines("litprog/test1.R"), eval = FALSE}
+```
+
+```{info, title = "Important", collapsible = FALSE}
+If you run `purl()` multiple times to the same output file and the **code doesn't change**, then it **does not overwrite** (or at least doesn't on my machine). Hence you might need to delete the extracted R script before re-running `purl()` with different `documentation` options.
+```
 
 ```{task}
 Take your R Markdown document created in the previous task (`ff.Rmd`), and `purl` it to create a script file (be careful to have a backup of your original `ff.R` script in case you overwrite it).
@@ -444,6 +522,17 @@ Write a simple presentation with a couple of slides that highlights the key poin
 
 An absolutely brilliant package, written again by [Yihui Xie](https://yihui.org/en/), is `bookdown`, which enables you to write print-ready books using R Markdown. This includes a load of additional features, like better cross-referencing and bibliographic features. Bookdown can also be used to create simpler documents such as those produced as standard by `rmarkdown`, but that enable you to implement some of the `bookdown` features.
 
-All of the lecture notes for this module have been written using `bookdown`. However, I have also developed customised code and templates to build in additional features, such as the `task` and `solution` boxes and suchlike, and to ensure they work when compiled to either HTML or PDF format. This is the beauty of **open-source** software---you are free to develop code further and build on the amazing work done by other developers. As such I make various pieces of software and R packages publicly available through e.g. GitHub, so that others can use them if they wish. This way the open-source software ecosystem continues to thrive through a shared sense of altruism. 
+All of the lecture notes for this module have been written using `bookdown`. However, I have also developed customised code and templates to build in additional features, such as the `task` and `solution` boxes and suchlike, and to ensure they work when compiled to either HTML or PDF format. Similarly, all the slides and handouts were also written using `rmarkdown` with custom templates to ensure that the slides can be compiled into HTML or PDF (PDF typesets better, and is better for handouts, but is not (currently) screen-reader compatible, whereas HTML slides are, so it's great to have both options to help improve accessibility). I dislike Word, and so don't go anywhere near that unless I have to!
 
-[https://github.com/tjmckinley/RtutorialSkeleton](https://github.com/tjmckinley/RtutorialSkeleton)
+Yihui Xie's `bookdown` book can be found at [https://bookdown.org/](https://bookdown.org/).
+
+This is the beauty of **open-source** software---you are free to develop code further and build on the amazing work done by other developers. I use open-source software every day in my research, and try to give a small part back by making various pieces of software and R packages publicly available through e.g. GitHub, so that others can use them if they wish. It is through a shared sense of altruism that the open-source software ecosystem continues to thrive.
+
+## Additional task
+
+```{task}
+Take the analysis we conducted in Chapter \@ref(spiegelhalter), and create a short R script that reads in the relevant data files and creates the main figure that we produced in the earlier workshop. Convert this into R Markdown and produce a short report, with some descriptive text, but hiding all the code in the compiled document. Add any references using the default Chicago-style as necessary.
+```
+
+```{solution, code = readLines("litprog/covid.Rmd"), eval = FALSE}
+```

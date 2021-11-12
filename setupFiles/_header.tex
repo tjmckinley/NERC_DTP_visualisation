@@ -1,0 +1,131 @@
+\mode<presentation>
+% \mode<handout>
+{
+  \usetheme[block=fill]{metropolis}
+}
+
+% reset some of the options in metropolis
+% to suit style of slides
+\setlength{\unitlength}{\textwidth}
+\setlength{\parskip}{\baselineskip}
+\linespread{1}
+\setbeamersize{text margin left=2ex,text margin right=2ex}
+\usepackage[sfdefault,light]{FiraSans}
+%\usepackage{FiraMono}
+
+\definecolor{exeterblue}{HTML}{005eab}
+\setbeamercolor{alerted text}{%
+  fg=exeterblue
+}
+
+\setbeamercolor{normal text}{%
+  bg=white,%
+  fg=black%
+}
+\setbeamercolor{frametitle}{%
+  bg=normal text.bg,%
+  fg=normal text.fg%
+}
+
+\setbeamercolor{block title example}{bg=alerted text.fg!50,fg=black}
+\setbeamercolor{block body example}{bg=alerted text.fg!15}
+\setbeamercolor{item}{fg=black}
+
+\setbeamerfont{frametitle}{size=\Large, series=\mdseries}
+
+\makeatletter
+
+\setlength{\metropolis@frametitle@padding}{2.2ex}% <- default 2.2 ex
+
+%set beamer template with logo
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip%
+  \begin{beamercolorbox}[%
+      wd=\paperwidth,%
+      sep=0pt,%
+      leftskip=\metropolis@frametitle@padding,%
+      rightskip=\metropolis@frametitle@padding,%
+    ]{frametitle}%
+  \metropolis@frametitlestrut@start%
+  \insertframetitle%
+  \nolinebreak%
+  \metropolis@frametitlestrut@end%
+  \hfill
+  \raisebox{-0.9ex}{\includegraphics[height=2.5ex,keepaspectratio]{../setupFiles/_colour_logo_vector.pdf}}
+  \end{beamercolorbox}%
+}
+\setbeamertemplate{title separator}{
+  \begin{tikzpicture}
+    \fill[fg] (0,0) rectangle (\textwidth, 1pt);
+  \end{tikzpicture}%
+  \par%
+}
+
+\makeatother
+
+%amend frametitle to have dividing line
+\addtobeamertemplate{frametitle}{}{
+  \nointerlineskip
+  \textcolor{alerted text.fg}{\rule{\textwidth}{1pt}}
+}
+
+% set hyperlinks up correctly
+\hypersetup{colorlinks,linkcolor=exeterblue,urlcolor=exeterblue,citecolor=exeterblue}
+
+\usepackage{graphicx, amsmath, amssymb, dsfont, fancyvrb, booktabs}
+\usepackage{multirow, verbatim, algorithmic, tikz, cancel, colortbl}
+\usepackage[export]{adjustbox}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
+\usetikzlibrary{arrows}
+
+% set footnote indicator
+\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\setcounter{footnote}{1}
+
+% amend spacing in r markdown template
+\AtBeginPart{}
+\AtBeginSection{}
+\AtBeginSubsection{}
+\AtBeginSubsubsection{}
+\setlength{\emergencystretch}{0em}
+\setlength{\parskip}{\baselineskip}
+
+% set new commands for columns
+\newcommand{\bcolumns}[1]{\begin{columns}[#1]}
+\newcommand{\ecolumns}{\end{columns}}
+\newcommand{\bcolumn}[1]{\begin{column}{#1\textwidth}}
+\newcommand{\ecolumn}{\end{column}}
+
+\newcommand{\bcenter}{\begin{center}}
+\newcommand{\ecenter}{\end{center}}
+\newcommand{\bexampleblock}{\begin{exampleblock}}
+\newcommand{\eexampleblock}{\end{exampleblock}}
+\newcommand{\bsmaller}{\begin{small}}
+\newcommand{\esmaller}{\end{small}}
+\newcommand{\blarger}{\begin{large}}
+\newcommand{\elarger}{\end{large}}
+
+\newcommand{\br}{\vspace{\baselineskip}}
+
+% boxed environments
+\usepackage{tcolorbox}
+\newtcbox{\mybox}[2][exeterblue]{nobeforeafter,colframe=#1,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt,#2}
+\tcbset{colframe=exeterblue,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt}
+\newcommand{\btcolorbox}{\begin{tcolorbox}}
+\newcommand{\etcolorbox}{\end{tcolorbox}}
+\AtBeginEnvironment{tcolorbox}{\normalsize}
+
+\metroset{numbering=none}
+
+% sort spacing and verbatim environment
+\setlength{\parskip}{0.5\baselineskip}
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+
+% set code chunk background colour
+\definecolor{codegrey}{HTML}{F0F0F0}
+\colorlet{shadecolor}{codegrey}
+

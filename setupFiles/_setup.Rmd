@@ -1,0 +1,235 @@
+```{r, include = FALSE, purl = FALSE, cache = FALSE}
+## load knitr library
+library(knitr)
+
+## set default options
+opts_chunk$set(cache = FALSE, echo = FALSE, fig.align = "center", out.width = "100%", wrap = FALSE)
+
+## footnote function
+footnotemarkCtr <- 1
+footnoteCtr <- 1
+footnotemark <- function() {
+    ## set footnote marks
+    marks <- c("&dagger;", "&Dagger;", "&#167;", "&#182;", "&#35;", "&#42;")
+    if(is_latex_output()) {
+        x <- paste0("[^", footnotemarkCtr, "]")
+    } else {
+        x <- paste0("<sup>", marks[footnotemarkCtr + 1 - footnoteCtr], "</sup>")
+    }
+    ## increment counter
+    assign("footnotemarkCtr", footnotemarkCtr + 1, pos = 1)
+    x
+}
+## custom engine for tasks
+knit_engines$set(footnotes = function(options) {
+    ## set footnote marks
+    marks <- c("&dagger;", "&Dagger;", "&#167;", "&#182;", "&#35;", "&#42;")
+    ## check there is code for each counter
+    nfnotes <- footnotemarkCtr - footnoteCtr
+    if(nfnotes == 0) stop("Missing required footnotemark")
+    if(nfnotes > 6) stop("Too many footnotes")
+    if(is.null(options$code) & nfnotes > 0) stop("Missing required footnote code")
+    ## split code
+    if(nfnotes > 1) {
+        inds <- grep("####", options$code)
+        if(length(inds) < 1) stop(paste("Can't split chunk", options$label, "into different footnotes"))
+        if(inds[1] == 1) stop(paste("In chunk", options$label, "must have footnote text for first footnote"))
+        code <- list(NULL)
+        currind <- 1
+        for(i in 1:length(inds)) {
+            code[[i]] <- options$code[currind:(inds[i] - 1)]
+            currind <- inds[i] + 1
+        }
+        code[[i + 1]] <- options$code[currind:length(options$code)]
+    } else {
+        code <- options$code
+    }
+    if(length(code) != nfnotes) stop("Mismatch between number of footnotemarks and footnotes")
+    ## set up output
+    if(opts_knit$get("rmarkdown.pandoc.to") != "beamer") {
+        if(is.list(code)) {
+            code <- lapply(1:length(code), function(i, x) {
+                paste0("<sup>", marks[i], "</sup>", x[[i]], "\n")
+            }, x = code)
+            code <- paste0(code, collapse = "\n")
+            code <- paste0("<div class=\"footer\">\n\n", code, "\n\n<div>\n")
+        } else {
+            code <- paste0("<div class=\"footer\">\n\n<sup>", marks[1], "</sup>", code, "\n\n<div>\n")
+        }
+    } else {
+        code <- lapply(1:length(code), function(i, x) {
+            paste0("[^", footnoteCtr + (i - 1), "]: ", x[[i]], "\n")
+        }, x = code)
+        code <- paste0(code, collapse = "\n")
+        code <- paste0(code, raw_latex("\n\\setcounter{footnote}{1}\n"))
+    }
+    ## increment counter
+    assign("footnoteCtr", footnotemarkCtr, pos = 1)
+    return(code)
+})
+
+## environment functions
+benv <- function(text) {
+    if(!(text %in% c("center", "smaller", "larger"))) {
+        stop(paste0("Can't set benv with \"", text, "\""))
+    }
+    if(is_latex_output()) {
+        x <- paste0("\\b", text, "\n")
+    } else {
+        x <- paste0("<div class=\"", text, "\">\n")
+    }
+    x
+}
+eenv <- function(text) {
+    if(!(text %in% c("center", "smaller", "larger"))) {
+        stop(paste0("Can't set eenv with \"", text, "\""))
+    }
+    if(is_latex_output()) {
+        x <- paste0("\\e", text, "\n")
+    } else {
+        x <- "</div>\n"
+    }
+    x
+}
+
+## column functions
+bcols <- function(valign = c("c", "t")) {
+    if(is_latex_output()) {
+        x <- paste0("\\bcolumns{", valign[1], "}\n")
+    } else {
+        x <- paste0("<div class=\"columns", ifelse(valign[1] == "c", " c", ""), "\">\n")
+    }
+    x
+}
+ecols <- function() {
+    if(is_latex_output()) {
+        x <- "\\ecolumns\n"
+    } else {
+        x <- "</div>\n"
+    }
+    x
+}
+bcol <- function(prop, center = FALSE) {
+    if(is_latex_output()) {
+        x <- paste0("\\bcolumn{", prop, "}\n")
+        if(center) {
+            x <- paste0(x, "\\centering\n")
+        }
+    } else {
+        if(missing(prop)) prop <- 1
+        x <- paste0("<div class=\"column", ifelse(center, " center", ""), "\" style=\"--prop: ", prop, ";\">\n")
+    }
+    x
+}
+ecol <- function() {
+    if(is_latex_output()) {
+        x <- "\\ecolumn\n"
+    } else {
+        x <- "</div>\n"
+    }
+    x
+}
+
+## break function
+br <- function() {
+    if(is_latex_output()) {
+        x <- "\\br\n"
+    } else {
+        x <- "<br>\n"
+    }
+    x
+}
+
+## custom engine for boxes
+knit_engines$set(box = function(options) {
+    ## set up output
+    if(opts_knit$get("rmarkdown.pandoc.to") == "beamer") {
+        if(options$wrap) {
+            x <- paste0("\\btcolorbox\n\n", options$code, "\n\n\\etcolorbox\n")
+        } else {
+            x <- paste0(knitr::raw_latex("\\mybox{}{"), options$code, knitr::raw_latex("}"))
+        }
+    } else {
+        x <- paste0("<p class=\"box\">\n", options$code, "\n</p>")
+    }
+    return(x)
+})
+
+## uncover function
+buncover <- function(order) {
+    if(is_latex_output()) {
+        x <- paste0("\\uncover<", order, ">{")
+        x <- knitr::raw_latex(x)
+    } else {
+        x <- paste0("<div class=\"fragment\">\n")
+    }
+    x
+}
+euncover <- function(order) {
+    if(is_latex_output()) {
+        x <- knitr::raw_latex("}")
+    } else {
+        x <- paste0("</div>\n")
+    }
+    x
+}
+
+## resize chunk hook
+def.chunk.hook  <- knit_hooks$get("chunk")
+knit_hooks$set(chunk = function(x, options) {
+    x <- def.chunk.hook(x, options)
+    if(is.null(options$size)) {
+        options$size <- "normalsize"
+    }
+    if(is.null(options$latexcodesize)) {
+        options$latexcodesize <- "scriptsize"
+    }
+    if(is.null(options$htmlcodesize)) {
+        options$htmlcodesize <- "xx-large"
+    }
+    if(length(options$latexcodesize) != 1) {
+        stop("Invalid 'latexcodesize' option to chunk")
+    }
+    if(length(options$htmlcodesize) != 1) {
+        stop("Invalid 'htmlcodesize' option to chunk")
+    }
+    validScalings <- c("smaller", "normalsize", "larger")
+    latexSizes <- c("tiny", "scriptsize", "footnotesize", "small", "normalsize", "large", "Large", "huge")
+    htmlSizes <- c("xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large")
+    ## check sizes
+    if(length(options$size) != 1) {
+        stop("Invalid 'size' option to chunk1")
+    }
+    if(!(options$size %in% validScalings)) {
+        print(options$size)
+        stop("Invalid 'size' option to chunk2")
+    }
+    if(!(options$latexcodesize %in% latexSizes)) {
+        stop("Invalid 'latexcodesize' option to chunk")
+    }
+    if(!(options$htmlcodesize %in% htmlSizes)) {
+        stop("Invalid 'htmlcodesize' option to chunk")
+    }
+    if(is_latex_output()) {
+        ## scale size if necessary
+        ind <- match(options$latexcodesize, latexSizes)
+        ind <- ifelse(options$size == "smaller", ind - 1, ind)
+        ind <- ifelse(options$size == "larger", ind + 1, ind)
+        if(ind <= 0 | ind > length(latexSizes)) {
+            stop(paste0("Can't make font size ", options$size))
+        }
+        x <- paste0("\\", latexSizes[ind], "\n\n", knit_child(text = x), "\n\n \\normalsize")
+    } else {
+        ## scale size if necessary
+        ind <- match(options$htmlcodesize, htmlSizes)
+        ind <- ifelse(options$size == "smaller", ind - 1, ind)
+        ind <- ifelse(options$size == "larger", ind + 1, ind)
+        if(ind <= 0 | ind > length(htmlSizes)) {
+            stop(paste0("Can't make font size ", options$size))
+        }
+        x <- paste0("<div class=\"resize\" style=\"--fsize: ", htmlSizes[ind], ";\">\n", x, "\n</div>")
+    }
+    x
+})
+```
+

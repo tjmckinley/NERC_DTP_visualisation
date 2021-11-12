@@ -14,6 +14,7 @@ A PDF handout for the slides for this Chapter can be found on the ELE page`r ife
 ```
 
 Our reproducible research journey has taken us from basic script files to fully annotated electronic notebooks using R Markdown. There is one final piece of the puzzle missing. How do we deal with **changes** done to our source code? 
+\newpage
 
 A common approach is to create a new version of the file before making any changes.
 
@@ -47,6 +48,7 @@ knitr::include_graphics("git/images/final_doc.png")
 **Version control systems** are software that track changes done to a set of files over time in a systematic fashion, such that previous versions can be easily accessed and compared. In a nutshell, these systems start with a **base** version of the file and then record any changes done along the way. Effectively, we have a **fossil record** that captures the evolution of the source code.
 
 Version control systems are not a novel idea. They have been around at least since [1973](https://en.wikipedia.org/wiki/Source_Code_Control_System). However, these tools were predominantly used by software engineers. It is only recently that such software has become a mainstay for reproducible research; thanks to easy-to-use and open-source software like [Git](https://git-scm.com/). But also because it became a necessity, as scientists are dealing with ever-increasing large and complex datasets, requiring several computer programs to wrangle, visualise and model the data. Compare this to the "good old days" when datasets were simpler and could be analysed by "hand" or using spreadsheets.
+\newpage
 
 Having this **fossil history**, that lets you access any version of your code between the start of the project and the present day, has several advantages:
 
@@ -84,7 +86,7 @@ Once you are comfortable with the basics of Git, I recommend the following liter
 
 Git comprises a suite of **command-line utility tools**, designed to work on a Unix-style command-line environment (e.g. [`bash`](https://en.wikipedia.org/wiki/Bash_(Unix_shell))). This is the default environment for Mac / Linux users (accessed via the **Terminal** app). Windows users need to install **Git Bash**, which essentially emulates `bash` on Windows. 
 
-To install Git (and Git Bash for Windows users), follow the relevant instructions on the [downloads](https://git-scm.com/downloads) page (use the default options).
+To install Git (and Git Bash for Windows users), follow the relevant instructions on the [downloads](https://git-scm.com/downloads) page (use the default options, except I would recommend changing the default text editor from `vim` to something simpler (like Notepad), and also setting the main branch name to `main`).
 
 To make sure installation was successful open the following application:
 
@@ -111,7 +113,6 @@ Git commands are structured as follows:
 $ git verb options
 ```
 
-\newpage
 Where:
 
 * `verb` is the particular **action** you want Git to perform.
@@ -131,6 +132,7 @@ You can view the Git settings on your machine using:
 ```
 $ git config --list
 ```
+\newpage
 
 ```{info, title = "Note", collapsible = FALSE}
 Later on in this course we will be using the online repository [GitHub](https://github.com/). It's best to create an account now and set your Git `user.email` to the same one used when setting up your [GitHub](https://github.com/) account. As this is a tool that you will probably use after leaving the university, I would use a personal email address.
@@ -168,6 +170,7 @@ Before running the `$ git init` command, make sure you have navigated to the rig
 The `git init` command will create a **hidden** directory called `.git` (you can view it by enabling showing of hidden files in your file manager or by typing `$ ls -a`). This folder stores **all** of the tracked information about changes done to the files within that project. If you delete the `.git` folder you will lose your fossil history---so do **not** touch this folder!
 
 The `.git` folder is what makes an otherwise "normal" directory on your computer become a Git **repository** (repo for short). One of Git's key features is that the repo (i.e. the `.git` folder), contains the *entire* history of the project. If you move / clone this repo onto a new computer (e.g. a collaborator's computer), the full project history moves with it. This is called [distributed](https://en.wikipedia.org/wiki/Distributed_version_control) version control.
+\newpage
 
 ### Tracking changes
 
@@ -206,7 +209,6 @@ $ git branch -M main
 
 ```
 
-\newpage
 To instruct git to start **tracking** `hello.txt` we use the `add` command:
 
 ```
@@ -224,6 +226,7 @@ Changes to be committed:
   (use "git rm --cached <file>..." to unstage)
         new file:   hello.txt
 ```
+\newpage
 
 The next and final step is to tell Git to take a *snapshot* of `hello.txt` and record (permanently) these changes as a **commit**.
 

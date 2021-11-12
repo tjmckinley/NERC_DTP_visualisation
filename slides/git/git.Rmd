@@ -142,8 +142,76 @@ $ git diff        # view changes across different commits
 $ git branch      # create / delete branch
 ```
 
+**Demonstration time**
 
+## Your turn
 
+Have a go at Sections 11.1.2--11.1.7
 
+## Branching
 
+One of Git's greatest strengths is the ability to use **branches**. 
 
+This enables you to make copies of your **entire repo**, which you can amend, commit and develop separately from other branches---allowing you to use a **non-linear** workflow.
+
+This is really useful for **experimental features** or **testing new ideas**.
+
+If required, you can **merge**`r footnotemark()` these changes back into your `main` branch later on.
+
+```{footnotes}
+or `rebase`
+```
+
+## Branching
+
+This is also very useful when **collaborating** with other people on the same code base.
+
+Any branches you don't like can be deleted at a later time point.
+
+Since commits are **snapshots** of the repo at a given time, you can use these ideas to **revert** historical changes or **recover** deleted files etc.`r footnotemark()`.
+
+**Demonstration time**
+
+```{footnotes}
+as long as these files were **tracked**
+```
+
+## Your turn
+
+Have a go at Sections 11.1.8--11.1.10
+
+## GitHub
+
+So far we have only looked at **local** Git repos (i.e. one stored on your own machine).
+
+Often it can also be useful to host code **online**, especially if collaborating and/or sharing code.
+
+Many online Git repositories exist, but the one we will look at today is [GitHub](https://github.com/).
+
+## GitHub
+
+We can **clone** existing GitHub repos, or sync an existing *local* repo with a *remote* repo.
+
+We can then **pull** changes from the remote to the local repo, or **push** changes from the local to the remote repo to keep them in sync.
+
+You can even use GitHub to host [websites](https://pages.github.com/) as a quick way to deploy and update your work.
+
+**Demonstration time**
+
+## Your turn
+
+Have a go at Section 11.2.
+
+## Git in RStudio
+
+RStudio has a built-in connection to the command line (tab next to "Console"---see Fig \@ref(fig:rstudio-terminal)). So when we are writing code in RStudio, we do not need to open a separate command line window, we can do everything from within the RStudio IDE. 
+
+```{r rstudio-terminal, echo = FALSE, fig.cap = "The terminal window in RStudio", out.width = "60%"}
+knitr::include_graphics("images/rstudio-terminal.png")
+```
+
+## Git in RStudio
+
+When combined with [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) this can make for a neat integrated solution to both code development and version control.
+
+Have a go at Section 11.3.

@@ -1,6 +1,3 @@
-[submodule "slides"]
-	path = slides
-	url = https://github.com/tjmckinley/slideTemplate
 [submodule "assignments"]
 	path = assignments
 	url = ./assignments

@@ -1,5 +1,33 @@
 #!/bin/bash
 
+# -s compile slides
+
+while getopts :s: option
+do
+    case "${option}"
+    in
+        s) slides=${OPTARG};;
+        \?)
+            echo "Invalid option: -$OPTARG"
+            exit 1
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument."
+            exit 1
+            ;;
+    esac
+done
+
+# check slides mode (1 = compile, 0 = don't compile slides)
+if [ ! -z ${slides+x} ]; then
+    if [ $slides != "0" ] && [ slides != "1" ]; then
+        echo "slides set incorrectly (should be 0 = don't compile slides or 1 = compile slides)"
+        exit 1
+    fi
+else
+    slides="1"
+fi
+
 ## clean up folder
 rm -rf docs/
 
@@ -10,9 +38,9 @@ Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
 ## copy nojekyll file
 cp .nojekyll docs/
 
-## declare an array variable
-chNames=("intro" "advis")
-chPaths=("intro" "advis")
+## declare array variables
+chNames=("intro" "prog" "simpleplots" "advis" "datawr" "covid" "spatialCovid" "litprog" "git")
+chPaths=("intro" "intro" "intro" "advis" "advis" "covid" "covid" "litprog" "git")
 
 ## get length of an array
 arraylength=${#chNames[@]}
@@ -24,19 +52,24 @@ do
     chPath=${chPaths[$i]}
 
     ## compile lecture slides
-    cd slides
-    ./compile.sh -p $chName
-    ./compile.sh -p $chName -b 1
-    ./compile.sh -p $chName -h 1
-    cd ..
+    if [ $slides == "1" ]; then
+        cd slides
+        ./compile.sh -p $chName
+        ./compile.sh -p $chName -b 1
+        ./compile.sh -p $chName -h 1
+        cd ..
+    fi
     
     ## copy required files to uploadFiles
-    cp $chPath/uploadFiles/* docs/$chPath/uploadFiles
-    if [ -f $chPath/datasets$chPath.zip ]; then
-        rm $chPath/datasets$chPath.zip
+    mkdir -p docs/$chPath/uploadFiles
+    if [ -f $chPath/uploadFiles ]; then
+        cp $chPath/uploadFiles/* docs/$chPath/uploadFiles
+        if [ -f $chPath/datasets_${chPath}.zip ]; then
+            rm $chPath/datasets_${chPath}.zip
+        fi
+        zip -rj $chPath/datasets_${chPath}.zip $chPath/uploadFiles
+        mv $chPath/datasets_${chPath}.zip docs/$chPath/uploadFiles/
     fi
-    zip -rj $chPath/datasets$chName.zip $chPath/uploadFiles
-    mv $chPath/datasets$chPath.zip docs/$chPath/uploadFiles/
     cp slides/$chName/${chName}SLIDES* docs/$chPath/uploadFiles/
     cp slides/$chName/${chName}HANDOUT* docs/$chPath/uploadFiles/
 done

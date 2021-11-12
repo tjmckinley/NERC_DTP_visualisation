@@ -1,0 +1,112 @@
+---
+title: "Reproducibility and literate programming"
+author: "T.J. McKinley ([t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk))"
+output: 
+  revealjs::revealjs_presentation:
+    css: ../setupFiles/_styles.css
+    reveal_options:
+      width: 1200
+      height: 900
+      slideNumber: true
+      previewLinks: true
+    self_contained: true
+    include:
+      in_header: ../setupFiles/_script.html
+  beamer_presentation:
+      latex_engine: xelatex
+      includes:
+          in_header: ../setupFiles/_header.tex
+---
+
+```{r, setup, child = "../setupFiles/_setup.Rmd", include = FALSE, purl = FALSE, cache = FALSE}
+```
+
+```{r, include = FALSE}
+opts_chunk$set(echo = TRUE)
+```
+
+## Reproducibility
+
+Why do we harp on so much about **reproducibility**?
+
+*"Because the reproducibility of empirical results is an essential part of the scientific method, such failures undermine the credibility of theories building on them and potentially of substantial parts of scientific knowledge."*---[Wikipedia](https://en.wikipedia.org/wiki/Replication_crisis)
+
+This is as much to do with analysis and data processing, as it is about study design. We will focus on reproducibility of our **analyses**.
+
+## R scripts
+
+Simply recording all the things you've done in an R session is not overly helpful. 
+
+Instead you should think about writing script files to record the key steps of an analysis that will enable you to reproduce your results from start-to-finish with all the gumpf taken out.
+
+```{box, wrap = TRUE}
+I am defining **reproducibility** here, not only to mean that the steps of an analysis can be repeated, but also that they can be **understood**. Scripts should help us understand both **how** and **why** we did things. A key focus is therefore on clarity!
+```
+
+In fact, R script files form the basis of all good reproducible analyses. Languages that support scripting are thus **more powerful** and **robust** than point-and-click interfaces.
+
+## R scripts
+
+Although there are not hard and fast rules for writing good scripts, I think there are sensible aspects to consider:
+
+* They should be **commented**.
+* They should be formatted neatly (spaces / indentation etc. used sensibly).
+* No **extraneous** code (e.g. only **final** versions of plots included).
+* Where possible, the script file should be able to be run directly, with no errors or interactive user input required to produce the final plots / summaries. (We can use the `source()` function in R to run a script file from start-to-finish if we like.)
+
+## R scripts
+
+In fact, generating a **reproducible example**`r footnotemark()` is also really important when asking questions on StackOverFlow, or highlighting possible bugs in software on GitHub, or a range of other examples.
+
+In practice we can also split analyses up into different script files (e.g. one for data cleaning, one for data analysis etc.). The key thing is that they help to organise both your **code** and your **thinking**!
+
+```{footnotes}
+sometimes called a ***reprex***
+```
+
+## Folder structures
+
+`r benv("smaller")`
+
+I've found it is really important to keep code for projects or analyses neatly structured within folders. This:
+
+* keeps the analysis self-contained, and can be easily **shared** by simply zipping up the main folder (or managed as a **Git repository**).
+* This main folder can be set as the **working directory** in R, meaning that within your scripts files all paths to input or output files can be made **relative** to the working directory.
+* You can break up your code into multiple script files as required, and include a `README` file documenting how to reproduce the code (i.e. what order to run your files in etc.). You can even have an **uber-script** file, that runs all other script files in order if required.
+
+[**RStudio Projects**](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) associate a directory with a specific project, and provides some useful features like keeping unsaved code and automatically setting the working directory path when the project is opened.
+
+`r eenv("smaller")`
+
+## Literate programming
+
+There are a series of key packages that enable R users to run **input code**, and integrate this with the corresponding **outputs**, to produce fully reproducible documents (as opposed to just script files).
+
+This enables one to create **reports**, **websites**, **presentations**, **books** and various other things. 
+
+It **no**`r footnotemark()` danger of **copy-and-paste errors**, and ensuring that ***all*** reported outputs are derived from the code **as it has been run**.
+
+```{footnotes}
+well, a small danger---it is possible to introduce errors if one tries really hard...
+```
+
+## Literate programming
+
+In R, the `rmarkdown` and `knitr` packages provide support for a lightweight mark-up language called R Markdown.
+
+Markdown was originally designed to allow users to write HTML documents without needing to know how to code in HTML. However, when combined with a piece of software called `pandoc`, you can now knit R Markdown code into **HTML**, **PDF** and **Word**.
+
+Markdown was created with the mandate that documents should be easy to read and write; trading flexibility in formatting for ease-of-coding and understanding. It can be summarised on two sides of A4: through the [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf).
+
+## R Markdown
+
+**Demonstration time!**
+
+## Your turn
+
+Go through Chapter 9 in your own time (most of which has been covered). 
+
+Have a go at working through Chapter 10.
+
+
+

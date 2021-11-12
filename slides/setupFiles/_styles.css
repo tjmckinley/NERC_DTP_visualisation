@@ -1,0 +1,148 @@
+/* import fonts */
+@import url("https://fonts.googleapis.com/css?family=Fira+Sans:300");
+@import url("https://fonts.googleapis.com/css?family=Fira+Mono");
+
+/* set main colours */
+:root {
+    --main-colour: #005eab;
+    --main-colour-darken: #005091;
+    --prop: 1;
+    --fsize: medium;
+}
+
+/* set fonts */
+.reveal section {
+    text-align: left;
+    font-family: "Fira Sans", sans-serif;
+    font-size: 1em;
+}
+
+/* set title page structure */
+.reveal h1.title {
+    padding-bottom: 15px;
+    border-bottom: 5px solid var(--main-colour);
+}
+
+/* set slide header format */
+.reveal h2 {
+    padding-bottom: 30px;
+    border-bottom: 5px solid var(--main-colour);
+    background-image: url(../setupFiles/_colour_logo_vector.svg);
+    background-size: 20%;
+    background-repeat: no-repeat;
+    background-position: 100% 50%;
+}
+
+/* set author format */
+.reveal h2.author {
+    border: none;
+    background-image: none;
+}
+
+/* adjust mathjaz display padding */
+.reveal .MathJax_Display {
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+}
+
+/* set link colours */
+.reveal a {
+  color: var(--main-colour);
+}
+.reveal a:visited {
+  color: var(--main-colour);
+}
+.reveal a:hover {
+  color: var(--main-colour-darken);
+  text-decoration: underline;
+}
+
+/* set progression bar and control panel colours */
+.reveal .controls .enabled {
+    opacity: 0.9;
+}
+.reveal .controls .navigate-right.enabled {
+  border-left-color: var(--main-colour);
+}
+.reveal .controls .navigate-right.enabled:hover {
+  border-left-color: var(--main-colour-darken);
+}
+.reveal .controls .navigate-left.enabled {
+  border-right-color: var(--main-colour);
+}
+.reveal .controls .navigate-left.enabled:hover {
+  border-right-color: var(--main-colour-darken);
+}
+.reveal .controls .navigate-bottom.enabled {
+  border-top-color: var(--main-colour);
+}
+.reveal .controls .navigate-bottom.enabled:hover {
+  border-top-color: var(--main-colour-darken);
+}
+.reveal .controls .navigate-top.enabled {
+  border-bottom-color: var(--main-colour);
+}
+.reveal .controls .navigate-top.enabled:hover {
+  border-bottom-color: var(--main-colour-darken);
+}
+.reveal .progress span {
+    background: var(--main-colour);
+}
+
+/* set up multicolumn */
+.columns {
+    display: flex;
+}
+.columns.c {
+  align-items: center;
+}
+.column {
+    flex: var(--prop);
+}
+div.center > * {
+  text-align: center;
+  margin: auto;
+}
+div.smaller > * {
+  font-size: smaller;
+}
+div.larger > * {
+  font-size: larger;
+}
+.reveal section img { 
+  background:none; 
+  border:none; 
+  box-shadow:none;
+}
+p.box {
+  border: 3px solid var(--main-colour);
+  padding: 10px;
+  display: inline-block;
+}
+.reveal div.resize > * {
+  font-size: var(--fsize);
+  margin-bottom: 0;
+}
+.sourceCode.r {
+  font-size: inherit;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-bottom: 0;
+  background-color: #F0F0F0;
+}
+.reveal .footer {
+    padding-top: 30px;
+    margin-top: 50px;
+    font-size: smaller;
+}
+.reveal .footer:before {
+    content: ""; 
+    display: block;
+    width: 30%;
+    padding-bottom: 10px;
+    border-top: 1px solid black; 
+}
+.reveal sup {
+  vertical-align: super;
+  font-size: smaller;
+}

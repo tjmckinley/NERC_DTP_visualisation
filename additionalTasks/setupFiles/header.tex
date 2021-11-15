@@ -1,0 +1,56 @@
+% packages
+\usepackage{framed, xcolor, bm, dsfont, booktabs, gensymb, multirow}
+
+% sort reference labelling
+\usepackage[inline]{enumitem}    
+\newlist{qenum}{enumerate}{3}  % create a new enumerate-like environment
+\setlist[qenum,1]{label=\arabic*.,
+                  ref=\arabic*}
+\setlist[qenum,2]{label=(\alph*),
+                  ref=\theqenumi(\alph*)}
+\setlist[qenum,3]{label=(\roman*),
+                  ref=\theqenumii(\roman*)}
+                  
+% custom environments for markdown
+\newcommand{\benum}{\begin{qenum}}
+\newcommand{\eenum}{\end{qenum}}
+\newcommand{\btab}{\begin{tabular}}
+\newcommand{\etab}{\end{tabular}}
+
+% new commands
+\newcommand{\var}{\mbox{var}}
+\newcommand{\ds}[1]{\displaystyle{#1}}
+
+% make answer boxes
+\makeatletter
+
+\colorlet{shadecolor}{gray!20}
+
+\renewenvironment{snugshade}{%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed}
+\newcommand{\bss}{\begin{snugshade}}
+\newcommand{\ess}{\end{snugshade}}
+
+\makeatother
+
+% set Arial font
+\usepackage{fontspec}
+\setmainfont{Arial}
+
+% set footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[LE,LO]{CSC3031}
+\fancyfoot[RE,RO]{\thepage}
+
+\usepackage{setspace}
+%\doublespacing

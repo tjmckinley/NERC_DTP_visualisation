@@ -800,6 +800,18 @@ table2
 Notice that this table has one more death in the `65-74` category, and one less in the `75-84` category. I can't quite remedy this, but it will make almost negligible difference to the results.
 ```
 
+```{info, title = "Mathematical detail (if you are interested)", collapsible = TRUE}
+Here are some mathematical details for the population fatality risk estimates in Figure \@ref(fig:table2) in case you are interested. Firstly, the **population fatality risk** in age-category $a$, denoted $\mbox{PFR}_a$, is the number of people who have died from COVID-19 in age-category $a$ (column 2), divided by the number of individuals in age-category $a$ (column 3). Hence:
+$$
+    \mbox{PFR}_a = \frac{\mbox{number of deaths in age-category $a$}}{\mbox{number of individuals in age-category $a$}}.
+$$
+This corresponds to the **probability** that a **randomly-selected** person in age-category $a$ will have died of COVID-19 during the study period. Since it is a **probability**, it is constrained to lie in the range $[0, 1]$. To express this as a rate per 100,000 individuals, we can then just multiply $\mbox{PFR}_a$ by 100,000 (column 4), or to express as a percentage, we multiply by 100 (column 5).
+
+To calculate the PFR in terms of "1 death per $x$" population, we simply divide the population size (column 3) by the number of deaths (column 2) to calculate $x$; this is given in column 6 in Figure \@ref(fig:table2). 
+
+To calculate the COVID-19 death rate as a percentage of the 5-year average death rates, we first calculate the number of deaths from COVID-19 in age-category $a$ (column 2) and divide this by the 5-year average for the number of deaths in age-category $a$ (column 8), and then multiply by 100 to convert from a proportion to a percentage. This is stored in column 9 in Figure \@ref(fig:table2). To convert this to *days of equivalent risk*, we can multiply the COVID-19 death rate as a **proportion** of the 5-year average death rate, by the number of days "at-risk", which here is 112 days since the beginning of the study period. This is stored in column 10 in Figure \@ref(fig:table2).
+```
+    
 ```{task}
 Now calculate the COVID-19 death rates per 100,000 population and add to your new data frame.
 ```

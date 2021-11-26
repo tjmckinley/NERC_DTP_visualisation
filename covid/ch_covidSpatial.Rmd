@@ -380,7 +380,7 @@ library(sf)
 
 Now we need to download the relevant shapefile. A range of useful shapefiles associated with UK electoral and administrative regions can be found at [https://geoportal.statistics.gov.uk/](https://geoportal.statistics.gov.uk/). In this case we want to download the **LTLA** shapefile for **December 2019** (since the codes in the `pop` data set correspond to regions in 2019).
 
-For ease, the version of the data used in the analysis below is found in the  `r ifelse(!is_latex_output(), "[Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip](covid/uploadFiles/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip)", "*Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip*")` file, which has been downloaded from:
+For ease, the version of the data used in the analysis below is found in the  `r ifelse(!is_latex_output(), "[Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip](covid/uploadFiles/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip)", "\nLocal_Authority_Districts_(December_2019)_Boundaries_UK_BUC.zip")` file, which has been downloaded from:
 
 [https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019)](https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(BDY_LAD%2CDEC_2019))
 
@@ -396,14 +396,17 @@ These contain all of the necessary spatial information and meta-data discussed e
 
 ```{info, title = "Note"}
 There are higher resolution shapefiles available on the ONS Geoportal
+```
 
 ```{r, eval = FALSE}
-ltla <- st_read("Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shp")
+filepath <- "Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC"
+ltla <- st_read(paste0(filepath, "/", filepath, ".shp"))
 ltla
 ```
 
-```{r, echo = FALSE}
-ltla <- st_read("covid/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC/Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC.shp")
+```{r, echo = FALSE, size = "small"}
+filepath <- "Local_Authority_Districts_(December_2019)_Boundaries_UK_BUC"
+ltla <- st_read(paste0("covid/", filepath, "/", filepath, ".shp"))
 ltla
 ```
 
@@ -664,9 +667,12 @@ spatial_gif2_img[1] <- image_scale(spatial_gif2_img[1], "125")
 spatial_gif <- image_composite(spatial_gif1_img[1], spatial_gif2_img[1], offset = "+200+100")
 for(i in 2:length(spatial_gif1_img)) {
     spatial_gif2_img[i] <- image_scale(spatial_gif2_img[i], "125")
-    spatial_gif <- c(spatial_gif, image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
+    spatial_gif <- c(spatial_gif, 
+        image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
 }
+``
 
+``{r, eval = FALSE}
 ## remove old objects and garbage collect to reclaim memory
 ## which hopefully should alleviate crashes - at least on my machine
 ## it did
@@ -780,7 +786,8 @@ spatial_gif2_img[1] <- image_scale(spatial_gif2_img[1], "125")
 spatial_gif <- image_composite(spatial_gif1_img[1], spatial_gif2_img[1], offset = "+200+100")
 for(i in 2:length(spatial_gif1_img)) {
     spatial_gif2_img[i] <- image_scale(spatial_gif2_img[i], "125")
-    spatial_gif <- c(spatial_gif, image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
+    spatial_gif <- c(spatial_gif, 
+        image_composite(spatial_gif1_img[i], spatial_gif2_img[i], offset = "+200+100"))
 }
 rm(spatial_gif1, spatial_gif2, spatial_gif1_img, spatial_gif2_img)
 gc()

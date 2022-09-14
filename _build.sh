@@ -39,8 +39,10 @@ Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
 cp .nojekyll docs/
 
 ## declare array variables
-chNames=("intro" "prog" "simpleplots" "advis" "datawr" "covid" "spatialCovid" "litprog" "git")
-chPaths=("intro" "intro" "intro" "advis" "advis" "covid" "covid" "litprog" "git")
+chNames=("intro")
+##"prog" "simpleplots" "advis" "datawr" "covid" "spatialCovid" "litprog" "git")
+chPaths=("intro")
+##"intro" "intro" "advis" "advis" "covid" "covid" "litprog" "git")
 
 ## get length of an array
 arraylength=${#chNames[@]}
@@ -62,7 +64,7 @@ do
     
     ## copy required files to uploadFiles
     mkdir -p docs/$chPath/uploadFiles
-    if [ -f $chPath/uploadFiles ]; then
+    if [ -d $chPath/uploadFiles ]; then
         cp $chPath/uploadFiles/* docs/$chPath/uploadFiles
         if [ -f $chPath/datasets_${chPath}.zip ]; then
             rm $chPath/datasets_${chPath}.zip

@@ -294,6 +294,9 @@ On the university machines, all required packages have already been installed, b
 * `gapminder`
 * `patchwork`
 * `sf`
+* `gifski`
+* `av`
+* `plotly`
 
 Many of these packages depend on other packages, but R should install all dependencies automatically. `tidyverse` in particular will take a long time to install! 
 

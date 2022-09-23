@@ -116,6 +116,7 @@ Use the R function `seq()` to create the following sequences:
 ```{solution}
 
 ``{r, eval = FALSE}
+## 1.
 seq(2, 30, by = 2)
 ## 2.
 seq(-2.5, 15.34, length.out = 14)
@@ -432,7 +433,7 @@ rev(y)
 sort(y)
 
 ## there are various ways to sort `y` into decreasing order e.g.
-sort(y, decreasing = T)
+sort(y, decreasing = TRUE)
 rev(sort(y))
 order(-y)
 ``

@@ -3,14 +3,6 @@
 This repo contains lecture notes and slides for CSC3031 Applied Data Science 
 module. 
 
-The `template` branch contains the `RtutorialSkeleton` code that can be merged 
-if new changes are made. The `main` branch contains the lecture slides.
-
-There is a Git submodule named `slides`. In this folder is a clone of the 
-`slideTemplate` repo (again, the `template` branch contains the template,
-and the `main` branch contains the new slides. In contrast this repo
-can be rebased currently). 
-
 To completely compile all of the lecture notes, one can run the `_build.sh` 
 script. This will compile all lecture slides and lecture notes, and create
 a compressed `.zip` file that can be uploaded to ELE. When setting the 

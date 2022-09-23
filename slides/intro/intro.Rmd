@@ -79,7 +79,7 @@ There will also be some formative worksheets to help you consolidate these ideas
 
 There will be one piece of coursework, in the form of a programming report. This will be worth 40% of the total module mark.
 
-There will also be a 2.5hr (open-book) practical exam worth 60% of the module mark (**Option 2 exam**).
+There will also be a 2.5hr (open-book) practical exam worth 60% of the module mark (**Option 4 exam**).
 
 ## RStudio
 
@@ -437,7 +437,7 @@ mean(x)
 
 Here the `mean()` function takes a vector argument of arbitrary length, and returns a vector of length 1 containing the arithmetic mean.
 
-## Logical vectors and conditional subsetting
+## Logical vectors / conditional subsetting
 
 Vectors can also be `logical` types (e.g. `TRUE` or `FALSE`). Some operations will return logical vectors e.g.
 
@@ -458,7 +458,7 @@ x[x > 1]
 As usual, the `logical` index `vector` must be of the same length as the `vector` you wish to subset
 ```
 
-## Logical vectors and conditional subsetting
+## Logical vectors / conditional subsetting
 
 `r bcols()`
 `r bcol(0.48)`

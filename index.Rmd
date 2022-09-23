@@ -9,11 +9,12 @@ output:
     bookdown::gitbook:
         config:
             sharing: null
+            toc:
+                before: |
+                    <a href="https://www.exeter.ac.uk/"><img src="_colour_logo_vector.svg" width="280"></a>
         css: 'style.css'
         includes:
             in_header: _toggle.html
-        keep_md: TRUE
-linkcolor: blue
 documentclass: book
 link-citations: yes
 description: "CSC3031: Applied Data Science---Lecture Notes"

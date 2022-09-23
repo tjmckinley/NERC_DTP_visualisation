@@ -11,11 +11,12 @@
 \linespread{1}
 \setbeamersize{text margin left=2ex,text margin right=2ex}
 \usepackage[sfdefault,light]{FiraSans}
-%\usepackage{FiraMono}
+\usepackage{FiraMono}
 
-\definecolor{exeterblue}{HTML}{005eab}
+\definecolor{exeterdarkgreen}{HTML}{003c3c}
+\definecolor{exeterdeepgreen}{HTML}{007d69}
 \setbeamercolor{alerted text}{%
-  fg=exeterblue
+  fg=exeterdarkgreen
 }
 
 \setbeamercolor{normal text}{%
@@ -51,7 +52,7 @@
   \nolinebreak%
   \metropolis@frametitlestrut@end%
   \hfill
-  \raisebox{-0.9ex}{\includegraphics[height=2.5ex,keepaspectratio]{../setupFiles/_colour_logo_vector.pdf}}
+  \raisebox{-1.3ex}{\includegraphics[height=4ex,keepaspectratio]{../setupFiles/_colour_logo_vector.pdf}}
   \end{beamercolorbox}%
 }
 \setbeamertemplate{title separator}{
@@ -70,7 +71,7 @@
 }
 
 % set hyperlinks up correctly
-\hypersetup{colorlinks,linkcolor=exeterblue,urlcolor=exeterblue,citecolor=exeterblue}
+\hypersetup{colorlinks,linkcolor=exeterdeepgreen,urlcolor=exeterdeepgreen,citecolor=exeterdeepgreen}
 
 \usepackage{graphicx, amsmath, amssymb, dsfont, fancyvrb, booktabs}
 \usepackage{multirow, verbatim, algorithmic, tikz, cancel, colortbl}
@@ -110,8 +111,8 @@
 
 % boxed environments
 \usepackage{tcolorbox}
-\newtcbox{\mybox}[2][exeterblue]{nobeforeafter,colframe=#1,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt,#2}
-\tcbset{colframe=exeterblue,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt}
+\newtcbox{\mybox}[2][exeterdeepgreen]{nobeforeafter,colframe=#1,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt,#2}
+\tcbset{colframe=exeterdarkgreen,colback=exeterdarkgreen!15!white,boxrule=1pt,boxsep=0pt,arc=0pt,outer arc=0pt,left=3pt,right=3pt,top=3pt,bottom=3pt}
 \newcommand{\btcolorbox}{\begin{tcolorbox}}
 \newcommand{\etcolorbox}{\end{tcolorbox}}
 \AtBeginEnvironment{tcolorbox}{\normalsize}

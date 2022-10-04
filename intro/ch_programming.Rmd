@@ -211,8 +211,6 @@ Generate two uniform random numbers between 0 and 1, called `x` and `y`. Write a
 ## generate random numbers
 x <- runif(1)
 y <- runif(1)
-x
-y
 if(x > 0.5) {
     print("x > 0.5")
     if(y < 0.5) {

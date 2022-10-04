@@ -123,7 +123,7 @@ These options come into their own when passed `vector` objects, where each eleme
 
 For example:
 
-```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE}
+```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE, size = "smaller"}
 ffone <- ff[ff$partners == "1", ]
 ffcols <- ifelse(ffone$partner.type == 
     "Inseminated", "red", "black")
@@ -172,7 +172,7 @@ Similar functionality exists for drawing line plots. Here is a plot of monthly l
 `r bcols()`
 `r bcol(0.50)`
 
-```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE}
+```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE, size = "smaller"}
 plot(ldeaths$date[ldeaths$sex == "male"],
     ldeaths$deaths[ldeaths$sex == "male"],
     type = "l", lty = 1)
@@ -201,11 +201,10 @@ There are various useful functions, e.g. `points()`, `lines()` and `abline()``r 
 `r bcols()`
 `r bcol(0.48)`
 
-```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE}
+```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE, size = "smaller"}
 plot(ffone$thorax, ffone$longevity, 
     pch = 20)
-ffinds <- 
-    ffone$partner.type == "Inseminated"
+ffinds <- ffone$partner.type == "Inseminated"
 points(ffone$thorax[ffinds], 
     ffone$longevity[ffinds],
     col = "red",
@@ -235,7 +234,7 @@ amongst others: `hline()`, `vline()` etc.
 `r bcols()`
 `r bcol(0.58)`
 
-```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE}
+```{r, fig.width = 6, fig.height = 5.5, out.width = "45%", eval = FALSE, size = "smaller"}
 plot(ldeaths$date[ldeaths$sex == "male"],
     ldeaths$deaths[ldeaths$sex == "male"],
     type = "l", xlab = "Date", 

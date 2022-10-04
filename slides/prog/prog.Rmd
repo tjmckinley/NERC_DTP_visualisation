@@ -73,8 +73,8 @@ Note that loops can also operate across vectors e.g.
 `r bcol(0.48)`
 
 ```{r}
-simpsons <- c("marge", "homer", "bart", 
-    "lisa", "maggie")
+simpsons <- c("marge", "homer", 
+    "bart", "lisa", "maggie")
 for(i in simpsons) {
     print(i)
 }
@@ -84,8 +84,8 @@ for(i in simpsons) {
 `r bcol(0.48)`
 
 ```{r}
-simpsons <- c("marge", "homer", "bart", 
-    "lisa", "maggie")
+simpsons <- c("marge", "homer", 
+    "bart", "lisa", "maggie")
 for(i in 1:length(simpsons)) {
     print(simpsons[i])
 }
@@ -101,10 +101,10 @@ Conditional statements are also fundamental to computer programming e.g.
 `r bcols("t")`
 `r bcol(0.45)`
 
-```{r}
+```{r, size = "smaller"}
 simpsons <- data.frame(
-    name = c("marge", "bart", "lisa", 
-        "maggie", "homer"),
+    name = c("marge", "bart", 
+        "lisa", "maggie", "homer"),
     age_chr = c("grown-up", 
         rep("child", 3), "grown-up")
 )
@@ -114,7 +114,7 @@ simpsons
 `r ecol()`
 `r bcol(0.51)`
 
-```{r}
+```{r, size = "smaller"}
 for(i in 1:nrow(simpsons)) {
     if(simpsons$age_chr[i] == "grown-up") {
         print(paste(simpsons$name[i], 
@@ -374,7 +374,7 @@ The `tapply()` function enables you to apply a function to **subsets** of given 
 `r bcols("t")`
 `r bcol(0.48)`
 
-```{r}
+```{r, size = "smaller"}
 simpsons <- data.frame(
     name = c("marge", "bart", "lisa", 
         "maggie", "homer"),
@@ -388,11 +388,9 @@ simpsons
 `r ecol()`
 `r bcol(0.48)`
 
-```{r}
-tapply(simpsons$age, simpsons$age_chr, 
-    length)
-tapply(simpsons$age, simpsons$age_chr, 
-    mean)
+```{r, size = "smaller"}
+tapply(simpsons$age, simpsons$age_chr, length)
+tapply(simpsons$age, simpsons$age_chr, mean)
 ```
 
 `r ecol()`

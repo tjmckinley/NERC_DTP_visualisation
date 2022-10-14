@@ -142,7 +142,7 @@ legend(par("usr")[2] * 0.8, par("usr")[4] * 0.98,
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
-As usual, information can be found in the relevant help files, but a really useful resource for `ggplot2` is the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Another fantastic resource, is the [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/) by Winston Chang, which has a free online version, or a physical book that you can buy.
+As usual, information can be found in the relevant help files, but a really useful resource for `ggplot2` is the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-visualization.pdf). Another fantastic resource, is the [R Graphics Cookbook](https://r-graphics.org/) by Winston Chang, which has a free online version, or a physical book that you can buy.
 ```
 
 So, how does it work? `ggplot2` is based on a book called the [Grammar of Graphics](https://www.amazon.co.uk/Grammar-Graphics-Statistics-Computing/dp/0387245448) by [Leland Wilkinson](https://en.wikipedia.org/wiki/Leland_Wilkinson)---hence the name `gg`-`plot`! The ethos of `ggplot2` is that plots can be broken down into different **features**, most notably:
@@ -183,7 +183,7 @@ A **geom** defines the type of plot we want. In this case we want a **scatterplo
 * `geom_bar()`
 * `geom_violin()`
 
-Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more examples.
+Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-visualization.pdf) for more examples.
 
 ### Aesthetics
 
@@ -216,7 +216,7 @@ ggplot(iris) +
 Nice! With one tiny function we have added colours *and* legends. All neatly formatted to work together in one plot!
 
 ```{info, title = "Important", collapsible = FALSE}
-Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (we will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`.
+Each type of `geom` accepts only a subset of all aesthetics. Information on these can be found in the help files for each `geom_*` type, or see also the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-visualization.pdf). Most of these are fairly obvious. For example, a scatterplot requires both `x` and `y` aesthetics as a minimum. A kernel density geom e.g. `geom_density()`, requires only an `x` aesthetic (we will come back to this shortly). Some aesthetics do not make sense for certain types of geom; for example, it makes sense that a `shape` aesthetic can be added to `geom_point()` but not to `geom_line()`. Conversely, adding a `linetype` aesthetic to `geom_line()` makes sense, but not to `geom_point()`.
 ```
 
 ### Labels and titles
@@ -231,7 +231,7 @@ ggplot(iris) +
 ```
 
 ```{task}
-Asume that we want to visualise the distribution of `Sepal.Length` values for each species, together on one plot. One way that we can do this is to use a kernel density plot (or alternatively a histogram) of the data. Produce a plot containing three density plots for `Sepal.Length`, stratified by `Species`. **Hint**: use the `geom_density()` geom, which requires an `x` aesthetic only, and set the `colour` aesthetic as before.
+Assume that we want to visualise the distribution of `Sepal.Length` values for each species, together on one plot. One way that we can do this is to use a kernel density plot (or alternatively a histogram) of the data. Produce a plot containing three density plots for `Sepal.Length`, stratified by `Species`. **Hint**: use the `geom_density()` geom, which requires an `x` aesthetic only, and set the `colour` aesthetic as before.
 ```
 
 ```{solution}
@@ -417,7 +417,7 @@ ggplot(iris) +
 This doesn't add anything more to the plot here since the colours are redundant. Later we will see a better example of this.
 
 ```{info, title = "Note", collapsible = FALSE}
-There is also a `facet_grid()` option that allows us to facet by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for more details.
+There is also a `facet_grid()` option that allows us to facet by more than one variable. Please see the [Data Visualisation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-visualization.pdf) for more details.
 ```
 
 ### Statistical transformations
@@ -1019,9 +1019,12 @@ p <- ggplot(filter(gapminder, year == 1952),
     theme_bw()
 ```
 
-```{r, eval = ifelse(is_latex_output(), TRUE, FALSE)}
-## turn into interactive plot
+```{r, eval = FALSE}
 ggplotly(p, width = 420, height = 420)
+```
+
+```{r, eval = ifelse(is_latex_output(), TRUE, FALSE), echo = FALSE}
+include_graphics("advis/images/plotly.png")
 ```
 
 ```{r, echo = FALSE, eval = ifelse(!is_latex_output(), TRUE, FALSE)}

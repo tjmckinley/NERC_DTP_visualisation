@@ -250,7 +250,7 @@ So far, not so different.
 
 How about if we wanted to visualise something a bit more complex? 
 
-For example, is the famous **``women and children first''** code-of-conduct supported by the Titanic survival data?
+For example, is the famous **"women and children first"** code-of-conduct supported by the Titanic survival data?
 
 ## Example: Titanic survival data
 
@@ -322,7 +322,7 @@ Notice several things with the **base R** script:
 * requires `for()` loop;
 * requires subsetting (and use of `$` operator);
 * axes on different scales;
-* No legends!
+* no legends!
 
 ## Example: Titanic survival data
 

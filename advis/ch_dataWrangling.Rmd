@@ -9,7 +9,7 @@ All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), 
 It is estimated that data scientists spend around [50-80% of their time cleaning and manipulating data](https://www.nytimes.com/2014/08/18/technology/for-big-data-scientists-hurdle-to-insights-is-janitor-work.html?_r=0). This process, known as **data wrangling** is a key component of modern statistical science, particularly in the age of **big data**. You should already be familiar with cleaning, manipulating and summarising data using some of R's core functions. The `tidyverse` incorporates a suite of packages, such as `tidyr` and `dplyr` that are designed to make common data wrangling tasks not only easier to achieve, but also easier to decipher. **Readability** of the code being a core ideal in the philosophy underpinning the packages. 
 
 ```{info, title = "Note", collapsible = FALSE}
-Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
+Great resources are the [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-import.pdf), [Data Tidying Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/tidyr.pdf) and [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-transformation.pdf), which give lots of information about functions available in different `tidyverse` packages[^tidyversepackages].
 ```
 
 [^tidyversepackages]: Note that we do not make distinctions between which functions belong to which `tidyverse` packages here. Most of the functions we will use belong to either `readr`, `dplyr`, `tidyr` or `ggplot2`. Information on these packages can be found on the cheat sheets.
@@ -145,7 +145,7 @@ Notice once again that the first argument to `select()` is the data set, and the
 select(iris, Species, starts_with("Sepal"))
 ```
 
-See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf) for more examples.
+See the [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-transformation.pdf) for more examples.
 
 \newpage
 
@@ -532,7 +532,7 @@ gp
 ```{hypertarget, label = "anti_join"}
 ```
 
-The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, and visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
+The `inner_join()` function takes two data sets, and returns a combined data set with entries that match on both `country` ***and*** `year`. Any rows from either data set that do not match the other data set are removed. To have a look at entries that differ on the matching criteria between the data sets, then we can use either `semi_join()` or `anti_join()` (please see [Data Transformation Cheat Sheet](https://github.com/rstudio/cheatsheets/raw/main/data-transformation.pdf)). For example, the function `anti_join(gp_income, gp_hiv, by = c("year", "country"))` will return all rows of `gp_income` that can't be matched to `gp_hiv`, and visa-versa for `anti_join(gp_hiv, gp_income, by = c("year", "country"))`:
 
 ```{r}
 anti_join(gp_income, gp_hiv, by = c("year", "country"))

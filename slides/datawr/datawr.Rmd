@@ -443,7 +443,7 @@ comics %>%
 
 Have a crack at Section 6.3 of the lecture notes.
 
-## `pivot_longer()` and `pivot_wider()`
+## `pivot_*()` functions
 
 Other really important functions are `pivot_longer()` and `pivot_wider()`.
 
@@ -628,20 +628,24 @@ senate %>%
 
 ## Example: Senate predictions 2018
 
-We can now do some more complex analyses. For example, to produce a table of binary predictions based on $p > 0.5$ (using the 'tidy' version of the data):
+We can now do some more complex analyses. For example, to produce a table of binary predictions based on the highest probability of winning in each state (using the 'tidy' version of the data):
 
 ```{r, eval = FALSE}
 senate %>%
-    mutate(outcome = ifelse(prop > 0.5, 1, 0)) %>%
-    group_by(party, outcome) %>%
+    group_by(state) %>%
+    mutate(outcome = ifelse(prop == max(prop), 1, 0)) %>%
+    filter(outcome == 1) %>%
+    group_by(party) %>%
     count() %>%
     pivot_wider(names_from = party, values_from = n)
 ```  
 
 ```{r, echo = FALSE}
 senate %>%
-    mutate(outcome = ifelse(prop > 0.5, 1, 0)) %>%
-    group_by(party, outcome) %>%
+    group_by(state) %>%
+    mutate(outcome = ifelse(prop == max(prop), 1, 0)) %>%
+    filter(outcome == 1) %>%
+    group_by(party) %>%
     count() %>%
     pivot_wider(names_from = party, values_from = n) %>%
     as.data.frame()
@@ -654,10 +658,11 @@ Other useful functions are `unite()` and `separate()`, the former takes multiple
 `r bcols()`
 `r bcol(0.48)`
 
-```{r, results = "hide"}
+```{r, results = "hide", size = "smaller"}
 senate <- senate %>%
+    group_by(state) %>%
     mutate(outcome = 
-      ifelse(prop > 0.5, 1, 0)) %>%
+      ifelse(prop == max(prop), 1, 0)) %>%
     group_by(party, outcome) %>%
     count()
 senate
@@ -672,7 +677,7 @@ senate %>%
 `r ecol()`
 `r bcol(0.48)`
 
-```{r, results = "hide"}
+```{r, results = "hide", size = "smaller"}
 senate <- senate %>%
     unite(outcome, 
           party, outcome, sep = "_")

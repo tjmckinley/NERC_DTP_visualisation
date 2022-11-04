@@ -103,7 +103,7 @@ length(unique(covid$areaCode))
 
 ```
 
-Here we can see that the data set is large: `r format(nrow(covid), big.mark = ",")` observations across `r format(length(unique(covid$areaCode)), big.mark = ",")` LTLA regions. Not the sort of data set we want to manipulating with point-and-click software!
+Here we can see that the data set is large: `r format(nrow(covid), big.mark = ",")` observations across `r format(length(unique(covid$areaCode)), big.mark = ",")` LTLA regions. Not the sort of data set we want to be manipulating with point-and-click software!
 
 A key question throughout the COVID-19 pandemic has been to understand spatial heterogeneity in disease rates over time. Ultimately these ideas formed the basis of policies such as the **four-tier localised restrictions** that were introduced in the autumn/winter of 2020 and withdrawn in early 2021.
 

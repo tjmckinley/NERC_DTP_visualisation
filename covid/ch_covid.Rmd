@@ -459,7 +459,7 @@ Extract all data from the `deaths` data set for the time period between 7 March 
 
 ``{r, eval = FALSE}
 ## extract relevant data
-deaths_sub <- filter(deaths, date >= as.Date("2020-03-07") & date <= as.Date("2020-06-26")) %>%
+deaths_sub <- filter(deaths, date >= "2020-03-07" & date <= "2020-06-26") %>%
     group_by(age, sex) %>%
     summarise(deaths = sum(deaths), .groups = "drop")
 ``
@@ -468,7 +468,7 @@ deaths_sub <- filter(deaths, date >= as.Date("2020-03-07") & date <= as.Date("20
 
 ```{r, echo = FALSE}
 ## extract relevant data
-deaths_sub <- filter(deaths, date >= as.Date("2020-03-07") & date <= as.Date("2020-06-26")) %>%
+deaths_sub <- filter(deaths, date >= "2020-03-07" & date <= "2020-06-26") %>%
     group_by(age, sex) %>%
     summarise(deaths = sum(deaths), .groups = "drop")
 ```
@@ -882,7 +882,7 @@ colnames(nonCovidDeaths) <- c("age", as.character(dates))
 ## tidy data and wrangle into correct format
 nonCovidDeaths <- pivot_longer(nonCovidDeaths, !age, names_to = "date", values_to = "deaths") %>%
     mutate(date = as.Date(date)) %>%
-    filter(date >= as.Date("2020-03-07") & date <= as.Date("2020-06-26")) %>%
+    filter(date >= "2020-03-07" & date <= "2020-06-26") %>%
     mutate(age = ifelse(age == "<1" | age == "1-4", "0-4", age)) %>%
     mutate(age = ifelse(age == "5-9" | age == "10-14", "5-14", age)) %>%
     mutate(age = ifelse(age == "15-19" | age == "20-24", "15-24", age)) %>%

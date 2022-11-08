@@ -455,6 +455,21 @@ Now that we have done most of the hard work, we can merge the information from t
 Extract all data from the `deaths` data set for the time period between 7 March and 26 June 2020 (inclusive). Aggregate the deaths counts together across the whole time period for each `age`/`sex` combination. Save this as a new object called `deaths_sub`.
 ```
 
+```{info, title = "Note on filtering dates"}
+Note that if you are filtering a `Date` object in R, then you can use e.g.
+
+``{r, eval = FALSE}
+filter(DATAFRAME, date >= "2020-12-30")
+``
+
+***as long as the*** `character` ***you are filtering is in the format*** `%Y-%m-%d` ***or*** `%Y/%m/%d` (so a four-digit year, `%Y`, a two-digit month, `%m`, followed by a two-digit day, `%d`, separated by `-` or `/`). Hence, even though e.g. `"2020-12-30"` is a `character`, R knows how to convert to a date. If you want to filter using any other format, then you will have to explicitly convert to a `Date` object. For example, for typical US date formats you would use e.g.
+
+``{r, eval = FALSE}
+filter(DATAFRAME, date >= as.Date("12/30/2020", format = "%m/%d/%Y"))
+``
+
+```
+
 ```{solution}
 
 ``{r, eval = FALSE}

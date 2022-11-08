@@ -83,7 +83,7 @@ There are various ways to check unique matching, but one option is to use `group
 temp <- group_by(covid, areaCode, areaName) %>%
     count()
 ## check all area codes are unique
-group_by(temp, areaName) %>%
+group_by(temp, areaCode) %>%
     count() %>%
     summary()
 ## check all area names are unique
@@ -158,7 +158,7 @@ Produce a plot of the death trajectories over time, stratified by LTLA for these
 ## produce time-series plot of deaths
 ggplot(largestDeaths) +
     geom_line(aes(x = date, y = deaths, colour = areaName)) +
-    xlab("Date") + ylab("Deaths within 28 days of a positive death") +
+    xlab("Date") + ylab("Deaths within 28 days of a positive test") +
     labs(colour = "LTLA")
 ``
 
@@ -170,7 +170,7 @@ Hopefully your plot should look something like the one below (I've set monthly $
 ## produce time-series plot of deaths
 p <- ggplot(largestDeaths) +
     geom_line(aes(x = date, y = deaths, colour = areaName)) +
-    xlab("Date") + ylab("Deaths within 28 days of a positive death") +
+    xlab("Date") + ylab("Deaths within 28 days of a positive test") +
     labs(colour = "LTLA") +
     scale_x_date(date_breaks = "1 month") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))

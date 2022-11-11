@@ -226,7 +226,7 @@ RStudio has options that allow you to run code chunks *in situ*. Note the little
 ```
 
 ```{task}
-Make a **copy** of the `ff.R` script file we used earlier, and save it as an R Markdown file (e.g. copy it to a file called `ff.Rmd`. Edit this file and turn it into a working R Markdown document, with explanations of the analysis interspersed with the code and the output. Make sure you add a **title** and **author** to the YAML.
+Make a **copy** of the `ff.R` script file used [Chapter 9](#ffscript) (or copy the code from [here](#ffscript)), and save it as an R Markdown file (e.g. copy it to a file called `ff.Rmd`). Edit this file and turn it into a working R Markdown document, with explanations of the analysis interspersed with the code and the output. Make sure you add a **title** and **author** to the YAML.
 
 **Note**: in the solution below I've added some further information about the study---taken from the earlier lecture notes, to illustrate some of the formatting options such as bullet point lists, **bold** and *italic* fonts, inline code and hyperlinks.
 ```
@@ -314,6 +314,10 @@ kable(cars[1:6, ], align = "c", col.names = c("Speed (mph)", "Stopping distance 
 
 ```{info, title = "kableExtra", collapsible = FALSE}
 `kable()` itself is relatively lightweight, and doesn't allow for sophisticated table formatting. There is however another great package called `kableExtra`, which can be installed in the usual way and gives much more flexibility around formatting. If you're interested, then more information can be found in the online vignette [here](https://haozhu233.github.io/kableExtra/awesome_table_in_html.html#Overview).
+```
+
+```{info, title = "gt", collapsible = FALSE}
+There has recently been a package released called [`gt`](https://gt.rstudio.com/), which looks awesome. It is currently still in the early release stage (although it is on CRAN), and I haven't used it in anger yet, which is why I haven't expanded on it here. However, feel free to install and have a play if you like!
 ```
 
 Note that sometimes, you might want to format the cells of the different columns separately. For example, there is a `digits` argument to `kable()`, that can be used to round decimal numbers to a certain number of significant figures. Alternatively, another option is to round and format numbers in the `data.frame` object itself before you use it in `kable()`. This can be easily done using **pipes**, which avoids changing the original data set at all but gives you more control over how the table is presented.

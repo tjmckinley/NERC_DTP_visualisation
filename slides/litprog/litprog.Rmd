@@ -77,7 +77,7 @@ I've found it is really important to keep code for projects or analyses neatly s
 * This main folder can be set as the **working directory** in R, meaning that within your scripts files all paths to input or output files can be made **relative** to the working directory.
 * You can break up your code into multiple script files as required, and include a `README` file documenting how to reproduce the code (i.e. what order to run your files in etc.). You can even have an **uber-script** file, that runs all other script files in order if required.
 
-[**RStudio Projects**](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) associate a directory with a specific project, and provides some useful features like keeping unsaved code and automatically setting the working directory path when the project is opened.
+[**RStudio Projects**](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) associate a directory with a specific project, and provide some useful features like keeping unsaved code and automatically setting the working directory path when the project is opened.
 
 `r eenv("smaller")`
 

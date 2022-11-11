@@ -98,7 +98,7 @@ R is a fast developing language, and RStudio a fast developing piece of software
 
 ### Notepads and reports
 
-One option that RStudio allows is for the user to create a simple report directly from an R script. This functionality is called **Compile Report**, and can be triggered in my version of RStudio by the shortcut `Ctrl-Shift-K`. Firstly, download the R script file `ff.R` from the workshop website into your working directory, and then load it into RStudio. This is a copy of the script we wrote earlier, and should contain the code [here](#ffscript).
+One option that RStudio allows is for the user to create a simple report directly from an R script. This functionality is called **Compile Report**, and can be triggered in my version of RStudio by the shortcut `Ctrl-Shift-K`. Firstly, download the R script file `ff.R` from the data download `.zip` file or ELE, save it into your working directory, and then load it into RStudio. This is a copy of the script used  [earlier](#ffscript). (Alternatively, copy the code [here](#ffscript) into a new file called `ff.R`.)
 
 The **Compile Report** option can also be triggered by hitting the report button shown in Figure \@ref(fig:comprep) (note that if you have a different version of RStudio, this button might be in a different place).
 

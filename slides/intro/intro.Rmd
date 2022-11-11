@@ -16,6 +16,9 @@ output:
       latex_engine: xelatex
       includes:
           in_header: ../setupFiles/_header.tex
+urlcolor: exeterdeepgreen
+citecolor: exeterdeepgreen
+linkcolor: exeterdeepgreen
 ---
 
 ```{r, setup, child = "../setupFiles/_setup.Rmd", include = FALSE, purl = FALSE, cache = FALSE}

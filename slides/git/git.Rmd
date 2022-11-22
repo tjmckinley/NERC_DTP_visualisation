@@ -99,7 +99,7 @@ We will use Git on the **command line**, through a **Terminal** on Linux/Mac, an
 
 Git command are structured as`r footnotemark()`:
 
-```
+```{bash, eval = FALSE}
 $ git verb options
 ```
 
@@ -111,7 +111,7 @@ The `$` is just to remind us that we type these commands into a **command prompt
 
 To set up Git, first set your credentials. 
 
-```
+```{bash, eval = FALSE}
 $ git config --global user.name "Jon Snow"
 $ git config --global user.email "jon.snow@nightwatch.com"
 ```
@@ -124,7 +124,7 @@ A **Git repository** can be initiated in any folder`r footnotemark()`, and will 
 
 To initialise a Git repository, you can migrate to the directory in bash, and then simply type
 
-```
+```{bash, eval = FALSE}
 $ git init
 ```
 
@@ -134,7 +134,7 @@ you can use the command `$ cd path/to/repo`
 
 ## Main commands
 
-```
+```{bash, eval = FALSE}
 $ git init        # create an empty Git repository
 $ git status      # view the current state of the repository
 $ git add         # add files to the staging area (prepare for commit)

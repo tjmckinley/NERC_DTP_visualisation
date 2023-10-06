@@ -80,9 +80,9 @@ There are tasks to complete during each workshop, which act as formative questio
 
 ## Summative assessments
 
-There will be one piece of coursework, in the form of a programming report. This will be worth 40% of the total module mark.
+There will be one piece of coursework, in the form of a programming report. This will be worth 50% of the total module mark.
 
-There will also be a 2.5hr (open-book) practical exam worth 60% of the module mark (**Option 4 exam**).
+There will also be a 2.5hr (open-book) practical exam worth 50% of the module mark (**Option 4 exam**).
 
 ## RStudio
 
@@ -236,7 +236,7 @@ x <- sqrt(exp(y))
 x
 ```
 
-(Here this calculates $\sqrt{e^y} = \sqrt{e^{(2 + 2)}}$.) Also, remember e.g. BODMAS:
+(Here this calculates $\sqrt{e^y} = \sqrt{e^{(2 + 2)}}$.) Also, remember e.g. BODMAS`r footnotemark()`:
 
 `r bcols("t")`
 `r bcol(0.48)`
@@ -255,8 +255,12 @@ x
 `r ecol()`
 `r ecols()`
 
+`r ifelse(is_latex_output(), "\\vspace{\\baselineskip}\n", "")`
+
 ```{footnotes}
 more on these in due course...
+####
+Brackets, Orders, Division, Multiplication, Addition, Subtraction
 ```
 
 ## Your turn
@@ -670,19 +674,27 @@ Have a go at Section 2.5.
 
 ## Saving objects
 
-A quick way to save your **workspace** is to use `save.image("NAME_OF_FILE.RData")`.
+A quick way to save your **workspace** is to use
+
+```{r, eval = FALSE}
+save.image("NAME_OF_FILE.RData")
+```
 
 `r bcols("t")`
 `r bcol(0.48)`
 
 If you want to save specific objects from your workspace, you can use `save()` e.g.
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, size = "smaller"}
 ## save objects x and y
 save(x, y, file = "NAME_OF_FILE.RData")
 ```
 
-`.RData` files can be read in using `load("NAME_OF_FILE.RData")`
+`.RData` files can be read in using 
+
+```{r, eval = FALSE, size = "smaller"}
+load("NAME_OF_FILE.RData")
+```
 
 `r ecol()`
 `r bcol(0.48)`
@@ -694,7 +706,7 @@ If you want to save a **single object**, then you can use `save()`, but `saveRDS
 saveRDS(ff, "NAME_OF_FILE.rds")
 ```
 
-This has the advantage that the file can be easily read back in using e.g.
+This has the advantage that the object can be easily read back in using e.g.
 
 ```{r, eval = FALSE}
 ff <- readRDS("NAME_OF_FILE.rds")

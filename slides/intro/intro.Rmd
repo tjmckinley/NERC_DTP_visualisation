@@ -137,6 +137,12 @@ More recently have been pioneered (in particular) for packages developed by RStu
 include_graphics("images/ggplot.png")
 ```
 
+## Working directories
+
+It is usually helpful to set your **working directory** each time you start a new R project (see Section 1.4 of the notes).
+
+It's usually a good idea to save all data sets and script files into the working directory, and it's also a good idea to keep different projects in different folders (more on this in a later workshop), and set the working directory appropriately.
+
 ## Console window
 
 R is an **interpreted** language, so you can enter commands into the **command prompt** (`>`) in the **console** window, and R will run the command and generate output.

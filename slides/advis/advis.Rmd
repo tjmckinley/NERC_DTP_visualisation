@@ -35,10 +35,14 @@ opts_chunk$set(echo = TRUE)
 Specifically, a **tidy** data set is one in which:
 
 * **rows** contain different **observations**;
-* **columns** contain different **variables**;
+* **columns** contain different **variables**`r footnotemark()`;
 * **cells** contain values.
 
 The idea of 'tidy' data gives rise to the nomenclature of the `tidyverse`.
+
+```{footnotes}
+but variables have to make sense, so having a `Sex` column with levels: `Male`, `Female`, `All` would not make sense because `Male` and `Female` are nested within `All`
+```
 
 ## The `tidyverse`
 
@@ -119,6 +123,30 @@ Link: [https://ggplot2-book.org/](https://ggplot2-book.org/)
 `r ecols()`
 
 `r eenv("smaller")`
+
+## What we're aiming for...
+
+`r benv("center")`
+
+```{r, out.width="70%", echo = FALSE}
+include_graphics("images/hans.jpg")
+```
+
+Courtesy of the inimitable [Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling). 
+
+Link: [here](https://www.youtube.com/embed/jbkSRLYSojo)
+
+`r eenv("center")`
+
+## Remember
+
+Don't forget to:
+
+* download the datasets required from ELE or the link in the notes;
+* set up your **working directory**;
+* use **script files** to record what you've done!
+
+(See Section 1.4 of the Notes.)
 
 ## Example: Titanic survival data
 
@@ -370,20 +398,6 @@ ggplot(titanic) +
     geom_bar(aes(x = survived, fill = gender)) +
     facet_wrap(~pclass)
 ```
-
-## What we're aiming for...
-
-`r benv("center")`
-
-```{r, out.width="70%", echo = FALSE}
-include_graphics("images/hans.jpg")
-```
-
-Courtesy of the inimitable [Hans Rosling](https://en.wikipedia.org/wiki/Hans_Rosling). 
-
-Link: [here](https://www.youtube.com/embed/jbkSRLYSojo)
-
-`r eenv("center")`
 
 ## `ggplot2`
 
@@ -667,7 +681,7 @@ ggplot(titanic, aes(x = fare, y = age)) +
 ```
 
 You can change the default parameters of the smoother, such as the bandwidth (see `?stat_smooth`).
-
+`r br()`
 Useful for exploratory purposes, but no substitute for a proper **model**!
 
 `r ecol()`
@@ -819,7 +833,7 @@ His book [Factfulness](https://www.gapminder.org/factfulness-book/), co-written 
 
 ## Epilogue
 
-We have just begun to scratch the surface with what `ggplot2` can do.
+We have just begun to scratch the surface with what `ggplot2` can do (Section 5.7 will introduce ways to make animations and interactive plots using the `gganimate` and `plotly` packages).
 
 I hope that this workshop has whetted your appetites to use this package in your work. I now use this for almost all of the plots I use in publications and teaching.
 

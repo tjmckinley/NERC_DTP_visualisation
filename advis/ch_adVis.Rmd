@@ -898,7 +898,7 @@ par(mfrow = c(1, 1))
     
 ```
 
-## Additional (non-mandatory) functionality: going beyond static plots
+## Additional functionality: going beyond static plots
 
 There has been a whole ecosystem of packages that have evolved from the core `tidyverse`. One such package is [`gganimate`](https://gganimate.com/articles/gganimate.html), which, as the name suggests, allows one to turn `ggplot2` plots into animations. 
 

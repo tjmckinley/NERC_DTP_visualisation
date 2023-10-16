@@ -33,12 +33,16 @@ opts_chunk$set(echo = TRUE)
 Specifically, a **tidy** data set is one in which:
 
 * **rows** contain different **observations**;
-* **columns** contain different **variables**;
+* **columns** contain different **variables**`r footnotemark()`;
 * **cells** contain values.
 
 Remember:
 
 > "Tidy datasets are all alike but every messy dataset is messy in its own way."---[Hadley Wickham](http://hadley.nz/)
+
+```{footnotes}
+but variables have to make sense, so having a `Sex` column with levels: `Male`, `Female`, `All` would not make sense because `Male` and `Female` are nested within `All`
+```
 
 ## The `tidyverse`
 
@@ -94,7 +98,7 @@ Common data wrangling tasks include:
 * transforming columns.
 
 ```{footnotes}
-or `tibble`---see later
+or `tibble` objects---see later
 ####
 note that the `purrr` package provides functionality to wrangle different types of object, such as standard lists. We won't cover these here, but see Hadley's book, or the tutorials at [https://www.tidyverse.org/](https://www.tidyverse.org/) for more details
 ```
@@ -168,7 +172,7 @@ gapminder
 `r eenv("smaller")`
 
 ```{footnotes}
-note the underscore (`read_csv`) **not** `read.csv()`
+note the underscore (`read_csv`) **not** `read.csv()` as used in base R
 ```
 
 ## Aside: `tibble` objects

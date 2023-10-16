@@ -298,6 +298,61 @@ iris %>%
 
 ```
 
+### Column-wise functions
+
+Note that there is also a useful shortcut function: `across()`, that enables you to apply a transformation or summary to multiple columns without having to type everything out long-hand. For example, you can use `across()` within `summarise()` functions to apply the same function to multiple columns (rather than having to replicate the code for each column separately). For example, to generate the mean for all numerical columns, grouped by `Species`, you could use:
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(across(where(is.numeric), mean), .groups = "drop")
+```
+
+Here the `where(is.numeric)` is a selection helper function that returns columns where `is.numeric()` is `TRUE`, and `across()` then operates across these columns to apply the function `mean()`.
+
+You can also concatenate column numbers, or explicit column names, or some of the `select()` helper functions within `across()`. For example, to produce the mean sepal length and width, grouped by `Species`, then you could use either
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(across(c(1, 2), mean), .groups = "drop")
+```
+
+or 
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(across(c(Sepal.Length, Sepal.Width), mean), .groups = "drop")
+```
+
+or
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(across(starts_with("Sepal"), mean), .groups = "drop")
+```
+
+To apply multiple functions to each column is a bit trickier. In this case you need to provide a list of functions to apply. For example, to generate the mean and standard deviations for sepal widths and lengths, grouped by `Species`, you could use:
+
+```{r}
+iris %>% 
+    group_by(Species) %>%
+    summarise(across(starts_with("Sepal"), list(Mean = mean, SD = sd)), .groups = "drop")
+```
+
+Note that since you are applying multiple functions, it's more informative to use a named list e.g. `list(Mean = mean, SD = sd))`, where `Mean` and `SD` here correspond to how you want the output columns labelled for each function (`mean()` and `sd()` respectively). The output names are appended to the column names in the resulting `tibble` object. See `vignette("colwise")` for more details.
+
+Note that you can also use `across()` within `mutate()` calls as well, for example, if you had a data frame called `DATASET` then you could use e.g.
+
+```{r, eval = FALSE}
+mutate(DATASET, across(where(is.character), as.factor)) %>%
+    summary()
+```
+
+as a quick way to create an informative summary, where any `character` column is temporarily converted to a `factor` for the purposes of the summary output (so `summary()` returns the number of observations for each level of the corresponding factor, instead of simply telling you that a column is a `character`). This leaves all non-numerical columns alone.
+
 ## Reshaping data sets
 
 Another key feature of `tidyverse` is the power it gives you to reshape data sets. The two key functions are `pivot_longer()` and `pivot_wider()`. The `pivot_longer()` function takes multiple columns, and gathers them into key-value pairs. The `pivot_wider()` function is its converse, it takes two columns (`key` and `value`) and spreads these into multiple columns. These ideas are best illustrated by an example.

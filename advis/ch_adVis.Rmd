@@ -639,7 +639,7 @@ Let's have a look at a couple of other examples.
 
 ### GDP per continent
 
-Another chart seen in Professor Rosling's TED talk was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_density()` geom as in the earlier example, which requires only an `x` aesthetic---see `?geom_density`---since it calculates the density on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
+Another chart that Professor Rosling used in an associated [TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?utm_source=tedcomshare&utm_medium=referral&utm_campaign=tedspread) was a stacked density plot. This is a smoothed version of a **histogram**. Let's start by looking at the distribution of GPD values across all countries in 1952. This can be done with the `geom_density()` geom as in the earlier example, which requires only an `x` aesthetic---see `?geom_density`---since it calculates the density on the $y$-axis automatically from the data once we have chosen an appropriate bandwidth.
 
 ```{r, message = FALSE}
 ggplot(gapminder[gapminder$year == 1952, ],

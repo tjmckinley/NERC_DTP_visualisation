@@ -342,7 +342,52 @@ iris %>%
     summarise(across(starts_with("Sepal"), list(Mean = mean, SD = sd)), .groups = "drop")
 ```
 
-Note that since you are applying multiple functions, it's more informative to use a named list e.g. `list(Mean = mean, SD = sd))`, where `Mean` and `SD` here correspond to how you want the output columns labelled for each function (`mean()` and `sd()` respectively). The output names are appended to the column names in the resulting `tibble` object. See `vignette("colwise")` for more details.
+Note that since you are applying multiple functions, it's more informative to use a named list e.g. `list(Mean = mean, SD = sd))`, where `Mean` and `SD` here correspond to how you want the output columns labelled for each function (`mean()` and `sd()` respectively). The output names are appended to the column names in the resulting `tibble` object. See [`vignette("colwise")`](https://dplyr.tidyverse.org/articles/colwise.html) for more details.
+
+```{info, title = "Passing additional arguments to functions", collapsible = TRUE}
+Note that if you want to pass additional arguments to a function used in `across()`, then you can utilise a special syntax using `~` as shown below. For example, imagine that we had a missing value (`NA`) in one entry of `Sepal.length`, then running `mean()` will return an `NA` unless we tell R to remove the `NA` values explicitly (using the `na.rm = TRUE` argument to `mean()`) i.e.
+
+``{r}
+iris1 <- iris
+iris1$Sepal.Length[1] <- NA
+iris1 %>%
+    group_by(Species) %>%
+    summarise(across(starts_with("Sepal"), mean), .groups = "drop")
+``
+
+Notice the `NA` in the summary for the `setosa` group caused by the missing data point. Compare this to the version below where we use `~mean(.x, na.rm = TRUE)`, which is a shorthand for `function(.x) mean(.x, na.rm = TRUE)`. (Essentially each column in `across()` gets passed as the `.x` variable into the function.) The use of `.x` as the variable name is a consequence of using the `~` notation. You could also explicitly write your own function and use whatever local variable name you like. See various options below for examples.
+
+``{r}
+iris1 %>% 
+    group_by(Species) %>%
+    summarise(across(starts_with("Sepal"), ~mean(.x, na.rm = TRUE)), .groups = "drop")
+``
+
+or
+
+``{r}
+iris1 %>% 
+    group_by(Species) %>%
+    summarise(
+        across(starts_with("Sepal"), function(vec) mean(vec, na.rm = TRUE)), 
+        .groups = "drop"
+    )
+``
+
+or
+
+``{r}
+## write custom function
+mean_rmNA <- function(vec) {
+    mean(vec, na.rm = TRUE)
+}
+
+iris1 %>% 
+    group_by(Species) %>%
+    summarise(across(starts_with("Sepal"), mean_rmNA), .groups = "drop")
+``
+
+```
 
 Note that you can also use `across()` within `mutate()` calls as well, for example, if you had a data frame called `DATASET` then you could use e.g.
 

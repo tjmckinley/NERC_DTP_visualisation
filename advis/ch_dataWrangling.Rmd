@@ -863,14 +863,14 @@ Finally, we have wrangled our data into a useful form for data analysis. Now we 
 ggplot(pop, aes(x = age, y = ifelse(sex == "male", -pop, pop), fill = sex)) + 
     geom_bar(stat = "identity") +
     scale_y_continuous(
-        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2), 
+        breaks = signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2),
         labels = abs(signif(seq(-max(pop$pop), max(pop$pop), length.out = 5), 2))
     ) +
-    coord_flip() +
     facet_wrap(~country, ncol = 1) +
     ylab("Population counts (x1000)") +
     xlab("Age (yrs)") +
-    labs(fill = "Sex")
+    labs(fill = "Sex") +
+    coord_flip()
 ```
 
 \newpage

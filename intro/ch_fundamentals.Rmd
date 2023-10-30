@@ -306,6 +306,19 @@ ziggy
 
 We can see that now the object `ziggy` has been changed to a `character` permanently.
 
+You can also create "empty" vectors of specific lengths by using e.g. `numeric()`, `character()`, `logical()` functions. For example, to create an empty vectors of length 10 say, then you can use e.g.
+
+```{r}
+y <- numeric(10)
+y
+y <- character(10)
+y
+y <- logical(10)
+y
+```
+
+Note that these are not "empty" specifically, rather they have been filled with identical default values, however these are useful functions for creating objects that you can "fill-in" later on.
+
 ```{task}
 Use the various vector creation commands to create the following sequences:
 

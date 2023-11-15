@@ -154,7 +154,7 @@ Produce a plot of the death trajectories over time, stratified by LTLA for these
 
 ```{solution}
 
-``{r, fig.width = 10, fig.height = 5, out.width = "80%"}
+``{r, fig.width = 10, fig.height = 5, out.width = "80%", warning = FALSE}
 ## produce time-series plot of deaths
 ggplot(largestDeaths) +
     geom_line(aes(x = date, y = deaths, colour = areaName)) +
@@ -164,9 +164,9 @@ ggplot(largestDeaths) +
 
 ```
 
-Hopefully your plot should look something like the one below (I've set monthly $x$-axis labels using `scales_x_date()` and made them look a bit nicer using `theme()`---figuring this out involved judicious use of Google and StackOverFlow, don't be limited only by what you've been taught, if there's a will, there's usually a way!)
+Hopefully your plot should look something like the one below (I've set monthly $x$-axis labels using `scales_x_date()` and made them look a bit nicer using `theme()`---figuring this out involved judicious use of Google and StackOverFlow, don't be limited only by what you've been taught, if there's a will, there's usually a way)!
 
-```{r, echo = FALSE, fig.width = 10, fig.height = 5, out.width = "80%", message = FALSE}
+```{r, echo = FALSE, fig.width = 10, fig.height = 5, out.width = "80%", message = FALSE, warning = FALSE}
 ## produce time-series plot of deaths
 p <- ggplot(largestDeaths) +
     geom_line(aes(x = date, y = deaths, colour = areaName)) +
@@ -178,7 +178,7 @@ ggsave("slides/spatialCovid/images/timeseries.png", p)
 p
 ```
 
-We can see that Birmingham was the hardest-hit LTLA in terms of absolute numbers of deaths within 28 days of a positive COVID-19 test. We can also see clearly the first wave, driven by the introduction of a novel and highly transmissible virus into a completely susceptible population. We can see the drop in deaths following the first national lockdown that began on the 26th March 2020 and the end of the first wave in the summer. Lockdown restrictions began to be eased during May 2020. Localised (tiered) restrictions were introduced in the summer of 2020, but a rise in deaths during the early autumn of 2020 resulted in a second national lockdown, which began on November 5th 2020 but was eased in late November/early December 2020, with additional easing over the Christmas period. We then see a rise in deaths through January 2021 with a new (third) national lockdown starting on 6th January. Lockdown restrictions began to be eased in early March 2021 and throughout the subsequent summer. We are beginning to see cases rise as part of a third wave, driven in part by the emergence of a new "delta" variant of the pathogen. However, in part due to the widespread rollout of vaccination, which began in late 2020, the absolute numbers of deaths in the third wave seem to be lower than in previous waves. Untangling the likely impacts of the different control measures, and the causes of the epidemic dynamics remains an area of intensive ongoing research.
+We can see that Birmingham was the hardest-hit LTLA in terms of absolute numbers of deaths within 28 days of a positive COVID-19 test. We can also see clearly the first wave, driven by the introduction of a novel and highly transmissible virus into a completely susceptible population. We can see the drop in deaths following the first national lockdown that began on the 26th March 2020 and the end of the first wave in the summer. Lockdown restrictions began to be eased during May 2020. Localised (tiered) restrictions were introduced in the summer of 2020, but a rise in deaths during the early autumn of 2020 resulted in a second national lockdown, which began on November 5th 2020 but was eased in late November/early December 2020, with additional easing over the Christmas period. We then see a rise in deaths through January 2021 with a new (third) national lockdown starting on 6th January. Lockdown restrictions began to be eased in early March 2021 and throughout the subsequent summer. We can then begin to see cases rise as part of the third wave, driven in part by the emergence of a new "delta" variant of the pathogen. However, in part due to the widespread rollout of vaccination, which began in late 2020, the absolute numbers of deaths in the third wave seem to be lower than in previous waves. Untangling the likely impacts of the different control measures, and the causes of the epidemic dynamics remains an area of intensive ongoing research.
 
 ## Death rates over space and time
 

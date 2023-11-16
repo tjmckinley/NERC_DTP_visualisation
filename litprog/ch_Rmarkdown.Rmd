@@ -403,7 +403,7 @@ If you ever do want to learn LaTeX, then please see a great tutorial by Andy Rob
 R Markdown also supports bibliographic referencing using a [BibTeX](https://www.bibtex.org/)-style bibliographic manager. This is a format used in LaTeX documents, but in essence simply means that rather than use a manager such as EndNote, Zotero or Mendeley, instead you record your references in a simple text file with the suffix `.bib`. The references must be written in a specific format, but these can easily be downloaded through the **citation download** button on most journal papers. For the format of different types of reference, such as articles, books or technical reports, please see [https://en.wikipedia.org/wiki/BibTeX](https://en.wikipedia.org/wiki/BibTeX). 
 
 ```{info, title = "Note", collapsible = FALSE}
-Note that references stored in other formats (e.g. EndNote, Zotero or Mendeley) can be **exported** to BibTeX if required. (A quick Google search gives lots of resources online to convert between EndNote, Zotero, Mendeley and BibTeX, so let me know if you have any issues with this.) This means that you can store your references in say Zotero if you prefer (and if you already use this), and simply export the ones you need to a BibTeX file if you want to pass them to R Markdown.
+Note that references stored in other formats (e.g. EndNote, Zotero or Mendeley) can be **exported** to BibTeX if required. (A quick Google search gives lots of resources online to convert between EndNote, Zotero, Mendeley and BibTeX, so let me know if you have any issues with this.) This means that you can store your references in say Zotero if you prefer (and if you already use this), and simply export the ones you need to a BibTeX file if you want to pass them to R Markdown. You can also import BibTeX files into other formats.
 ```
 
 For example, a BibTeX entry for [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) would be:
@@ -467,8 +467,8 @@ General things to remember:
 
 * All authors should be separated using `and`. The formatting will be taken care of by the style file.
 * Always use full author names if available. Any shortening of the names will be taken care of in the style file (sometimes full names are not provided though).
-* Some style files automatically change title/journal names etc. to lower-case (but not authors thankfully). If there are specific letters you wish to always remain unchanged, please put these in curly brackets. For example, `{B}ritish` will ensure that the "B" is always capitalised, regardless of the style file.
-* If you need to italicise something, then use `\textit{}` rather than `*` (since `\textit{}` is LaTeX code for italics). For example, species names such as *Mycobacterium bovis* are always italicised, and so you can use `\textit{{M}ycobacterium bovis}` to format this correctly (notice that I've also put the `{M}` in curly brackets since it should always be capitalised).
+* Some style files automatically change title/journal names etc. to lower-case (but not authors thankfully). If there are specific letters/words you wish to always remain unchanged, please put these in curly brackets. For example, `{B}ritish` will ensure that the "B" is always capitalised, regardless of the style file.
+* If you need to italicise something, then use `\textit{}` rather than surrounding with `*` operators as for Markdown (since `\textit{}` is LaTeX code for italics). For example, species names such as *Mycobacterium bovis* are always italicised, and so you can use `\textit{{M}ycobacterium bovis}` to format this correctly (notice that I've also put the `{M}` in curly brackets since it should always be capitalised).
 * If you need to use accents over certain letters, then you will have to use LaTeX code for accents. Some examples can be found [here](https://en.wikibooks.org/wiki/LaTeX/Special_Characters). 
 * Adding the [Digital Object Identifier (DOI)](https://www.doi.org/) helps to uniquely identify the resource (and in certain style files will automatically be hyperlinked to the correct entry at [https://www.doi.org/](https://www.doi.org/)).
 
@@ -531,11 +531,13 @@ Manuals can be included using `@manual`, as:
 }
 ``
 
-Notice that here we have included a URL to the software website. Finally, we can include websites via `@misc`, as:
+Notice that here we have included a URL to the software website.
+
+Finally, we can include websites via `@misc`, as:
 
 ``
 @misc{citethemright:2023,
-    title = {Cite Them Right Harvard},
+    title = {{Cite Them Right Harvard}},
     author = {{Cite Them Right}},
     year = 2023,
     url = {https://www.citethemrightonline.com/category-list?docid=CTRHarvard},
@@ -543,7 +545,7 @@ Notice that here we have included a URL to the software website. Finally, we can
 }
 ``
 
-Notice that it is usual to add the date at which you accessed the website to your reference (`urldate` here), and notice also that to keep the author as `Cite Them Right` we've used curly brackets again (otherwise, the software may think that `Cite Them` are first names, and `Right` is a surname, and thus format the author as "Right, C. T.")!
+Notice that it is usual to add the date at which you accessed the website to your reference (`urldate` here), and notice also that to keep the author as `Cite Them Right` we've used curly brackets again (otherwise, the software may think that `Cite Them` are first names, and `Right` is a surname, and thus format the author as "Right, C. T.")! The curly brackets around the website name ensures that it remains all in title case.
 
 ```
 

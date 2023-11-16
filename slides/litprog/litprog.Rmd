@@ -133,7 +133,29 @@ So, in short, **always treat the working directory as being the location of your
 
 Go through Chapter 9 in your own time (most of which has been covered). 
 
-Have a go at working through Chapter 10.
+Have a go at working through Chapter 10 up to Section 10.5.
+
+## Referencing
+
+Note that R Markdown also allows for citations and references to be added using BibTeX.
+
+This allows for references and reference lists to be automatically formatted through the use of **style files**.
+
+I have provided a style file called `harvard-exeter.csl`, that you should use in this module. This should be fairly close to the Cite Them Right style file, but the style file takes precedence **in this module** only`r footnotemark()`.
+
+```{footnotes}
+since I do not expect you to manually edit the style file or manually format references
+```
+
+## Referencing
+
+Note that you can convert between e.g. EndNote, Zotero, Mendeley and BibTeX as required (lots of examples of how to do this on Google, but let me know if you have any trouble).
+
+**Demonstration time!**
+
+## Your turn
+
+Have a go at working through the rest of Chapter 10.
 
 
 

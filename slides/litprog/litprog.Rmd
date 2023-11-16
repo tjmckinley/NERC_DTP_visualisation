@@ -105,6 +105,30 @@ Markdown was created with the mandate that documents should be easy to read and 
 
 **Demonstration time!**
 
+## Important: folder structures
+
+When you compile an R Markdown document (using e.g. the 'Knit' button), the software compiles the code within an isolated sandbox. 
+
+This means that it cannot see your current workspace, or any libraries you might have loaded, or anything else you might have done in your main R session. 
+
+This is important to make sure that the code is entirely **reproducible**. 
+
+One consequence of this is that when compiling, it automatically sets the **working directory** to the directory containing the `.Rmd` file. **Hence, using the folder structure guidelines mentioned before helps here.**
+
+## Important: folder structures
+
+Setting the working directory inside a piece of R code (using e.g. `setwd()`) **will not apply to the whole document**. 
+
+```{box, wrap = TRUE}
+This means that if you are including **paths to any files**, then these must be either *fully specified*, or specified *relative to the directory* that the `.Rmd` file is in.
+```
+
+The latter is preferred, since this will also work if you share the `.Rmd` file with anyone else.
+
+```{box, wrap = TRUE}
+So, in short, **always treat the working directory as being the location of your `.Rmd` file** in any piece of R Markdown code, and do not try to override this with e.g. `setwd()`.
+```
+
 ## Your turn
 
 Go through Chapter 9 in your own time (most of which has been covered). 

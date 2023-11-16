@@ -7,6 +7,7 @@ author: \"TJ McKinley\"
 date: \"05/11/2021\"
 output: html_document
 bibliography: references.bib
+csl: harvard-exeter.csl
 ---
 
 `{r setup, include = FALSE}

@@ -1,7 +1,7 @@
 # R Markdown
 
 ```{info, title = "Note", collapsible = FALSE}
-An awesome reference for all things `rmarkdown` is the **R Markdown Cookbook**, which can be found\
+An awesome reference for all things `rmarkdown` is the **R Markdown Cookbook**, which can be found at
 [https://bookdown.org/yihui/rmarkdown-cookbook/](https://bookdown.org/yihui/rmarkdown-cookbook/)
 ```
 
@@ -27,11 +27,21 @@ Try compiling to a PDF, or a Word document by clicking on the arrow next to the 
 
 Let's talk through the different components of the Markdown code.
 
+```{info, title = "Very important", collapsible = FALSE}
+When you compile an R Markdown document (using e.g. the 'Knit' button), the software compiles the code within an isolated sandbox. This means that it cannot see your current workspace, or any libraries you might have loaded, or anything else you might have done in your main R session. This is important to make sure that the code is entirely **reproducible**. 
+
+One consequence of this is that when compiling, it automatically sets the **working directory** to the directory containing the `.Rmd` file. 
+
+Setting the working directory inside a piece of R code (using e.g. `setwd()`) **will not apply to the whole document**. This means that if you are including **paths to any files**, then these must be either *fully specified*, or specified *relative to the directory* that the `.Rmd` file is in. The latter is preferred, since this will also work if you share the `.Rmd` file with anyone else.
+
+So, in short, **always treat the working directory as being the location of your `.Rmd` file** in any piece of R Markdown code, and do not try to override this with e.g. `setwd()`.
+```
+
 ## YAML
 
 The top section is called the YAML. (This stands for "YAML Ain't Markup Language"---a [recursive acronym](https://en.wikipedia.org/wiki/Recursive_acronym) of the sort favoured by programmers worldwide.)
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, comment = NA}
 cat("---
 title: \"Untitled\"
 output: html_document
@@ -123,7 +133,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```")
 ```
 
-The function `opts_chunk$set()` allows the user to set **global options**. In this case setting the `echo` option to be `TRUE` by default. (Note that options added to individual code chunks override these global options, so I can still set `echo = FALSE` for specific chunks if required.) Notice also the use of the option `include = FALSE` to this chunk. This means that the function is run, but neither the source code or outputs are included in the compiled document. This is useful here, since the contents of this chunk relate to the processing of the R Markdown document, and do not play any role in the "analysis".
+The function `opts_chunk$set()` allows the user to set **global options**. In this case setting the `echo` option to be `TRUE` by default. **(Note that options added to individual code chunks override these global options, so I can still set `echo = FALSE` for specific chunks if required.)** Notice also the use of the option `include = FALSE` to this chunk. This means that the function is run, but neither the source code or outputs are included in the compiled document. This is useful here, since the contents of this chunk relate to the processing of the R Markdown document, and do not play any role in the "analysis".
 
 ```{info, title = "Aside", collapsible = FALSE}
 The `opts_chunk$set()` function is part of the `knitr` package, and the `knitr::` part is just making this explicit. As long as the `knitr` package is loaded (using `library(knitr)`), then you do not need to add the `knitr::` part. This format can be useful if you want to use specific functions from a package, but without loading the whole library. There are some technicalities around this (RStudio loads the `namespace` of `knitr` already---this is not true for all packages), so a more general option would be:
@@ -240,7 +250,7 @@ Make a **copy** of the `ff.R` script file used [Chapter 9](#ffscript) (or copy t
 
 When creating plots from R, useful chunk options are `fig.width` and `fig.height`, which allow you to set the plot dimensions in inches. Alternatively, `out.width` and `out.height` can be used to scale figures in different ways, I mostly use e.g. `out.width = "50%"` to scale the width and height by 50% to make a smaller plot (`out.width` respects aspect ratios unless you specifically set `out.height` as well). Figure captions can be added using the `fig.cap` option. Alignment of the output figure can be controlled with `fig.align`, which takes the values `"left"`, `"right"` or `"center"`.
 
-We can include images that are not generated in R by using the `include_graphics()` function in an R chunk (as long as `knitr` has been loaded in an earlier chunk). We simply pass the relative path to an image into this function. For example:
+We can include images that are not generated in R by using the `include_graphics()` function in an R chunk (as long as `knitr` has been loaded in an earlier chunk). We simply pass the relative path to an image into this function. For example, as long as the file `"Homer_Simpson_2006.png` is in the *working directory* (remember that the working directory in R Markdown is set to the directory of the `.Rmd` file), then the following:
 
 ```{r, comment = NA, echo = FALSE}
 cat("```{r, echo = FALSE}
@@ -317,7 +327,7 @@ kable(cars[1:6, ], align = "c", col.names = c("Speed (mph)", "Stopping distance 
 ```
 
 ```{info, title = "gt", collapsible = FALSE}
-There has recently been a package released called [`gt`](https://gt.rstudio.com/), which looks awesome. It is currently still in the early release stage (although it is on CRAN), and I haven't used it in anger yet, which is why I haven't expanded on it here. However, feel free to install and have a play if you like!
+There has recently been a package released called [`gt`](https://gt.rstudio.com/), which looks awesome. It is currently still in the early release stage (although it is on CRAN), and I haven't used it in anger yet, which is why I haven't expanded on it here. However, feel free to install and have a play if you like! (My early-access opinion is that it seems a little sketchy for some more complex tables when producing PDF outputs, but is really good for HTML outputs. I hope that it will improve over time because the syntax and flexibility is great.)
 ```
 
 Note that sometimes, you might want to format the cells of the different columns separately. For example, there is a `digits` argument to `kable()`, that can be used to round decimal numbers to a certain number of significant figures. Alternatively, another option is to round and format numbers in the `data.frame` object itself before you use it in `kable()`. This can be easily done using **pipes**, which avoids changing the original data set at all but gives you more control over how the table is presented.
@@ -380,7 +390,9 @@ Here an underscore `_` allows for **subscripts**, a hat symbol `^` allows for **
 
 ```
 
+```{info, title = "Note", collapsible = FALSE}
 Even though this uses LaTeX notation, it will compile using the MathJax Javascript library for HTML files, and automatically convert to Equation format in Word.
+```
 
 ```{info, title = "Note", collapsible = FALSE}
 If you ever do want to learn LaTeX, then please see a great tutorial by Andy Roberts at [https://www.andy-roberts.net/writing/latex](https://www.andy-roberts.net/writing/latex).
@@ -388,9 +400,13 @@ If you ever do want to learn LaTeX, then please see a great tutorial by Andy Rob
 
 ## Referencing
 
-R Markdown also supports bibliographic referencing using a BibTeX-style bibliographic manager. This is a format used in LaTeX documents, but in essence simply means that rather than use a manager such as EndNote, Zotero or Mendeley, instead you record your references in a simple text file with the suffix `.bib`. The references must be written in a specific format, but these can easily be downloaded through the **citation download** button on most journal papers. For the format of different types of reference, such as articles, books or technical reports, please see [https://en.wikipedia.org/wiki/BibTeX](https://en.wikipedia.org/wiki/BibTeX). Note that you can usually convert bibliographies stored in other formats, e.g. Zotero, to BibTeX if required.
+R Markdown also supports bibliographic referencing using a [BibTeX](https://www.bibtex.org/)-style bibliographic manager. This is a format used in LaTeX documents, but in essence simply means that rather than use a manager such as EndNote, Zotero or Mendeley, instead you record your references in a simple text file with the suffix `.bib`. The references must be written in a specific format, but these can easily be downloaded through the **citation download** button on most journal papers. For the format of different types of reference, such as articles, books or technical reports, please see [https://en.wikipedia.org/wiki/BibTeX](https://en.wikipedia.org/wiki/BibTeX). 
 
-An example BibTeX entry for [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) is:
+```{info, title = "Note", collapsible = FALSE}
+Note that references stored in other formats (e.g. EndNote, Zotero or Mendeley) can be **exported** to BibTeX if required. (A quick Google search gives lots of resources online to convert between EndNote, Zotero, Mendeley and BibTeX, so let me know if you have any issues with this.) This means that you can store your references in say Zotero if you prefer (and if you already use this), and simply export the ones you need to a BibTeX file if you want to pass them to R Markdown.
+```
+
+For example, a BibTeX entry for [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) would be:
 
 ```{r, fig.cap = "Partridge and Farquhar (1981) BibTeX entry", eval = FALSE, echo = TRUE}
 @article{partridge_farquhar:1981,
@@ -404,15 +420,17 @@ An example BibTeX entry for [Partridge and Farquhar (1981)](https://www.nature.c
 }
 ```
 
-I wrote this by hand. Conversely, Figure \@ref(fig:citation) shows an example where the BibTeX entry can be downloaded directly, for [Spiegelhalter (2020)](https://www.bmj.com/content/370/bmj.m3259).
+The first part of the BibteX entry, `partridge_farquhar:1981` is a **unique identifier** for the reference, and can be changed to anything you like. 
+
+I wrote the above entry by hand. Conversely, Figure \@ref(fig:citation) shows an example where the BibTeX entry can be downloaded directly, for [Spiegelhalter (2020)](https://www.bmj.com/content/370/bmj.m3259).
 
 ```{r, citation, fig.cap = "BMJ Citation Download", echo = FALSE, out.width = "60%", out.height = "60%"}
 include_graphics("litprog/images/citation.png")
 ```
 
-If we save all the references we need into a file called e.g. `references.bib` (stored in the working directory), then we can add this file to the YAML as follows:
+If we save all the references we need into a file called e.g. `references.bib`, then we can add this file to the YAML as follows:
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, comment = NA}
 cat("---
 title: \"Untitled\"
 output: html_document
@@ -420,24 +438,161 @@ bibliography: references.bib
 ---")
 ```
 
-The first part of the BibteX entry, `partridge_farquhar:1981` is a unique identifier for the reference, and can be changed to anything you like. This identifier can then be used in the code as e.g. `@partridge_farquhar:1981`, which will then typeset as Partridge and Farquhar (1981), and `[@partridge_farquhar:1981]` will typeset as (Partridge and Farquhar, 1981). This will then add the references to the end of the document. It's usually worthwhile adding an empty section to the end of your R Markdown code with the title **References** e.g.
+```{info, title = "Note", collapsible = FALSE}
+If `references.bib` is **not** stored in the **working directory**, then you will have to add the full path to the file in the YAML. Hence it is better to store it in the working directory.
+```
+
+The unique identifiers can then be used in the code wherever a reference is required e.g. `@partridge_farquhar:1981`, which will then typeset as Partridge and Farquhar (1981), and `[@partridge_farquhar:1981]` will typeset as (Partridge and Farquhar, 1981). This will also add the list of references to the end of the document. It's usually worthwhile adding an empty section to the end of your R Markdown code with the title **References** e.g.
 
 ```
 # References
 ```
 
 ```{info, title = "Note", collapsible = FALSE}
-Only entries that are cited in the document will appear in the reference list, so you are free to use a single `.bib` file for all your references if you like, and pick-and-choose the ones you need as and when you need them.
+Only entries that are cited in the document will appear in the reference list, so you are free to use a single `.bib` file for **all** your references if you like, and only the ones you reference in the R Markdown document will appear in your compiled document.
 ```
 
-```{info, title = "Note", collapsible = FALSE}
-By default this uses a Chicago referencing style, which is an author-year style. Other formats (e.g. Vancouver, Harvard etc.) can be specified using Citation Style Language (CSL) files. A good resource for these is the [Zotero Style Guide](https://www.zotero.org/styles), and once downloaded they can be added to the YAML and then update the document accordingly.
+```{info, title = "Useful information regarding BibTeX files"}
+Below are example `.bib` entries with some common types of reference you might want to include. These include:
+    
+* articles,
+* books,
+* chapters in books,
+* manuals,
+* websites.
+
+You can use some of these as a basis for your own reference files. You'll notice that some fields are different for different types of reference. I've also chosen some of these examples to highlight a few important points regarding formatting of BibTeX files (because they are written in LaTeX rather than R Markdown, so a few things differ in terms of formatting---if you can't get something to work, then please e-mail me).
+
+General things to remember:
+
+* All authors should be separated using `and`. The formatting will be taken care of by the style file.
+* Always use full author names if available. Any shortening of the names will be taken care of in the style file (sometimes full names are not provided though).
+* Some style files automatically change title/journal names etc. to lower-case (but not authors thankfully). If there are specific letters you wish to always remain unchanged, please put these in curly brackets. For example, `{B}ritish` will ensure that the "B" is always capitalised, regardless of the style file.
+* If you need to italicise something, then use `\textit{}` rather than `*` (since `\textit{}` is LaTeX code for italics). For example, species names such as *Mycobacterium bovis* are always italicised, and so you can use `\textit{{M}ycobacterium bovis}` to format this correctly (notice that I've also put the `{M}` in curly brackets since it should always be capitalised).
+* If you need to use accents over certain letters, then you will have to use LaTeX code for accents. Some examples can be found [here](https://en.wikibooks.org/wiki/LaTeX/Special_Characters). 
+* Adding the [Digital Object Identifier (DOI)](https://www.doi.org/) helps to uniquely identify the resource (and in certain style files will automatically be hyperlinked to the correct entry at [https://www.doi.org/](https://www.doi.org/)).
+
+Some examples of these ideas can be seen below.
+
+Firstly, journal articles can be included using the `@article` class, as:
+
+``
+@article{mathewsetal:2006,
+    author = {Fiona Mathews and David W. MacDonald and G. Michael Taylor and Merryl Gelling and Rachel A. Norman and Paul E. Honess and Rebecca Foster and Charlotte M. Gower and Susan Varley and Audrey Harris and Simonette Palmer and Glyn Hewinson and Joanne P. Webster},
+    title = {Bovine tuberculosis (\textit{{M}ycobacterium bovis}) in {B}ritish farmland wildlife: the importance to agriculture},
+    journal = {Proceedings of the Royal Society B: Biological Sciences},
+    volume = {273},
+    number = {1584},
+    pages = {357--365},
+    year = {2006},
+    doi = {10.1098/rspb.2005.3298}
+}
+``
+
+Notice that here we separate all authors using `and`, set some letters to be always capitalised using `{}`, and also format the species name for *Mycobacterium bovis* to be italicised.
+
+Books can be referenced using `@book`, as:
+
+``
+@book{kalbfleisch_prentice:2002,
+	author = {John D. Kalbfleisch and Ross L. Prentice},
+	title = {The Statistical Analysis of Failure Time Data},
+	publisher = {Wiley},
+	edition = {2nd},
+	year = {2002},
+	doi = {10.1002/9781118032985}
+}
+``
+
+Chapters in books can be referenced using `@inbook`, as:
+
+``
+@inbook{jegatetal:2008,
+	author = {C. J\`{e}gat and F. Carrat and C. Lajaunie and H. Wackernagel},
+	title = {Early Detection and Assessment of Epidemics by Particle Filtering},
+	booktitle = {geoENV VI – Geostatistics for Environmental Applications},
+	editor = {A. Soares and M. Pereira and R. Dimitrakopoulos},
+	publisher = {Springer Netherlands},
+	year = {2008},
+	pages = {22--35}
+}
+``
+
+Here we have included a grave accent where required. Note that the original paper only has initials for each name, so we can't add full names here.
+
+Manuals can be included using `@manual`, as:
+
+``
+@manual{winbugs14:2003,
+	author = {David Spiegelhalter and Andrew Thomas and Nicky Best and Dave Lunn},
+	title = {WinBUGS User Manual, Version 1.4},
+	year = {2003},
+	url = {https://www.mrc-bsu.cam.ac.uk/wp-content/uploads/manual14.pdf}
+}
+``
+
+Notice that here we have included a URL to the software website. Finally, we can include websites via `@misc`, as:
+
+``
+@misc{citethemright:2023,
+    title = {Cite Them Right Harvard},
+    author = {{Cite Them Right}},
+    year = 2023,
+    url = {https://www.citethemrightonline.com/category-list?docid=CTRHarvard},
+    urldate = {2023-11-16}
+}
+``
+
+Notice that it is usual to add the date at which you accessed the website to your reference (`urldate` here), and notice also that to keep the author as `Cite Them Right` we've used curly brackets again (otherwise, the software may think that `Cite Them` are first names, and `Right` is a surname, and thus format the author as "Right, C. T.")!
+
+```
+
+### Referencing styles
+
+By default, R Markdown uses a Chicago referencing style, which is an author-year style. Other formats (e.g. Vancouver, Harvard etc.) can be specified using Citation Style Language (CSL) files. A good resource for these is the [Zotero Style Guide](https://www.zotero.org/styles), where you can download a given style file and then simply link the downloaded style file to the document in the YAML (see below). 
+
+```{info, title = "Important: style files", collapsible = FALSE}
+The point of style files is to avoid you from having to do any manual formatting of your references or reference list. Almost all scientific journals provide style files for journal submissions, which can be linked to e.g. EndNote, Zotero or Mendeley (if you are writing a document in Word for example), or to BibTeX.
+
+This has many advantages. For example, if you resubmit your work to a different journal, then you only have to replace the original style file with a new one, and all of your references automatically update to the new format without any manual intervention!
+    
+Of course, it may be that you can't download a style file that matches the **exact specification** required. If this is the case, then you can manually edit the style file (since it is just a text file after all), however, this does require some understanding of how style files operate. **You will not have to manually edit style files in this course.** However, a useful resource if you ever need it in the future can be found on the [Zotero](https://www.zotero.org/support/dev/citation_styles/style_editing_step-by-step) website.
+    
+To be consistent with the other Medical Sciences courses, we will use a **Harvard** style in this module. Unfortunately the University *does not* provide style files for the exact formatting requirements they use, specifically the ones described on Cite Them Right:
+    
+[https://www.citethemrightonline.com/category-list?docid=CTRHarvard](https://www.citethemrightonline.com/category-list?docid=CTRHarvard)
+
+However, I have created a version that I think is close to the correct one, which can be used as described below.
+```
+
+To change to the Exeter Harvard style, download the `r ifelse(!is_latex_output(), "[\u0060 harvard-exeter.csl \u0060](litprog/uploadFiles/harvard-exeter.csl) file", "\\texttt{harvard-exeter.csl} from ELE")`, put it in the working directory, and then add the following line to the YAML:
+
+```{r, echo = FALSE, comment = NA}
+cat("csl: harvard-exeter.csl")
+```
+
+and then recompile the document.
 
 For more details please see the [R Markdown Cookbook section on bibliographies](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html).
+
+```{task}
+Add a reference to [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) to your `ff.Rmd` file using the approach described above.
 ```
 
 ```{task}
-Add a reference to [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0#citeas) to your `ff.Rmd` using the approach described above.
+Change the bibliography style to Harvard in `ff.Rmd`, using the `harvard-exeter.csl` file and the approach described above.
+```
+
+```{task}
+Download one of the Vancouver style files from the [Zotero Style Guide](https://www.zotero.org/styles) repository, and change the bibliography style in `ff.Rmd` to use this new file. Examine the compiled document to see the effect that the style file has on the way the references and reference list are formatted.
+```
+
+```{info, title = "**Important: coursework**", collapsible = FALSE}
+For any coursework in this module I would like you to use the `harvard-exeter.csl` style file provided. If there are any differences between this file and the exact [Cite Them Right](https://www.citethemrightonline.com/category-list?docid=CTRHarvard) criteria, then, for **THIS module** only, **the `harvard-exeter.csl` style file will take precedence**.
+
+I **do not** expect you to manually edit your references or style file here, as long as you use the correct file then I will be happy.
+
+However, if there are any differences between the style file and Cite Them Right that you notice, please do let me know and I can update the style file for the future.
 ```
 
 ## Additional features
@@ -535,7 +690,7 @@ This is the beauty of **open-source** software---you are free to develop code fu
 ## Additional task
 
 ```{task}
-Take the analysis we conducted in Chapter \@ref(spiegelhalter), and create a short R script that reads in the relevant data files and creates the main figure that we produced in the earlier workshop. Convert this into R Markdown and produce a short report, with some descriptive text, but hiding all the code in the compiled document. Add any references using the default Chicago-style as necessary.
+Take the analysis we conducted in Chapter \@ref(spiegelhalter), and create a short R script that reads in the relevant data files and creates the main figure that we produced in the earlier workshop. Convert this into R Markdown and produce a short report, with some descriptive text, but hiding all the code in the compiled document. Add any references using the Harvard (Exeter) style as necessary.
 ```
 
 ```{solution, code = readLines("litprog/covid.Rmd"), eval = FALSE}

@@ -109,7 +109,19 @@ A key question throughout the COVID-19 pandemic has been to understand spatial h
 
 One thing we could do is explore how the epidemic trajectories varied between different LTLAs. However, we have cumulative death counts, so let's convert these to the number of new deaths at each time point. These can be calculated by taking the difference in cumulative deaths between consecutive time points. Again, there are various approaches, including using loops etc., but here we will use a function called `lag()`^[or alternatively, one called `lead()`], which takes a vector and returns the ***previous*** value corresponding to each element. A key challenge here is that we need to do this within each LTLA separately, however we can exploit `group_by()` once again.
 
-As such, we will ***order*** the data by date, ***group*** by LTLA, and then calculate the difference between the cumulative counts at each day and the cumulative counts at the previous day. This gives the number of new COVID-19 deaths at each day. The **grouping** ensures that the differences are only calculated ***within each LTLA***. Here we go:
+As such, we will ***order*** the data by date, ***group*** by LTLA, and then calculate the difference between the cumulative counts at each day and the cumulative counts at the previous day. This gives the number of new COVID-19 deaths at each day. The **grouping** ensures that the differences are only calculated ***within each LTLA***. 
+
+```{info, title = "Note", collapsible = FALSE}
+In some versions of `tidyverse` in seems that the `date` column will not be automatically converted to a `Date` object when the data is read in (or if you have used `read.csv()` instead of `read_csv()`). As such the code below will sort into the wrong order (because `date` will be a `character` vector and not a `Date` vector). If you get this behaviour, then you will have to manually convert `date` from a `character` to a `Date` using `as.Date()`. For example:
+    
+``{r, eval = FALSE}
+covid <- mutate(covid, date = as.Date(date, format = "%Y-%m-%d"))
+``
+
+Remember, the `format` argument to `as.Date()` defines the format that the dates appear in the vector that you want to convert. Here they are specified as a four-digit year (`%Y`), followed by a two-digit month (`%m`), followed by a two-digit day (`%d`), each separated by hyphens (`-`). See [earlier](#dateinfo) for more details.
+```
+
+Assuming the `date` column is in the correct format, then to calculate the new deaths at each day within each LTLA we can run:
 
 ```{r}
 ## calculate new deaths at each day within each LTLA
@@ -605,6 +617,23 @@ include_graphics("covid/images/deaths.gif")
 
 ```{r, echo = FALSE, eval = ifelse(is_latex_output(), TRUE, FALSE), out.width = "80%"}
 include_graphics("covid/images/deaths_gif.png")
+```
+
+```{info, title = "Note", collapsible = FALSE}
+Some students reported getting an error when trying to run the code below, of the form:
+
+``
+Error: arguments have different crs
+``
+
+This seems to have been caused by a bug in the latest version (`0.1.4`) of the `transformr` package that `gganimate` uses. If you get this error, then a quick solution is to roll-back to the previous version of `transformr`. To do this, you can use the `remotes` package as follows (if `remotes` is not installed, then it can be installed in the usual way using `install.packages("remotes")`):
+
+``
+library(remotes)
+install_version("transformr", version = "0.1.3")
+``
+
+Then you will have to restart R and rerun your code but then the animation should work. Let me know if you have any further problems.
 ```
 
 ```{info, title = "Code for producing animation", collapsible = TRUE}

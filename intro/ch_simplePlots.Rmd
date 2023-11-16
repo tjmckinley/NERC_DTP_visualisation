@@ -204,8 +204,11 @@ summary(ldeaths)
 head(ldeaths)
 ```
 
+```{hypertarget, label = "dateinfo"}
+```
+
 ```{info, title = "Aside", collapsible = FALSE}
-We can see that the `date` column has been read in as a `character` vector, which is what we expect given the input file. However, R has a special data type that can be used to store and manipulate dates. This is very helpful when we want to plot, since it can automatically capture the correct ordering. There are also various base R functions that can manipulate dates (for example, if you want to extract the month or year say, or find the time difference bewteen two dates). A neat recent package is [`lubridate`](https://lubridate.tidyverse.org/), which is part of the `tidyverse`. We will use some of its functionality in the future, but here we just need to use a base R function called `as.Date()` to convert the `date` column into a `Date` object. The `format = "%d-%m-%Y"` argument tells `as.Date()` the structure of the input (`%Y` = four digit year, `%m` = two digit month, `%d` = two digit day, all seperated by hyphens (`-`)).
+We can see that the `date` column has been read in as a `character` vector, which is what we expect given the input file. However, R has a special data type that can be used to store and manipulate dates. This is very helpful when we want to plot, since it can automatically capture the correct ordering. There are also various base R functions that can manipulate dates (for example, if you want to extract the month or year say, or find the time difference between two dates). A neat recent package is [`lubridate`](https://lubridate.tidyverse.org/), which is part of the `tidyverse`. We will use some of its functionality in the future, but here we just need to use a base R function called `as.Date()` to convert the `date` column into a `Date` object. The `format = "%d-%m-%Y"` argument tells `as.Date()` the structure of the input (`%Y` = four digit year, `%m` = two digit month, `%d` = two digit day, all seperated by hyphens (`-`)).
 
 ``{r}
 ## convert character to date

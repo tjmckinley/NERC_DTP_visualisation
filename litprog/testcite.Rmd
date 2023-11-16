@@ -1,0 +1,16 @@
+---
+title: "Untitled"
+author: "TJ McKinley"
+date: "2023-10-18"
+output: html_document
+bibliography: references.bib
+csl: uploadFiles/harvard-exeter.csl
+---
+
+[@mathewsetal:2006; @kalbfleisch_prentice:2002]
+@jegatetal:2008
+@winbugs14:2003
+@citethemright:2023
+
+# References
+

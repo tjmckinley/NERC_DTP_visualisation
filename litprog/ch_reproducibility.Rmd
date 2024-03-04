@@ -26,6 +26,26 @@ Finally, we will also introduce the concept of **version control**, which, in my
 
 Key packages we will be using include [`knitr`](https://yihui.org/knitr/), [`rmarkdown`](https://rmarkdown.rstudio.com/) and [`tinytex`](https://yihui.org/tinytex/), though these are installed automatically with RStudio. In addition, RStudio makes it very easy to utilise these packages, and has built-in support for various key functions that we will use.
 
+If you want to compile to PDF directly, then you will need to install `tinytex`. To check this you can run:
+
+```{r, eval = FALSE}
+library(tinytex)
+```
+
+If this loads without an error message then it is already installed. If not then you can install it in the usual way e.g.
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+```
+
+Once the `tinytex` R package has installed, you will then need to install the TinyTeX LaTeX packages. This can be done from within the R console, by typing:
+
+```{r, eval = FALSE}
+tinytex::install_tinytex()
+```
+
+Once this has been installed then you should be good to go.
+
 ## Script files
 
 We have already seen that R allows us to write **script files**, that details our exact analysis, and that can be used to make our code **reproducible**. I would argue that the transition from a **basic** script file (i.e. a text file that contains some code), to a **reproducible** script file hinges on the **purpose** of the script. Allow me to elaborate...

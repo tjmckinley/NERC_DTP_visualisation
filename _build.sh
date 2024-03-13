@@ -20,7 +20,7 @@ done
 
 # check slides mode (1 = compile, 0 = don't compile slides)
 if [ ! -z ${slides+x} ]; then
-    if [ $slides != "0" ] && [ slides != "1" ]; then
+    if [ $slides != "0" ] && [ $slides != "1" ]; then
         echo "slides set incorrectly (should be 0 = don't compile slides or 1 = compile slides)"
         exit 1
     fi

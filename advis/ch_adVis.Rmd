@@ -3,9 +3,9 @@
 # Visualisation using `ggplot2` {#advis}
 
 ```{info, title = "Note", collapsible = FALSE}
-A PDF handout for the slides for this part of the module can be found on the ELE page`r ifelse(!is_latex_output(), " or via the link [here](advis/uploadFiles/advisHANDOUT.pdf)", "")`. A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found on ELE`r ifelse(!is_latex_output(), ", or via the links [here](advis/uploadFiles/advisSLIDES.pdf) and [here](advis/uploadFiles/advisSLIDES.html)", "")`.
+A PDF handout for the slides for this part of the module can be found [here](advis/uploadFiles/advisHANDOUT.pdf). A PDF version of the slides (not in handout form) and a HTML version (which should be compatible with screen-readers) can also be found via the links [here](advis/uploadFiles/advisSLIDES.pdf) and [here](advis/uploadFiles/advisSLIDES.html).
 
-All required data files can be downloaded from ELE`r ifelse(!is_latex_output(), " or [here](advis/uploadFiles/datasets_advis.zip)", "")`.
+All required data files can be downloaded from [here](advis/uploadFiles/datasets_advis.zip).
 ```
 
 ## Introduction to `tidyverse`
@@ -786,7 +786,7 @@ Take a look at the help file `?ggsave` for more details.
 
 ## Additional task
 
-Let's return to the fruitflies data from previous practicals. Recall:
+Let's look at some data from an experiment exploring the effect of sexual activity on lifespan of male fruitflies, described in [Partridge and Farquhar (1981)](https://www.nature.com/articles/294580a0).
 
 > *A cost of increased reproduction in terms of reduced longevity has been shown for female fruitflies, but not for males. We have data from an experiment that used a factorial design to assess whether increased sexual activity affected the lifespan of male fruitflies.*
 > 
@@ -822,7 +822,7 @@ and use `ggplot2` to reproduce something similar to the plot below:
 
 ```{solution, multCode = TRUE, titles = c("ggplot2", "Base R")}
 
-For comparison `ggplot2` and base R versions of the code are provided. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this module, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
+For comparison `ggplot2` and base R versions of the code are provided. You can see how much easier it is to produce a plot like this using `ggplot2`! Note that in the base R code we have used the `lm()` function to fit a **linear regression model** to each subset of data in order to produce the fitted lines. We do not cover **statistical modelling in R** in this workshop, but if you are interested, there is a workshop [here](https://exeter-data-analytics.github.io/StatModelling/) where you can learn more.
 
 ``{r, fig.height = 4, fig.width = 8}
 ## produce summary plot

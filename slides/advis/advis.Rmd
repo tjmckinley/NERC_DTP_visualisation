@@ -146,8 +146,6 @@ Don't forget to:
 * set up your **working directory**;
 * use **script files** to record what you've done!
 
-(See Section 1.4 of the Notes.)
-
 ## Example: Titanic survival data
 
 Let's have a look at some data:
@@ -233,7 +231,7 @@ temp %>% rownames_to_column("Treatment") %>%
     gather(Replicate, Measurement, -Treatment)
 ```
 
-In the next workshop we will see how to use `tidyverse` to manipulate, join and tidy messy data sets!
+`tidyverse` has a lot of useful package to help manipulate, join and tidy messy data sets, which are beyond the scope of today's workshop. Check out the [R For Data Science](https://r4ds.had.co.nz/) book as a good place to start.
 
 ## Introduction to `ggplot2`
 
@@ -421,7 +419,7 @@ ggplot(titanic)
 ```
 
 ```{footnotes}
-or `tibble` objects---see next session...
+or `tibble` objects---which are special types of data frame that you might come across if you delve more into `tidyverse`
 ```
 
 ## Geoms
@@ -524,7 +522,7 @@ Notice also that it's added a legend automatically! Neat eh?
 
 ## Your turn
 
-Now have a go at some of the exercises in Section 5.3 of the lecture notes. This uses the `iris` data set in R to illustrate some of these concepts, but this time generating a scatterplot.
+Now have a go at some of the exercises in Section 1.3 of the lecture notes. This uses the `iris` data set in R to illustrate some of these concepts, but this time generating a scatterplot.
 
 To do this we will need a new geom (`geom_point()`) and new aesthetics (`y` and `colour`). Otherwise the approach is very similar to the bar plot example.
 
@@ -608,12 +606,7 @@ ggplot(titanic) + geom_bar(aes(x = survived, fill = pclass)) +
 
 ```{r, eval = FALSE}
 ggplot(titanic) + 
-    geom_point(
-        aes(x = fare, 
-            y = age, 
-            colour = survived
-        )
-    ) +
+    geom_bar(aes(x = survived)) +
     facet_grid(pclass ~ gender)
 ```
 
@@ -622,9 +615,7 @@ ggplot(titanic) +
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 ggplot(titanic) + 
-    geom_point(aes(x = fare, 
-                 y = age, 
-                 colour = survived)) +
+    geom_bar(aes(x = survived)) +
     facet_grid(pclass ~ gender)
 ```
 
@@ -633,7 +624,7 @@ ggplot(titanic) +
 
 ## Your turn
 
-Have a go at Section 5.3.6 of the workshop.
+Have a go at Section 1.3.6 of the workshop.
 
 ## Statistical transformations
 
@@ -733,7 +724,7 @@ ggplot(titanic, aes(x = fare, y = age, colour = survived)) +
 
 ## Your turn
 
-Add some smoothed lines to your `iris` scatterplot. See Section 5.3.7 of the notes.
+Add some smoothed lines to your `iris` scatterplot. See Section 1.3.7 of the notes.
 
 ## Scales
 
@@ -804,7 +795,7 @@ We will see some more examples of using **scales** and **positions**, plus ways 
 
 Now we will put all of these ideas together to produce a complex bubblechart of **life expectancy** against **log(GDP)**, of the form shown by Professor Rosling in his earlier talk.
 
-Work through the tasks in Section 5.4 of the notes, and don't forget to ask if you don't understand anything.
+Work through the tasks in Section 1.4 of the notes, and don't forget to ask if you don't understand anything.
 
 ## One more thing...
 \small
@@ -833,11 +824,9 @@ His book [Factfulness](https://www.gapminder.org/factfulness-book/), co-written 
 
 ## Epilogue
 
-We have just begun to scratch the surface with what `ggplot2` can do (Section 5.7 will introduce ways to make animations and interactive plots using the `gganimate` and `plotly` packages).
+We have just begun to scratch the surface with what `ggplot2` can do (Section 1.7 will introduce ways to make animations and interactive plots using the `gganimate` and `plotly` packages).
 
 I hope that this workshop has whetted your appetites to use this package in your work. I now use this for almost all of the plots I use in publications and teaching.
 
 Please feel free to e-mail me with any further questions.
-
-In the next practical we will see how we can use `tidyverse` to facilitate complex **data wrangling** tasks in R.
 

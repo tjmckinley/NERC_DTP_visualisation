@@ -1,5 +1,5 @@
 --- 
-title: "CSC3031: Applied Data Science"
+title: "NERC DTP Visualisation Workshop"
 author: "TJ McKinley"
 site: bookdown::bookdown_site
 output:
@@ -17,7 +17,7 @@ output:
             in_header: _toggle.html
 documentclass: book
 link-citations: yes
-description: "CSC3031: Applied Data Science---Lecture Notes"
+description: "NERC DTP Visualisation Workshop---Lecture Notes"
 ---
 
 # Introduction {-}
@@ -31,38 +31,20 @@ set.seed(123654)
 #opts_chunk$set(cache = TRUE)
 ```
 
-Data science is an inter-disciplinary scientific field that aims to extract knowledge and insights from observed data, encompassing ideas of statistical modelling, machine learning, data visualisation and computer science. The ability to be able to process, visualise and analyse complex data sets is a sought-after skill set in modern biomedical science, particularly in the era of "big data". 
-
-Prerequisite modules have introduced the fundamentals of statistical modelling and computer programming; this module will augment these by focusing on many of the practical skills required when working with complex data sets, such as: collating, transforming and manipulating data, advanced visualisation tools and reproducible science. We will use the statistical programming language [R](https://cran.r-project.org/)---software that is now very widely used amongst biomedical and health scientists. In particular, we will introduce a powerful suite of packages known as the [`tidyverse`](https://www.tidyverse.org/), which are designed to make these routine, yet challenging, data science tasks faster, easier and more enjoyable. The course will be almost entirely practical based using real-world examples of complex data sets.
-
-This module requires that you have some experience of using computer programming. It does not require that you have used R before, since this will be introduced at the beginning of the module. All software is freely available, open-source and multi-platform. 
+This workshop will introduce you to using the [`ggplot2`](https://ggplot2.tidyverse.org/) package in R to quickly and easily produce visualisations of (complex) data sets. This is part of a wider suite of packages known as the [`tidyverse`](https://www.tidyverse.org/), which I can thoroughly recommend.
 
 ## Recommended reading {-}
 
-The following books are probably the most relevant to this module:
+The following books are probably the most relevant to this workshop:
 
 * [R for Data Science](https://www.oreilly.com/library/view/r-for-data/9781491910382/) by Hadley Wickham and Garrett Grolemund (2016), available for free online at [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/);
-* [ggplot2](https://www.springer.com/gp/book/9780387981413) by Hadley Wickham (2009), available for free online at [https://ggplot2-book.org/](https://ggplot2-book.org/);
-* [Pro Git Book](https://www.apress.com/gp/book/9781484200773) by Scott Chacon and Ben Straub, available freely online at [https://git-scm.com/book/en/v2](https://git-scm.com/book/en/v2).
+* [ggplot2](https://www.springer.com/gp/book/9780387981413) by Hadley Wickham (2009), available for free online at [https://ggplot2-book.org/](https://ggplot2-book.org/).
 
-In case you want other useful reading materials, I can recommend:
-    
-* [Statistics: An Introduction Using R](https://www.wiley.com/en-gb/Statistics%3A+An+Introduction+Using+R%2C+2nd+Edition-p-9781118941096) by Mick Crawley (2005);
-* [The R Book](https://www.wiley.com/en-gb/The+R+Book%2C+2nd+Edition-p-9780470973929) by Mick Crawley (2007).
+## Structure of this workshop {-}
 
-"The R Book" is a fairly hefty tome, but is pretty comprehensive. "Statistics: An Introduction Using R" is an attenuated version of "The R Book" and provides a good introduction to using R, as well as a good grounding in common statistical methods using R.
+R can be tricky to learn, so please feel free to e-mail me with questions at [t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk), though please make sure that you have thought through your question in advance. Most R problems can be solved with judicious use of [Google](https://www.google.com/) and [StackOverFlow](https://stackoverflow.com/)...
 
-In addition to those listed above, [Hadley Wickham](http://hadley.nz/) and colleagues have also written many great R packages and several more books, especially:
-    
-* [Advanced R](https://www.routledge.com/Advanced-R-Second-Edition/Wickham/p/book/9780815384571) by Hadley Wickham (2014), available for free online at [http://adv-r.had.co.nz/](http://adv-r.had.co.nz/).
-
-All of these books are available in the University library and/or can be read freely online at the above links.
-
-## Structure of this module {-}
-
-Many introduction to R workshops focus on the use of R as a *statistical computing* environment. This module focuses instead on using R as a *programming* and *scientific computing* environment. R can be tricky to learn, so please feel free to e-mail me with questions at [t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk), though please make sure that you have thought through your question in advance. Most R problems can be solved with judicious use of [Google](https://www.google.com/) and [StackOverFlow](https://stackoverflow.com/)...
-
-In these notes, R commands to be entered into the console are shown in grey boxes e.g.
+In this workshop, R commands to be entered into the console are shown in grey boxes e.g.
 
 ```{r, eval = FALSE}
 seq(0, 1, length = 11)
@@ -85,8 +67,4 @@ All **tasks** will be denoted in panel boxes like this one. In the HTML version,
 ```{solution}
 The answer is, of course, 42. 
 ```
-
-## Acknowledgements {-}
-
-I am indebted to [Dr Matt Castle](https://www.biostats.lifesci.cam.ac.uk/about-us), whose excellent "Introduction to R" practicals form the basis of the introductory content. I am also indebted to my late friend and colleague [Dr John Joseph Valletta](https://www.gigrower.co.uk/2020/10/30/remembering-jj-valletta-1983-2020/) and [Professor Dave Hodgson](https://biosciences.exeter.ac.uk/staff/profile/index.php?web_id=david_hodgson) for sharing various materials/data sets.
 

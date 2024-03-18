@@ -39,8 +39,8 @@ Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
 cp .nojekyll docs/
 
 ## declare array variables
-chNames=("intro" "prog" "simpleplots" "advis" "datawr" "covid" "spatialCovid" "litprog" "git")
-chPaths=("intro" "intro" "intro" "advis" "advis" "covid" "covid" "litprog" "git")
+chNames=("advis") #"intro" "prog" "simpleplots" "advis" "datawr" "covid" "spatialCovid" "litprog" "git")
+chPaths=("advis") #"intro" "intro" "intro" "advis" "advis" "covid" "covid" "litprog" "git")
 
 ## get length of an array
 arraylength=${#chNames[@]}

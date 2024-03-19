@@ -1,5 +1,5 @@
 ---
-title: "Advanced Visualisation (Made Easy) in R Practical"
+title: "Advanced Visualisation (Made Easy) in R Workshop"
 author: "T.J. McKinley ([t.mckinley@exeter.ac.uk](mailto:t.mckinley@exeter.ac.uk))"
 output: 
   revealjs::revealjs_presentation:
@@ -27,6 +27,35 @@ linkcolor: exeterdeepgreen
 ```{r, include = FALSE}
 opts_chunk$set(echo = TRUE)
 ```
+
+## Workshop notes
+
+`r bcols()`
+`r bcol(0.48)`
+
+The workshop notes are available at:
+
+`r br()`
+
+`r benv("center")`
+
+[https://tjmckinley.github.io/NERC_DTP_visualisation/](https://tjmckinley.github.io/NERC_DTP_visualisation/).
+
+`r eenv("center")`
+
+`r ecol()`
+`r bcol(0.48, TRUE)`
+
+```{r, out.width = "78%", echo = FALSE, include = ifelse(is_latex_output(), TRUE, FALSE)}
+include_graphics("images/qr-code.pdf")
+```
+
+```{r, out.width = "78%", echo = FALSE, include = ifelse(is_latex_output(), FALSE, TRUE)}
+include_graphics("images/qr-code.svg")
+```
+
+`r ecol()`
+`r ecols()`
 
 ## 'Tidy' data
 
@@ -142,7 +171,7 @@ Link: [here](https://www.youtube.com/embed/jbkSRLYSojo)
 
 Don't forget to:
 
-* download the datasets required from ELE or the link in the notes;
+* download the datasets required from the link in the notes;
 * set up your **working directory**;
 * use **script files** to record what you've done!
 
@@ -789,14 +818,6 @@ ggplot(titanic) +
 `r ecol()`
 `r ecols()`
 
-## Example: Gapminder
-
-We will see some more examples of using **scales** and **positions**, plus ways to tidy up axis/legend labels etc., in the next example:
-
-Now we will put all of these ideas together to produce a complex bubblechart of **life expectancy** against **log(GDP)**, of the form shown by Professor Rosling in his earlier talk.
-
-Work through the tasks in Section 1.4 of the notes, and don't forget to ask if you don't understand anything.
-
 ## One more thing...
 \small
 
@@ -813,6 +834,14 @@ ggplot() +
 ```
 
 Here the `geom_point()` uses a different data set than the `geom_line()` and `geom_ribbon()` functions.
+
+## Example: Gapminder
+
+Now you can put all of these ideas together to produce a complex bubblechart of **life expectancy** against **log(GDP)**, of the form shown by Professor Rosling in his earlier talk.
+
+This will provide some more examples of using **scales** and **positions**, plus ways to tidy up axis/legend labels etc. as you work through the example.
+
+Work through the tasks in Section 1.4 of the notes, and don't forget to ask if you don't understand anything.
 
 ## Epilogue
 

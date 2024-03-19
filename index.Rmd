@@ -17,6 +17,9 @@ output:
             in_header: _toggle.html
 documentclass: book
 link-citations: yes
+urlcolor: exeterdeepgreen
+citecolor: exeterdeepgreen
+linkcolor: exeterdeepgreen
 description: "NERC DTP Visualisation Workshop---Lecture Notes"
 ---
 
@@ -37,8 +40,8 @@ This workshop will introduce you to using the [`ggplot2`](https://ggplot2.tidyve
 
 The following books are probably the most relevant to this workshop:
 
-* [R for Data Science](https://www.oreilly.com/library/view/r-for-data/9781491910382/) by Hadley Wickham and Garrett Grolemund (2016), available for free online at [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/);
-* [ggplot2](https://www.springer.com/gp/book/9780387981413) by Hadley Wickham (2009), available for free online at [https://ggplot2-book.org/](https://ggplot2-book.org/).
+* [R for Data Science](https://www.oreilly.com/library/view/r-for-data/9781491910382/) by Hadley Wickham and Garrett Grolemund (2016), available online at [http://r4ds.had.co.nz/](http://r4ds.had.co.nz/);
+* [ggplot2](https://www.springer.com/gp/book/9780387981413) by Hadley Wickham (2009), available online at [https://ggplot2-book.org/](https://ggplot2-book.org/).
 
 ## Structure of this workshop {-}
 
@@ -56,7 +59,7 @@ and the corresponding outputs look like:
 seq(0, 1, length = 11)
 ```
 
-If you're reading this online, there is a downloadable PDF version of these notes if you prefer (available via the link next to the title at the top of the page).
+`r ifelse(is_latex_output(), "", "If you're reading this online, there is a downloadable PDF version of these notes if you prefer (available via the link next to the title at the top of the page).")`
 
 ## Tasks {-}
 
